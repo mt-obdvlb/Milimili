@@ -1,5 +1,6 @@
 {
   "name": "milimili",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "build": "turbo run build",
@@ -15,6 +16,7 @@
     "@eslint/js": "^9.31.0",
     "@eslint/json": "^0.13.0",
     "@next/eslint-plugin-next": "^15.3.0",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "eslint": "^9.31.0",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-only-warn": "^1.1.0",
@@ -34,5 +36,9 @@
   "packageManager": "pnpm@8.15.6",
   "engines": {
     "node": ">=18"
-  }
+  },
+  "dependencies": {
+    "zod": "^4.0.5"
+  },
+  "license": "MIT"
 }

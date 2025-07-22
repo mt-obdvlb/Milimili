@@ -1,19 +1,18 @@
+import css from '@eslint/css'
 import js from '@eslint/js'
+import json from '@eslint/json'
+import pluginNext from '@next/eslint-plugin-next'
+import eslintConfigPrettier from 'eslint-config-prettier'
+import onlyWarn from 'eslint-plugin-only-warn'
+import eslintPluginPrettier from 'eslint-plugin-prettier'
+import pluginReact from 'eslint-plugin-react'
+import pluginReactHooks from 'eslint-plugin-react-hooks'
+import turboPlugin from 'eslint-plugin-turbo'
+import { defineConfig } from 'eslint/config'
 import globals from 'globals'
 import tseslint from 'typescript-eslint'
-import json from '@eslint/json'
-import css from '@eslint/css'
-import { defineConfig } from 'eslint/config'
-import eslintConfigPrettier from 'eslint-config-prettier'
-import turboPlugin from 'eslint-plugin-turbo'
-import onlyWarn from 'eslint-plugin-only-warn'
-import pluginNext from '@next/eslint-plugin-next'
-import pluginReactHooks from 'eslint-plugin-react-hooks'
-import pluginReact from 'eslint-plugin-react'
-import eslintPluginPrettier from 'eslint-plugin-prettier'
 
 export default defineConfig([
-  // language 和 globals 统一放顶层
   {
     languageOptions: {
       globals: {
@@ -23,8 +22,19 @@ export default defineConfig([
     },
   },
 
-  ...js.configs.recommended,
-  ...tseslint.configs.recommended, // 保留一次
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
+
+  {
+    files: ['**/*.ts', '**/*.tsx'],
+    languageOptions: {
+      parser: tseslint.parser,
+      parserOptions: {
+        sourceType: 'module',
+        ecmaVersion: 'latest',
+      },
+    },
+  },
 
   {
     ignores: ['dist/**'],
@@ -34,9 +44,7 @@ export default defineConfig([
     plugins: {
       turbo: turboPlugin,
     },
-    rules: {
-      'turbo/no-undeclared-env-vars': 'warn',
-    },
+    files: ['apps/**', 'packages/**'],
   },
 
   {
@@ -53,6 +61,7 @@ export default defineConfig([
       ...pluginNext.configs.recommended.rules,
       ...pluginNext.configs['core-web-vitals'].rules,
     },
+    files: ['apps/web/**'],
   },
 
   {
@@ -65,32 +74,34 @@ export default defineConfig([
       ...pluginReactHooks.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off',
     },
+    files: ['apps/web/**'],
   },
 
   {
     files: ['**/*.json'],
-    plugins: { json },
-    language: 'json/json',
-    extends: ['json/recommended'],
+    ...json.configs.recommended,
   },
   {
     files: ['**/*.jsonc'],
-    plugins: { json },
-    language: 'json/jsonc',
-    extends: ['json/recommended'],
+    ...json.configs.recommended,
   },
   {
     files: ['**/*.json5'],
-    plugins: { json },
-    language: 'json/json5',
-    extends: ['json/recommended'],
+    ...json.configs.recommended,
   },
   {
     files: ['**/*.css'],
-    plugins: { css },
-    language: 'css/css',
-    extends: ['css/recommended'],
+    ...css.configs.recommended,
   },
-  eslintConfigPrettier,
-  eslintPluginPrettier,
+
+  {
+    name: 'prettier-config',
+    plugins: {
+      prettier: eslintPluginPrettier,
+    },
+    rules: {
+      ...eslintConfigPrettier.rules,
+      'prettier/prettier': 'warn',
+    },
+  },
 ])
