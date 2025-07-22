@@ -34,8 +34,9 @@
       "outputs": []
     }
   },
-  "env": {
-    "PORT": "optional",
-    "MONGO_URI": "optional"
-  }
+  "globalEnv": [
+    "PORT",
+    "MONGO_URI",
+    "CLIENT_URL"
+  ]
 }

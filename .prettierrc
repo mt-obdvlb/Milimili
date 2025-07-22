@@ -11,6 +11,7 @@
   "jsxSingleQuote": true,
   "htmlWhitespaceSensitivity": "ignore",
   "plugins": [
-    "prettier-plugin-tailwindcss"
+    "prettier-plugin-tailwindcss",
+    "@trivago/prettier-plugin-sort-imports"
   ]
 }
