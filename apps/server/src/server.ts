@@ -1,8 +1,10 @@
 import app from './app'
+import { appConfig } from '@/config'
+import { mongoConfig } from '@/config/mongo'
 import mongoose from 'mongoose'
 
-const PORT = process.env.PORT || 5000
-const MONGO_URI = process.env.MONGO_URI || ''
+const PORT = appConfig.port
+const MONGO_URI = mongoConfig.uri
 
 mongoose
   .connect(MONGO_URI)
