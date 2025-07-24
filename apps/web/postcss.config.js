@@ -1,3 +1,3 @@
-import { postcssConfig } from "@mtobdvlb/tailwind-config/postcss";
+import { postcssConfig } from '@mtobdvlb/tailwind-config/postcss'
 
-export default postcssConfig;
+export default postcssConfig
