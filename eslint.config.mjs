@@ -11,8 +11,10 @@ import turboPlugin from 'eslint-plugin-turbo'
 import { defineConfig } from 'eslint/config'
 import globals from 'globals'
 import tseslint from 'typescript-eslint'
+import pluginQuery from '@tanstack/eslint-plugin-query'
 
 export default defineConfig([
+  ...pluginQuery.configs['flat/recommended'],
   {
     languageOptions: {
       globals: {
