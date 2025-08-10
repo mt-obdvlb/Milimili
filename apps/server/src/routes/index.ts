@@ -1,12 +1,24 @@
-import homeRoute from '@/routes/home.route'
 import userRoute from '@/routes/user.route'
 import { Router } from 'express'
 import authRoute from '@/routes/auth.route'
+import categoryRoute from '@/routes/category.route'
+import notificationRoute from '@/routes/notification.route'
+import videoRoute from '@/routes/video.route'
+import feedRoute from '@/routes/feed.route'
+import historyRoute from '@/routes/history.route'
+import commentRoute from '@/routes/comment.route'
+import favoriteRoute from '@/routes/favorite.route'
 
 const router = Router()
 
 router.use('/auth', authRoute)
-router.use('/user', userRoute)
-router.use('/', homeRoute)
+router.use('/users', userRoute)
+router.use('/categories', categoryRoute)
+router.use('/videos', videoRoute)
+router.use('/feeds', feedRoute)
+router.use('/histories', historyRoute)
+router.use('/comments', commentRoute)
+router.use('/favorites', favoriteRoute)
+router.use('/notifications', notificationRoute)
 
 export default router
