@@ -1,6 +1,15 @@
-export type User = {
-  name: string
+export type UserBase = {
+  name?: string
   email: string
-  password: string
-  avatar: string
+  avatar?: string
+}
+
+export type UserDB = UserBase & {
+  password?: string
+}
+
+export type User = UserBase & {
+  id: string
+  createdAt: string
+  updatedAt: string
 }
