@@ -4,7 +4,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken'
 
 export const signToken = (
   payload: {
-    id: number
+    id: string
   },
   type: 'access' | 'refresh'
 ) => {
@@ -21,5 +21,5 @@ export const verifyToken = (token: string) => {
     throw new Error(MESSAGE.INVALID_TOKEN)
   }
 
-  return payload as JwtPayload & { id: number }
+  return payload as JwtPayload & { id: string }
 }

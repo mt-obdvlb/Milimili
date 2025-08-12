@@ -4,4 +4,5 @@ export const MESSAGE = {
   RATE_LIMIT_EXCEEDED: '请求过于频繁，请稍后再试',
   INVALID_PARAMS: '参数错误',
   INTERNAL_SERVER_ERROR: '服务器错误',
+  USER_NOT_FOUND: '用户不存在',
 }
