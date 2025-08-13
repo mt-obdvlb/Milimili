@@ -22,15 +22,19 @@ const notificationSchema = new Schema<INotification>(
     type: {
       type: String,
       required: true,
-      enum: ['reply', 'mention', 'like', 'system'],
+      enum: ['reply', 'mention', 'like', 'system', 'private_message'],
     },
     sourceType: {
       type: String,
-      enum: ['comment', 'video', 'systemMessage'],
+      enum: ['comment', 'video', 'feed'],
       required: false,
     },
     content: { type: String, required: false },
-    isRead: { type: Boolean, default: false },
+    isRead: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
   },
   { versionKey: false, timestamps: true }
 )

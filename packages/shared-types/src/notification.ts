@@ -1,13 +1,13 @@
 import { Types } from 'mongoose'
 
-export type NotificationType = 'reply' | 'mention' | 'like' | 'system'
-export type NotificationSourceType = 'comment' | 'video' | 'systemMessage'
+export type NotificationType = 'reply' | 'mention' | 'like' | 'system' | 'private_message'
+export type NotificationSourceType = 'comment' | 'video' | 'feed'
 
 export type NotificationBase = {
   type: NotificationType
   sourceType?: NotificationSourceType
   content?: string
-  isRead?: boolean
+  isRead: boolean
 }
 
 export type NotificationDB = NotificationBase & {
