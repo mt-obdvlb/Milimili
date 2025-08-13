@@ -6,7 +6,7 @@ import { asyncHandler } from '@/utils'
 
 const router = Router()
 
-router.post('/login', validatorMiddleware(userLoginDTO), asyncHandler(userLogin))
+router.post('/login', validatorMiddleware({ body: userLoginDTO }), asyncHandler(userLogin))
 router.post('/logout', authMiddleware, asyncHandler(userLogout))
 router.get('/info/home', authMiddleware, asyncHandler(userGetInfoHome))
 

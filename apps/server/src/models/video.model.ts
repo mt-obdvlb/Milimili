@@ -1,5 +1,5 @@
 import { Document, model, Schema } from 'mongoose'
-import { VideoDB } from '@mtobdvlb/shared-types'
+import { VideoDB, VideoSourceType, VideoStatus } from '@mtobdvlb/shared-types'
 
 export type IVideo = VideoDB & Document
 
@@ -46,11 +46,42 @@ const videoSchema = new Schema<IVideo>(
       required: true,
       ref: 'User',
     },
-
     time: {
       type: Number,
       required: true,
       min: 0,
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'scheduled', 'published'] satisfies VideoStatus[],
+      required: true,
+      default: 'published',
+    },
+    publishedAt: {
+      type: Date,
+      required: true,
+      default: Date.now,
+    },
+    danmakuDisabled: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
+    commentsDisabled: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
+    sourceType: {
+      type: String,
+      enum: ['original', 'repost'] satisfies VideoSourceType[],
+      required: true,
+      default: 'original',
+    },
+    isOpen: {
+      type: Boolean,
+      required: true,
+      default: true,
     },
   },
   { versionKey: false, timestamps: true }
