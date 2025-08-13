@@ -6,6 +6,7 @@ export type TagBase = {
 
 export type TagDB = TagBase & {
   videoId: Types.ObjectId
+  _id: Types.ObjectId
 }
 
 export type Tag = TagBase & {

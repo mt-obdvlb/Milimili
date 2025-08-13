@@ -6,6 +6,7 @@ export type FavoriteDB = FavoriteBase & {
   userId: Types.ObjectId
   videoId: Types.ObjectId
   folderId: Types.ObjectId
+  _id: Types.ObjectId
 }
 
 export type Favorite = FavoriteBase & {
@@ -29,6 +30,7 @@ export type FavoriteFolderBase = {
 
 export type FavoriteFolderDB = FavoriteFolderBase & {
   userId: Types.ObjectId
+  _id: Types.ObjectId
 }
 
 export type FavoriteFolder = FavoriteFolderBase & {

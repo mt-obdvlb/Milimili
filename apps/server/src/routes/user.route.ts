@@ -1,5 +1,12 @@
 import { Router } from 'express'
+import { userLogin, userLogout } from '@/controllers/user.controller'
+import { authMiddleware, validatorMiddleware } from '@/middlewares'
+import { userLoginDTO } from '@/dtos/user/login.dto'
+import { asyncHandler } from '@/utils'
 
 const router = Router()
+
+router.post('/login', validatorMiddleware(userLoginDTO), asyncHandler(userLogin))
+router.post('/logout', authMiddleware, asyncHandler(userLogout))
 
 export default router

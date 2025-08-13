@@ -1,3 +1,5 @@
+import { Types } from 'mongoose'
+
 export type UserBase = {
   name?: string
   email: string
@@ -6,6 +8,7 @@ export type UserBase = {
 
 export type UserDB = UserBase & {
   password?: string
+  _id: Types.ObjectId
 }
 
 export type User = UserBase & {

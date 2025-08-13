@@ -1,16 +1,16 @@
 import { redisConfig } from '@/config'
 import Redis from 'ioredis'
 
-const redisUtil = new Redis(redisConfig.uri, {
+const redis = new Redis(redisConfig.uri, {
   keyPrefix: 'milimili:',
 })
 
-redisUtil.on('error', (err) => {
+redis.on('error', (err) => {
   console.error('Redis error:', err)
 })
 
-redisUtil.on('connect', () => {
+redis.on('connect', () => {
   console.log('Redis connected')
 })
 
-export default redisUtil
+export default redis

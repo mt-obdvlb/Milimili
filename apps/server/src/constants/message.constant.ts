@@ -5,4 +5,8 @@ export const MESSAGE = {
   INVALID_PARAMS: '参数错误',
   INTERNAL_SERVER_ERROR: '服务器错误',
   USER_NOT_FOUND: '用户不存在',
+  LOGIN_ERROR: '登录失败',
+  UNKNOWN_ERROR: '未知错误',
+  PASSWORD_ERROR: '密码错误',
+  INVALID_CODE: '验证码错误',
 }

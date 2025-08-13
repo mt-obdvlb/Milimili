@@ -11,6 +11,7 @@ export type VideoBase = {
 export type VideoDB = VideoBase & {
   userId: Types.ObjectId
   categoryId: Types.ObjectId
+  _id: Types.ObjectId
 }
 
 export type Video = VideoBase & {
@@ -30,6 +31,7 @@ export type VideoStateBase = {
 
 export type VideoStateDB = VideoStateBase & {
   videoId: Types.ObjectId
+  _id: Types.ObjectId
 }
 
 export type VideoState = VideoStateBase & {

@@ -11,7 +11,11 @@
   "keywords": [],
   "author": "",
   "dependencies": {
+    "@types/nodemailer": "^6.4.17",
+    "ali-oss": "^6.23.0",
+    "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dayjs": "^1.11.13",
     "dotenv": "^17.2.0",
@@ -20,12 +24,16 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.16.4",
     "morgan": "^1.10.1",
+    "nodemailer": "^7.0.5",
     "swagger-jsdoc": "^6.2.8",
     "zod": "^4.0.5"
   },
   "devDependencies": {
     "@mtobdvlb/shared-types": "workspace:*",
     "@mtobdvlb/typescript-config": "workspace:*",
+    "@types/ali-oss": "^6.16.11",
+    "@types/bcrypt": "^6.0.0",
+    "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
@@ -34,6 +42,7 @@
     "@types/swagger-ui-express": "^4.1.8",
     "swagger-ui-express": "^5.0.1",
     "ts-node-dev": "^2.0.0",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.8.3"
   }
 }
