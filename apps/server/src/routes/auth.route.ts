@@ -7,6 +7,10 @@ import { asyncHandler } from '@/utils'
 const router = Router()
 
 router.post('/refresh', asyncHandler(authRefresh))
-router.post('/send-code', validatorMiddleware(authSendCodeDTO), asyncHandler(authSendCode))
+router.post(
+  '/send-code',
+  validatorMiddleware({ body: authSendCodeDTO }),
+  asyncHandler(authSendCode)
+)
 
 export default router
