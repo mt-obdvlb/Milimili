@@ -7,7 +7,7 @@ const userSchema = new Schema<IUser>(
   {
     name: {
       type: String,
-      required: false,
+      required: true,
       unique: true,
       minlength: 4,
       maxlength: 20,
@@ -24,7 +24,7 @@ const userSchema = new Schema<IUser>(
     },
     avatar: {
       type: String,
-      required: false,
+      required: true,
       default: 'https://mtobdvlb-web.oss-cn-beijing.aliyuncs.com/milimili/avatar.jpg',
     },
     email: {
