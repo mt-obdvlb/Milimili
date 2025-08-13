@@ -9,6 +9,7 @@ export type LikeBase = {
 export type LikeDB = LikeBase & {
   userId: Types.ObjectId
   targetId: Types.ObjectId
+  _id: Types.ObjectId
 }
 
 export type Like = LikeBase & {

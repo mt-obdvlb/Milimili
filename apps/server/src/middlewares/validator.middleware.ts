@@ -4,10 +4,11 @@ import { z } from 'zod/v4'
 
 export const validatorMiddleware =
   (schema: z.ZodSchema) => (req: Request, res: Response, next: NextFunction) => {
+    console.log(req.body)
     const result = schema.safeParse(req.body)
     if (!result.success) {
       return res.status(400).json({
-        code: 400,
+        code: 1,
         message: MESSAGE.INVALID_PARAMS,
       })
     }

@@ -14,6 +14,7 @@ export type NotificationDB = NotificationBase & {
   userId: Types.ObjectId
   fromUserId?: Types.ObjectId
   sourceId?: Types.ObjectId
+  _id: Types.ObjectId
 }
 
 export type Notification = NotificationBase & {

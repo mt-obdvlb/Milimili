@@ -10,6 +10,7 @@ export type DanmakuBase = {
 export type DanmakuDB = DanmakuBase & {
   videoId: Types.ObjectId
   userId: Types.ObjectId
+  _id: Types.ObjectId
 }
 
 export type Danmaku = DanmakuBase & {

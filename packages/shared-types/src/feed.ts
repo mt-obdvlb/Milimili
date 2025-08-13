@@ -9,6 +9,7 @@ export type FeedBase = {
 
 export type FeedDB = FeedBase & {
   userId: Types.ObjectId
+  _id: Types.ObjectId
 }
 
 export type Feed = FeedBase & {

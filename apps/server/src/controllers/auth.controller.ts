@@ -5,7 +5,10 @@ import { AuthService } from '@/services/auth.service'
 export const authRefresh: RequestHandler = async (req, res) => {
   const refreshToken = req.cookies.refresh_token
   if (!refreshToken) {
-    return res.status(401).json({ message: MESSAGE.INVALID_TOKEN })
+    return res.status(401).json({
+      message: MESSAGE.INVALID_TOKEN,
+      code: 1,
+    })
   }
 
   try {
@@ -22,9 +25,30 @@ export const authRefresh: RequestHandler = async (req, res) => {
       sameSite: 'strict',
       maxAge: 15 * 60 * 1000,
     })
-    return res.status(200).json()
+    return res.status(200).json({
+      code: 0,
+    })
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : MESSAGE.INVALID_TOKEN
-    return res.status(401).json({ message: errorMessage })
+    return res.status(401).json({
+      message: errorMessage,
+      code: 1,
+    })
+  }
+}
+
+export const authSendCode: RequestHandler = async (req, res) => {
+  const { email } = req.body
+  try {
+    await AuthService.sendCode(email)
+    return res.status(200).json({
+      code: 0,
+    })
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : MESSAGE.UNKNOWN_ERROR
+    return res.status(400).json({
+      message: errorMessage,
+      code: 1,
+    })
   }
 }

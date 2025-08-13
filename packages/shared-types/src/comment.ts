@@ -12,6 +12,7 @@ export type CommentDB = CommentBase & {
   userId: Types.ObjectId
   targetId: Types.ObjectId
   parentId?: Types.ObjectId
+  _id: Types.ObjectId
 }
 
 export type Comment = CommentBase & {

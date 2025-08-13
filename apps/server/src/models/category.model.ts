@@ -5,7 +5,12 @@ export type ICategory = CategoryDB & Document
 
 const categorySchema = new Schema<ICategory>(
   {
-    name: { type: String, required: true, trim: true },
+    name: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
   },
   { versionKey: false, timestamps: true }
 )

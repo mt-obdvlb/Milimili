@@ -5,6 +5,7 @@ export type FollowBase = object
 export type FollowDB = FollowBase & {
   followerId: Types.ObjectId
   followeeId: Types.ObjectId
+  _id: Types.ObjectId
 }
 
 export type Follow = FollowBase & {

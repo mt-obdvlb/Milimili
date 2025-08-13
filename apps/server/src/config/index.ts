@@ -1,3 +1,5 @@
 export * from './redis'
 export * from './jwt'
 export * from './app'
+export * from './email'
+export * from './mongo'
