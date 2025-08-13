@@ -2,9 +2,15 @@ import { UserLoginDTO } from '@/dtos/user/login.dto'
 import { RequestHandler } from 'express'
 import { UserService } from '@/services/user.service'
 import { MESSAGE } from '@/constants'
+import { Result } from '@mtobdvlb/shared-types'
+import { UserGetInfoHomeVO } from '@/vos/user/get-info-home.vo'
+import { ParamsDictionary } from 'express-serve-static-core'
 
-export const userLogin: RequestHandler = async (req, res) => {
-  const { email, password, code } = req.body as UserLoginDTO
+export const userLogin: RequestHandler<ParamsDictionary, Result, UserLoginDTO> = async (
+  req,
+  res
+) => {
+  const { email, password, code } = req.body
   try {
     let accessToken, refreshToken
     if (password) {
@@ -43,8 +49,24 @@ export const userLogin: RequestHandler = async (req, res) => {
   }
 }
 
-export const userLogout: RequestHandler = async (req, res) => {
+export const userLogout: RequestHandler<ParamsDictionary, Result, void> = async (req, res) => {
   res.clearCookie('access_token')
   res.clearCookie('refresh_token')
   return res.status(200).json({ code: 0 })
+}
+
+export const userGetInfoHome: RequestHandler<
+  ParamsDictionary,
+  Result<UserGetInfoHomeVO>,
+  void
+> = async (req, res) => {
+  if (!req.user)
+    return res.status(401).json({
+      message: MESSAGE.INVALID_TOKEN,
+      code: 1,
+    })
+  return res.status(200).json({
+    data: await UserService.getInfoHome(req.user?.id),
+    code: 0,
+  })
 }

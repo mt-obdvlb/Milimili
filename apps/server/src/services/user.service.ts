@@ -1,7 +1,8 @@
-import { UserModel } from '@/models'
+import { FollowModel, UserModel } from '@/models'
 import { MESSAGE } from '@/constants'
 import { comparePassword, signToken } from '@/utils'
 import redis from '@/utils/redis.util'
+import { FeedModel } from '@/models/feed.model'
 
 export const UserService = {
   loginByPassword: async (email: string, password: string) => {
@@ -27,6 +28,21 @@ export const UserService = {
     return {
       accessToken: signToken({ id: user._id.toString() }, 'access'),
       refreshToken: signToken({ id: user._id.toString() }, 'refresh'),
+    }
+  },
+  getInfoHome: async (id: string) => {
+    const user = await UserModel.findById(id, 'name avatar')
+    if (!user) throw new Error(MESSAGE.USER_NOT_FOUND)
+    const { name: username, avatar } = user
+    const following = await FollowModel.countDocuments({ followerId: id })
+    const followers = await FollowModel.countDocuments({ followedId: id })
+    const feeds = await FeedModel.countDocuments({ userId: id })
+    return {
+      username,
+      avatar,
+      following,
+      followers,
+      feeds,
     }
   },
 }
