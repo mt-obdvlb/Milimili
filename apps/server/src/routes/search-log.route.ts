@@ -1,10 +1,12 @@
 import { Router } from 'express'
 import { asyncHandler } from '@/utils'
 import { searchLogAdd, searchLogTop10 } from '@/controllers/search-log.controller'
+import { validatorMiddleware } from '@/middlewares'
+import { searchLogAddDTO } from '@/dtos/search-log/add.dto'
 
 const router = Router()
 
-router.post('/search-log', asyncHandler(searchLogAdd))
-router.get('/search-log/top10', asyncHandler(searchLogTop10))
+router.post('/', validatorMiddleware({ body: searchLogAddDTO }), asyncHandler(searchLogAdd))
+router.get('/top10', asyncHandler(searchLogTop10))
 
 export default router

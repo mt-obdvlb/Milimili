@@ -5,7 +5,6 @@ import axios, {
   type AxiosResponse,
   type InternalAxiosRequestConfig,
 } from 'axios'
-import { cookies } from 'next/headers'
 import { isServer } from '@/utils'
 
 interface RetryableAxiosRequestConfig extends InternalAxiosRequestConfig {
@@ -33,12 +32,13 @@ const processQueue = (error: unknown, cookieHeader: string | null = null) => {
 
 const request: AxiosInstance = (() => {
   const instance = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000/api',
+    baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000/api/v1',
     withCredentials: true,
   })
 
   instance.interceptors.request.use(async (config: RetryableAxiosRequestConfig) => {
     if (isServer()) {
+      const { cookies } = await import('next/headers')
       const cookieStore = await cookies()
       const accessToken = cookieStore.get('access_token')
       const refreshToken = cookieStore.get('refresh_token')
@@ -58,7 +58,7 @@ const request: AxiosInstance = (() => {
   })
 
   instance.interceptors.response.use(
-    (res: AxiosResponse) => res,
+    (res: AxiosResponse) => res.data,
     async (error: AxiosError) => {
       const originalRequest = error.config as RetryableAxiosRequestConfig
 
@@ -82,6 +82,8 @@ const request: AxiosInstance = (() => {
         try {
           const refreshConfig: AxiosRequestConfig = {}
           if (isServer()) {
+            const { cookies } = await import('next/headers')
+
             const cookieStore = await cookies()
             const refreshToken = cookieStore.get('refresh_token')
             if (refreshToken) {
@@ -95,6 +97,8 @@ const request: AxiosInstance = (() => {
 
           let newCookieHeader: string | null = null
           if (isServer()) {
+            const { cookies } = await import('next/headers')
+
             const cookieStore = await cookies()
             const newAccessToken = cookieStore.get('access_token')
             const refreshToken = cookieStore.get('refresh_token')
