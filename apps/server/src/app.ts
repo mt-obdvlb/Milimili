@@ -11,8 +11,14 @@ dotenv.config()
 
 const app = express()
 
+app.use(
+  cors({
+    origin: 'http://localhost:3001',
+    credentials: true,
+  })
+)
+
 app.use(cookieParser())
-app.use(cors({ origin: process.env.CLIENT_URL || '*' }))
 app.use(express.json())
 app.use(morgan('dev'))
 app.use(rateLimiter)

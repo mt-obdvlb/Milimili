@@ -130,6 +130,12 @@
   bottom: auto !important;
 }
 
-@theme {
+:root {
+  --text-1: #000000;
+  --text-2: #61666D;
+}
 
+@theme {
+  --color-text-1: var(--text-1);
+  --color-text-2: var(--text-2);
 }

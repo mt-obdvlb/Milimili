@@ -1,6 +1,6 @@
-import HeaderBar from '@/features/home/components/header/HeaderBar'
 import HeaderBanner from '@/features/home/components/header/HeaderBanner'
 import HeaderChannel from '@/features/home/components/header/HeaderChannel'
+import HeaderBar from '@/components/layout/HeaderBar'
 
 const Home = () => {
   return (

@@ -8,6 +8,7 @@ import feedRoute from '@/routes/feed.route'
 import historyRoute from '@/routes/history.route'
 import commentRoute from '@/routes/comment.route'
 import favoriteRoute from '@/routes/favorite.route'
+import searchLogRoute from '@/routes/search-log.route'
 
 const router = Router()
 
@@ -20,5 +21,6 @@ router.use('/histories', historyRoute)
 router.use('/comments', commentRoute)
 router.use('/favorites', favoriteRoute)
 router.use('/notifications', notificationRoute)
+router.use('/search-logs', searchLogRoute)
 
 export default router
