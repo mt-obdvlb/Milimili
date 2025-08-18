@@ -3,7 +3,7 @@ import redis from '@/utils/redis.util'
 import { NextFunction, Request, Response } from 'express'
 
 const WINDOW_SECONDS = 60
-const MAX_REQUESTS = 60
+const MAX_REQUESTS = 1000
 
 export const rateLimiter = async (req: Request, res: Response, next: NextFunction) => {
   try {
