@@ -24,7 +24,11 @@ const Home = async () => {
       <main className={'max-w-[calc(1920px+2*60px)] px-[60px] text-sm'}>
         <div className={'text-text1'}>
           <div className={'relative mb-[60px]'}>
-            <div className={'relative grid min-h-100 w-full grid-flow-row grid-cols-5 gap-[20px]'}>
+            <div
+              className={
+                'relative grid min-h-100 w-full grid-flow-row auto-rows-auto grid-cols-5 gap-[20px]'
+              }
+            >
               <MainRecommendedSwiper videoSwiperList={videoSwiperList} />
               <MainVideoList />
             </div>
