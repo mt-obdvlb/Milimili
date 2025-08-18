@@ -12,7 +12,7 @@ const HeaderBanner = () => {
       onMouseEnter={() => setIsMouseEnter(true)}
       onMouseLeave={() => setIsMouseEnter(false)}
       className={
-        'absolute top-0 left-0 z-0 flex h-[9.375vw] min-h-[155px] w-full min-w-[1000px] justify-center bg-[#e3e5e7]'
+        'relative top-0 left-0 z-0 flex h-[9.375vw] min-h-[155px] w-full min-w-[1000px] justify-center bg-[#e3e5e7]'
       }
     >
       <picture className='absolute inset-0'>

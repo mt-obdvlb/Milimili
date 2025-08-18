@@ -1,5 +1,7 @@
 import React from 'react'
 import '@/styles/global.css'
+import '@/styles/map.css'
+import '@/styles/light.css'
 import Provider from '@/components/provider/Provider'
 import Initializer from '@/components/initializer/Initializer'
 

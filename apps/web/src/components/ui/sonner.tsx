@@ -7,20 +7,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = 'system' } = useTheme()
 
   return (
-    <Sonner
-      visibleToasts={1}
-      duration={1000}
-      theme={theme as ToasterProps['theme']}
-      className='toaster group'
-      style={
-        {
-          '--normal-bg': 'var(--popover)',
-          '--normal-text': 'var(--popover-foreground)',
-          '--normal-border': 'var(--border)',
-        } as React.CSSProperties
-      }
-      {...props}
-    />
+    <Sonner visibleToasts={1} duration={500} theme={theme as ToasterProps['theme']} {...props} />
   )
 }
 
