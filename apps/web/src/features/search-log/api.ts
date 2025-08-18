@@ -1,12 +1,10 @@
 import { searchLogGetTop10 } from '@/services/search-log'
-import { useQuery } from '@tanstack/react-query'
 
-export const useSearchLogGetTop10 = () => {
-  const { data: searchLogTop10List } = useQuery({
-    queryKey: ['search-log'],
-    queryFn: () => searchLogGetTop10(),
-  })
+export const getSearchLogTop10 = async () => {
+  await import('server-only')
+  const { data: searchLogTop10List } = await searchLogGetTop10()
+  console.log(searchLogTop10List)
   return {
-    searchLogTop10List: searchLogTop10List?.data,
+    searchLogTop10List: searchLogTop10List,
   }
 }
