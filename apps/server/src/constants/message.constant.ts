@@ -9,4 +9,5 @@ export const MESSAGE = {
   UNKNOWN_ERROR: '未知错误',
   PASSWORD_ERROR: '密码错误',
   INVALID_CODE: '验证码错误',
+  VIDEO_NOT_FOUND: '视频不存在',
 }

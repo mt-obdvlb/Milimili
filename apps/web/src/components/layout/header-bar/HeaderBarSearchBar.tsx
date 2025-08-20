@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { Command, CommandGroup, CommandItem } from '@/components/ui/command'
 import { SearchLogTop10Result } from '@/types/search-log'
+import Image from 'next/image'
 
 const HeaderBarSearchBar = ({
   searchLogTop10List,
@@ -108,9 +109,10 @@ const HeaderBarSearchBar = ({
                     }
                   >
                     <p
-                      className={
-                        'mr-[7px] h-[17px] w-[15px] min-w-[15px] text-center text-[14px] leading-[17px] text-[#18191C]'
-                      }
+                      className={cn(
+                        'mr-[7px] h-[17px] w-[15px] min-w-[15px] text-center text-[14px] leading-[17px] text-[#18191C]',
+                        item.rank > 3 && 'text-text3'
+                      )}
                     >
                       {item.rank}
                     </p>
@@ -121,6 +123,15 @@ const HeaderBarSearchBar = ({
                     >
                       {item.keyword}
                     </p>
+                    {item.rank % 3 === 0 && (
+                      <Image height={14} width={14} src={'/images/hot.png'} alt={'hot'} />
+                    )}
+                    {item.rank % 3 === 1 && (
+                      <Image height={14} width={14} src={'/images/new.png'} alt={'new'} />
+                    )}
+                    {item.rank % 3 === 2 && (
+                      <Image height={14} width={14} src={'/images/gen.png'} alt={'gen'} />
+                    )}
                   </Link>
                 ))}
               </div>

@@ -1,7 +1,10 @@
-import { UserModel, VideoModel, VideoStatsModel } from '@/models'
+import { DanmakuModel, UserModel, VideoModel, VideoStatsModel } from '@/models'
 import { VideoListItem } from '@/vos/video/list.vo'
 import { VideoCreateDTO } from '@/dtos/video/create.dto'
 import { MESSAGE } from '@/constants'
+import { VideoAddDanmakuDTO } from '@/dtos/video/add-danmaku.dto'
+import { HttpError } from '@/utils/http-error.util'
+import { VideoGetDanmakusItem } from '@/vos/video/get-danmakus.vo'
 
 export const VideoService = {
   list: async ({ page, pageSize }: { page: number; pageSize: number }) => {
@@ -49,6 +52,7 @@ export const VideoService = {
           username: '$user.name',
           publishedAt: '$createdAt',
           userId: '$user._id',
+          url: 1,
         },
       },
     ])
@@ -61,5 +65,22 @@ export const VideoService = {
     if (!user) throw new Error(MESSAGE.USER_NOT_FOUND)
     const res = await VideoModel.create({ ...body, userId })
     await VideoStatsModel.create({ videoId: res._id })
+  },
+  getDanmakus: async (videoId: string) => {
+    return DanmakuModel.find<VideoGetDanmakusItem>(
+      { videoId },
+      {
+        _id: 0,
+        content: 1,
+        time: 1,
+        position: 1,
+        color: 1,
+      }
+    )
+  },
+  addDanmaku: async (body: VideoAddDanmakuDTO) => {
+    const video = await VideoModel.findById(body.videoId)
+    if (!video) throw new HttpError(404, MESSAGE.VIDEO_NOT_FOUND)
+    await DanmakuModel.create(body)
   },
 }

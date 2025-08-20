@@ -16,7 +16,12 @@ const danmakuSchema = new Schema<IDanmaku>(
       required: true,
     },
     content: { type: String, required: true, trim: true },
-    color: { type: String, default: '#FFFFFF', trim: true },
+    color: {
+      type: String,
+      default: '#FFFFFF',
+      required: true,
+      trim: true,
+    },
     position: {
       type: String,
       enum: ['top', 'bottom', 'scroll'],

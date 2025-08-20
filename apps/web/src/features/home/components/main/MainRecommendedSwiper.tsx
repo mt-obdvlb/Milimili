@@ -32,7 +32,7 @@ const MainRecommendedSwiper = ({ videoSwiperList }: { videoSwiperList?: VideoLis
 
   return (
     <div className={'relative col-span-2 row-span-2'}>
-      <div className={'relative aspect-video'}>
+      <div className={'relative pt-[69%]'}>
         <div
           className={
             'bg-graph_bg_regular absolute inset-0 flex flex-col overflow-hidden rounded-[6px]'

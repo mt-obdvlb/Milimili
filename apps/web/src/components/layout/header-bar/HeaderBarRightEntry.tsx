@@ -10,6 +10,8 @@ const HeaderBarRightEntry = () => {
   return (
     <div className={'ml-[10px] flex items-center text-white'}>
       <HeaderBarHoverCardWithBounce
+        hidden
+        building
         title={'大会员'}
         Svg={
           <svg

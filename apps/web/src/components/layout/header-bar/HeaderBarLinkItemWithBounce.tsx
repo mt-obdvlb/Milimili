@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { NavigationMenuItem, NavigationMenuLink } from '@/components/ui/navigation-menu'
 import { motion } from 'motion/react'
+import { toastBuilding } from '@/lib'
 
 const HeaderBarLinkItemWithBounce = ({ link }: { link: string }) => {
   const [hovered, setHovered] = useState(false)
@@ -14,7 +15,7 @@ const HeaderBarLinkItemWithBounce = ({ link }: { link: string }) => {
 
   return (
     <NavigationMenuItem key={link}>
-      <NavigationMenuLink type='header-bar-first' href='/'>
+      <NavigationMenuLink onClick={toastBuilding} type='header-bar-first'>
         <motion.div
           onMouseEnter={handleMouseEnter}
           onMouseLeave={() => {}}

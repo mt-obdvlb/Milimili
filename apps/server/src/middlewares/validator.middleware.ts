@@ -1,7 +1,6 @@
 import { MESSAGE } from '@/constants'
 import { NextFunction, Request, Response } from 'express'
 import { z } from 'zod/v4'
-import { ParamsDictionary } from 'express-serve-static-core'
 
 type SchemaGroup = {
   body?: z.ZodSchema
@@ -41,8 +40,7 @@ export const validatorMiddleware =
           message: MESSAGE.INVALID_PARAMS,
         })
       }
-      req.params = paramsResult.data as ParamsDictionary
+      req.body = paramsResult.data
     }
-    console.log(req.body)
     next()
   }
