@@ -1,9 +1,11 @@
 import { Types } from 'mongoose'
 
+export type DanmakuPosition = 'top' | 'bottom' | 'scroll'
+
 export type DanmakuBase = {
   content: string
   color?: string
-  position: 'top' | 'bottom' | 'scroll'
+  position: DanmakuPosition
   time: number
 }
 

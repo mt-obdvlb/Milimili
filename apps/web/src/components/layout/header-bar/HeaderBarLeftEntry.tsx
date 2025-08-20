@@ -8,8 +8,9 @@ import {
 } from '@/components/ui/navigation-menu'
 import HeaderBarLinkItemWithBounce from '@/components/layout/header-bar/HeaderBarLinkItemWithBounce'
 import React from 'react'
+import { toastBuilding } from '@/lib'
 
-const headerBarLeftLinks = ['番剧', '直播', '游戏中心', '会员购', '赛事']
+const headerBarLeftLinks = ['番剧', '直播', '游戏中心', '会员购', '漫画', '赛事']
 
 const HeaderBarLeftEntry = () => {
   return (
@@ -40,7 +41,11 @@ const HeaderBarLeftEntry = () => {
         ))}
 
         <NavigationMenuItem>
-          <NavigationMenuLink type={'header-bar-first'} className={''} href='/'>
+          <NavigationMenuLink
+            onClick={toastBuilding}
+            type={'header-bar-first'}
+            className={'cursor-pointer'}
+          >
             <svg
               width='16'
               height='16'

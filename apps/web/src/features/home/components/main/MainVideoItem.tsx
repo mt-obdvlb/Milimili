@@ -3,16 +3,23 @@ import Link from 'next/link'
 import dayjs from 'dayjs'
 import { cn } from '@/lib'
 import { formatPlayCount, formatTime } from '@/utils'
+import { useState } from 'react'
+import MainVideoPlayer from '@/features/home/components/main/MainVideoPlayer'
 
 const MainVideoItem = ({ video, margin }: { video: VideoListItem; margin: boolean }) => {
+  const [time, setTime] = useState(0)
+  const [hover, setHover] = useState(false)
+
   return (
     <section className={cn('text-text1 relative', margin ? 'mt-[20px]' : '')}>
       <Link
-        href={`/video/${video.id}`}
+        href={`/video/${video.id}?t=${time.toFixed(0)}`}
         target={'_blank'}
         className={'block transition-colors duration-200 ease-linear'}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
       >
-        <div className={'relative z-1 rounded-[6px]'}>
+        <div className={'relative z-1 overflow-hidden rounded-[6px]'}>
           <div className={'cursor-pointer bg-[#F1F2F3] pt-[56.25%]'}>
             <div
               className={
@@ -30,12 +37,24 @@ const MainVideoItem = ({ video, margin }: { video: VideoListItem; margin: boolea
                 className={'block size-full overflow-clip'}
               />
             </picture>
-            <div></div>
+            <div
+              className={cn(
+                'pointer-events-none absolute top-0 left-0 z-1 size-full overflow-hidden opacity-0 transition-opacity duration-200 ease-linear select-none',
+                hover && 'opacity-100'
+              )}
+            >
+              <div className={'relative size-full scale-[1.01] text-xs'}>
+                <div className={'relative size-full shadow-none'}>
+                  <MainVideoPlayer hover={hover} time={time} setTime={setTime} video={video} />
+                </div>
+              </div>
+            </div>
           </div>
           <div
-            className={
-              'pointer-events-none absolute inset-0 z-2 transition-all duration-200 ease-linear'
-            }
+            className={cn(
+              'pointer-events-none absolute inset-0 z-2 transition-all duration-200 ease-linear',
+              hover && 'hidden opacity-0'
+            )}
           >
             <div
               className={

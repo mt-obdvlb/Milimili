@@ -125,7 +125,7 @@ function NavigationMenuLink({
 }) {
   const typeClassMap: Record<NavigationMenuLinkType, string> = {
     'header-bar-first':
-      'mr-[15px] hover:bg-transparent hover:text-white h-full items-center focus:bg-transparent focus:text-white',
+      'mr-[15px] hover:bg-transparent hover:text-white h-full cursor-pointer items-center focus:bg-transparent focus:text-white',
     'header-bar-second': '',
   }
 
