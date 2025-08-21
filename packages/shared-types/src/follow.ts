@@ -3,14 +3,14 @@ import { Types } from 'mongoose'
 export type FollowBase = object
 
 export type FollowDB = FollowBase & {
-  followerId: Types.ObjectId
-  followeeId: Types.ObjectId
+  followrId: Types.ObjectId
+  followingId: Types.ObjectId
   _id: Types.ObjectId
 }
 
 export type Follow = FollowBase & {
   followerId: string
-  followeeId: string
+  followingId: string
   id: string
   createdAt: string
   updatedAt: string

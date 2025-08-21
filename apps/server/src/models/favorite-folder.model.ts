@@ -18,7 +18,7 @@ const favoriteFolderSchema = new Schema<IFavoriteFolder>(
       required: true,
       default: true,
     },
-    thumbnail: { type: String, required: true, trim: true },
+    thumbnail: { type: String, trim: true },
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',

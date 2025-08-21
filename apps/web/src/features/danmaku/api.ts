@@ -1,11 +1,13 @@
 import { danmakuGet } from '@/services/danmaku'
 import { useQuery } from '@tanstack/react-query'
 
-export const useDanmakuGet = (videoId: string, skipToken?: boolean) => {
-  const { data } = useQuery({
+export const useDanmakuGet = (videoId: string, isGet: boolean = true) => {
+  const { data: danmakuList } = useQuery({
     queryKey: ['danmaku', videoId],
     queryFn: () => danmakuGet(videoId),
-    enabled: !skipToken,
+    enabled: isGet,
   })
-  return data
+  return {
+    danmakuList: danmakuList?.data,
+  }
 }

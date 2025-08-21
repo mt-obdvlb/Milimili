@@ -5,6 +5,7 @@ export type VideoGetDanmakusItem = {
   time: number
   position: DanmakuPosition
   color: string
+  id: string
 }
 
 export type VideoGetDanmakusVO = VideoGetDanmakusItem[]

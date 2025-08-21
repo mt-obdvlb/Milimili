@@ -5,12 +5,12 @@ export type IFollow = FollowDB & Document
 
 const followSchema = new Schema<IFollow>(
   {
-    followerId: {
+    followrId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
-    followeeId: {
+    followingId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,

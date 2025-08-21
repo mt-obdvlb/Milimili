@@ -4,6 +4,8 @@ export type DanmakuGetItem = {
   content: string
   time: number
   position: DanmakuPosition
+  color: string
+  id: string
 }
 
-export type DanmkauGetResponse = DanmakuGetItem[]
+export type DanmakuGetResult = DanmakuGetItem[]
