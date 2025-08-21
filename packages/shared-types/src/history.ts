@@ -1,8 +1,8 @@
 import { Types } from 'mongoose'
 
 export type HistoryBase = {
-  watchedAt?: string
-  duration?: number
+  watchedAt: Date
+  duration: number
 }
 
 export type HistoryDB = HistoryBase & {

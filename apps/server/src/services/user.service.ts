@@ -1,4 +1,4 @@
-import { FollowModel, UserModel } from '@/models'
+import { FavoriteFolderModel, FollowModel, UserModel } from '@/models'
 import { MESSAGE } from '@/constants'
 import { comparePassword, signToken } from '@/utils'
 import redis from '@/utils/redis.util'
@@ -23,8 +23,19 @@ export const UserService = {
     if (!user) {
       await UserModel.create({ email })
       user = await UserModel.findOne({ email })
+      await FavoriteFolderModel.create({
+        userId: user!._id,
+        type: 'default',
+        name: '默认文件夹',
+      })
+      await FavoriteFolderModel.create({
+        userId: user!._id,
+        type: 'watch_later',
+        name: '稍后再看',
+      })
     }
     if (!user) throw new Error(MESSAGE.UNKNOWN_ERROR)
+
     return {
       accessToken: signToken({ id: user._id.toString() }, 'access'),
       refreshToken: signToken({ id: user._id.toString() }, 'refresh'),

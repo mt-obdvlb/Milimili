@@ -4,7 +4,8 @@ import { VideoCreateDTO } from '@/dtos/video/create.dto'
 import { MESSAGE } from '@/constants'
 import { VideoAddDanmakuDTO } from '@/dtos/video/add-danmaku.dto'
 import { HttpError } from '@/utils/http-error.util'
-import { VideoGetDanmakusItem } from '@/vos/video/get-danmakus.vo'
+import { VideoGetDanmakusVO } from '@/vos/video/get-danmakus.vo'
+import { FeedModel } from '@/models/feed.model'
 
 export const VideoService = {
   list: async ({ page, pageSize }: { page: number; pageSize: number }) => {
@@ -65,18 +66,30 @@ export const VideoService = {
     if (!user) throw new Error(MESSAGE.USER_NOT_FOUND)
     const res = await VideoModel.create({ ...body, userId })
     await VideoStatsModel.create({ videoId: res._id })
+    await FeedModel.create({
+      type: 'video',
+      videoId: res._id,
+      userId,
+      content: res.title,
+      publishedAt: res.publishedAt,
+      isOpen: res.isOpen,
+      commentsDisabled: res.commentsDisabled,
+    })
   },
   getDanmakus: async (videoId: string) => {
-    return DanmakuModel.find<VideoGetDanmakusItem>(
+    const data = await DanmakuModel.find(
       { videoId },
       {
-        _id: 0,
         content: 1,
         time: 1,
         position: 1,
         color: 1,
       }
     )
+    return data.map((d) => ({
+      ...d.toObject(),
+      id: d._id.toString(),
+    })) as VideoGetDanmakusVO
   },
   addDanmaku: async (body: VideoAddDanmakuDTO) => {
     const video = await VideoModel.findById(body.videoId)

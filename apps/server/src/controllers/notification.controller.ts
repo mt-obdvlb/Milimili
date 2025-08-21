@@ -3,6 +3,7 @@ import { ParamsDictionary } from 'express-serve-static-core'
 import { Result } from '@mtobdvlb/shared-types'
 import { NotificationStatisticsVO } from '@/vos/notification/statistics.vo'
 import { NotificationService } from '@/services/notification.service'
+import { MESSAGE } from '@/constants'
 
 export const notificationStatistics: RequestHandler<
   ParamsDictionary,

@@ -25,7 +25,7 @@ export type FavoriteFolderBase = {
   description?: string
   type: FavoriteFolderType
   isOpen: boolean
-  thumbnail: string
+  thumbnail?: string
 }
 
 export type FavoriteFolderDB = FavoriteFolderBase & {

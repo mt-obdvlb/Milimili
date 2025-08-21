@@ -15,8 +15,11 @@ const historySchema = new Schema<IHistory>(
       ref: 'Video',
       required: true,
     },
-    watchedAt: { type: Date, default: Date.now },
-    duration: { type: Number, default: 0 },
+    watchedAt: {
+      type: Date,
+      required: true,
+    },
+    duration: { type: Number, default: 0, required: true },
   },
   { versionKey: false, timestamps: true }
 )
