@@ -1,8 +1,14 @@
 import { MESSAGE } from '@/constants'
 import { RequestHandler } from 'express'
 import { AuthService } from '@/services/auth.service'
+import { ParamsDictionary } from 'express-serve-static-core'
+import { AuthRefreshVO } from '@/vos/auth/refresh.vo'
+import { Result } from '@mtobdvlb/shared-types'
 
-export const authRefresh: RequestHandler = async (req, res) => {
+export const authRefresh: RequestHandler<ParamsDictionary, Result<AuthRefreshVO>> = async (
+  req,
+  res
+) => {
   const refreshToken = req.cookies.refresh_token
   if (!refreshToken) {
     return res.status(401).json({
@@ -27,6 +33,10 @@ export const authRefresh: RequestHandler = async (req, res) => {
     })
     return res.status(200).json({
       code: 0,
+      data: {
+        accessToken,
+        refreshToken,
+      },
     })
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : MESSAGE.INVALID_TOKEN

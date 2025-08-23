@@ -9,7 +9,9 @@ import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { authSendCode } from '@/services/auth'
+import { useEffect, useState } from 'react'
+import { useAuthSendCode } from '@/features/auth/api'
+import { useUserLogin } from '@/features/user/api'
 
 const schema = z.object({
   code: z.string().min(1, '请输入验证码'),
@@ -29,11 +31,22 @@ const LoginModelCode = ({ formStyles }: { formStyles: LoginModelFormStyles }) =>
     reValidateMode: 'onSubmit',
   })
 
+  const [countdown, setCountdown] = useState(0)
+
+  const { sendCode } = useAuthSendCode()
+  const { login } = useUserLogin()
+
   const { label, btnWrap, btnPrimary, input, item } = formStyles
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    console.log('提交成功:', data)
-    toast('提交成功')
+    const { error, success } = await schema.safeParseAsync(data)
+    if (!success) {
+      toast(error.message)
+      return
+    }
+    const res = await login(data)
+    toast(res.message ?? '')
+    window.location.reload()
   }
 
   const onError: SubmitErrorHandler<FormData> = (errors) => {
@@ -48,15 +61,23 @@ const LoginModelCode = ({ formStyles }: { formStyles: LoginModelFormStyles }) =>
   // 发送验证码
   const handleSendCode = async () => {
     const email = form.getValues('email')
-    try {
-      await schema.pick({ email: true }).parseAsync({ email })
-      const res = await authSendCode(email)
-      console.log(res)
-      toast('验证码已发送')
-    } catch {
-      toast('请输入正确邮箱')
+    const { error, success } = await schema.pick({ email: true }).safeParseAsync({ email })
+    if (!success) {
+      toast(error.message)
+      return
     }
+    const res = await sendCode({ email })
+    toast(res.code ? (res.message ?? '') : '验证码已发送')
+    setCountdown(60)
   }
+
+  useEffect(() => {
+    if (countdown <= 0) return
+    const timer = setInterval(() => {
+      setCountdown((prev) => prev - 1)
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [countdown])
 
   const emailValue = form.watch('email')
   const emailValid = z.email().safeParse(emailValue).success
@@ -77,15 +98,15 @@ const LoginModelCode = ({ formStyles }: { formStyles: LoginModelFormStyles }) =>
                 </FormControl>
                 <Separator className='mx-0 my-0 mr-5 h-[26px]' orientation='vertical' />
                 <div
-                  onClick={handleSendCode}
+                  onClick={countdown ? () => {} : handleSendCode}
                   className={cn(
                     'm-0 w-[90px] p-0 text-center text-sm leading-5 font-normal',
-                    emailValid
+                    emailValid && !countdown
                       ? 'cursor-pointer text-[#00a1d6]'
                       : 'cursor-not-allowed text-[#c9ccd0]'
                   )}
                 >
-                  获取验证码
+                  {countdown > 0 ? `${countdown}s后重发` : '获取验证码'}
                 </div>
               </FormItem>
             )}

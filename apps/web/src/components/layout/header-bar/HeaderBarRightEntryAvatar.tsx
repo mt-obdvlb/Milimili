@@ -4,13 +4,13 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/h
 import Link from 'next/link'
 import { cn } from '@/lib'
 import React, { useState } from 'react'
-import { useUserStore } from '@/stores/user'
 import Image from 'next/image'
 import { Separator } from '@/components/ui/separator'
+import { UserHomeInfoResult } from '@/types/user'
 
-const HeaderBarRightEntryAvatar = () => {
+const HeaderBarRightEntryAvatar = ({ userHomeInfo }: { userHomeInfo?: UserHomeInfoResult }) => {
   const [isOpen, setIsOpen] = useState(false)
-  const user = useUserStore((state) => state.user)
+
   return (
     <HoverCard openDelay={150} closeDelay={150} onOpenChange={(open) => setIsOpen(open)}>
       <HoverCardTrigger asChild>
@@ -28,10 +28,12 @@ const HeaderBarRightEntryAvatar = () => {
             >
               <picture className={'relative inline-block size-full rounded-full align-middle'}>
                 <Image
-                  src={user?.avatar ?? '/images/avatar.jpg'}
                   fill
+                  src={userHomeInfo?.user.avatar ?? '/images/avatar.jpg'}
                   className={'block size-full rounded-full border-2 border-white contrast-100'}
-                  alt={user?.name ?? ''}
+                  alt={userHomeInfo?.user.name ?? ''}
+                  priority={false} // 取消预加载
+                  unoptimized={true} // 不走 next/image 优化
                 />
               </picture>
             </Link>
@@ -49,8 +51,8 @@ const HeaderBarRightEntryAvatar = () => {
                 className={`relative box-content block size-[82px] translate-0 rounded-full border-2 border-white bg-cover will-change-transform`}
               >
                 <Image
-                  src={user?.avatar ?? '/images/avatar.jpg'}
-                  alt={user?.name ?? ''}
+                  src={userHomeInfo?.user.avatar ?? '/images/avatar.jpg'}
+                  alt={userHomeInfo?.user.name ?? ''}
                   fill
                   className={
                     'absolute top-0 left-0 block size-full translate-z-0 rounded-full border-none object-cover contrast-100'
@@ -76,19 +78,22 @@ const HeaderBarRightEntryAvatar = () => {
         >
           <div className={'bg-bg1_float w-[300px] rounded-[8px] px-[24px] pb-[18px]'}>
             <Link href={''} className={'mb-[4px] block size-[80px] opacity-0'}></Link>
-            <Link href={`/space/${user?.id}`} className={'text-text1 font-medium'}>
-              {user?.name}
+            <Link href={`/space/${userHomeInfo?.user.id}`} className={'text-text1 font-medium'}>
+              {userHomeInfo?.user.name}
             </Link>
             <div className={'mb-[12px] flex justify-between px-[20px]'}>
               {[
                 {
                   name: '关注',
-                  number: 1,
+                  number: userHomeInfo?.followings,
                 },
-                { name: '粉丝', number: 0 },
+                {
+                  name: '粉丝',
+                  number: userHomeInfo?.followers,
+                },
                 {
                   name: '动态',
-                  number: 3,
+                  number: userHomeInfo?.feeds,
                 },
               ].map((item) => (
                 <Link

@@ -8,8 +8,15 @@ import { SearchLogTop10Result } from '@/types/search-log'
 import { useWindowScroll } from 'react-use'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib'
+import { UserHomeInfoResult } from '@/types/user'
 
-const HeaderBar = ({ searchLogTop10List }: { searchLogTop10List?: SearchLogTop10Result }) => {
+const HeaderBar = ({
+  searchLogTop10List,
+  userHomeInfo,
+}: {
+  searchLogTop10List?: SearchLogTop10Result
+  userHomeInfo?: UserHomeInfoResult
+}) => {
   const { y } = useWindowScroll()
   const pathname = usePathname()
   const [type, setType] = useState<'first' | 'second'>('first')
@@ -35,7 +42,7 @@ const HeaderBar = ({ searchLogTop10List }: { searchLogTop10List?: SearchLogTop10
     >
       <HeaderBarLeftEntry type={type} />
       <HeaderBarSearchBar searchLogTop10List={searchLogTop10List} />
-      <HeaderBarRightEntry type={type} />
+      <HeaderBarRightEntry userHomeInfo={userHomeInfo} type={type} />
     </div>
   )
 }

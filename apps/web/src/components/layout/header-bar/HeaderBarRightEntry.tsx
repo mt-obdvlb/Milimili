@@ -7,13 +7,20 @@ import Link from 'next/link'
 import React from 'react'
 import { cn } from '@/lib'
 import HeaderBarRightEntryAvatar from '@/components/layout/header-bar/HeaderBarRightEntryAvatar'
+import { UserHomeInfoResult } from '@/types/user'
 
-const HeaderBarRightEntry = ({ type }: { type: 'first' | 'second' }) => {
+const HeaderBarRightEntry = ({
+  type,
+  userHomeInfo,
+}: {
+  type: 'first' | 'second'
+  userHomeInfo?: UserHomeInfoResult
+}) => {
   const color = type === 'first' ? 'text-white' : 'text-text1'
 
   return (
     <div className={cn('ml-[10px] flex items-center', color)}>
-      <HeaderBarRightEntryAvatar />
+      <HeaderBarRightEntryAvatar userHomeInfo={userHomeInfo} />
       <HeaderBarHoverCardWithBounce
         hidden
         building

@@ -9,17 +9,15 @@ import MainVideoList from '@/features/home/components/main/MainVideoList'
 import { getVideoList } from '@/features/video/api'
 import { getSearchLogTop10 } from '@/features/search-log/api'
 import LoginTip from '@/features/home/components/other/LoginTip'
+import { getUserHomeInfo } from '@/features/user/api'
 
 const Home = async () => {
-  const [{ categoryList }, { videoSwiperList }, { searchLogTop10List }] = await Promise.all([
-    getCategoryList(),
-    getVideoList(),
-    getSearchLogTop10(),
-  ])
+  const [{ categoryList }, { videoSwiperList }, { searchLogTop10List }, { userHomeInfo }] =
+    await Promise.all([getCategoryList(), getVideoList(), getSearchLogTop10(), getUserHomeInfo()])
   return (
     <>
       <header className={'relative max-h-[2560px] min-h-[64px] bg-white'}>
-        <HeaderBar searchLogTop10List={searchLogTop10List} />
+        <HeaderBar userHomeInfo={userHomeInfo} searchLogTop10List={searchLogTop10List} />
         <HeaderBanner />
         <HeaderChannel categoryList={categoryList} />
         <HeaderChannelFixed />
