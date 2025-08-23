@@ -4,6 +4,7 @@ import '@/styles/map.css'
 import '@/styles/light.css'
 import Provider from '@/components/provider/Provider'
 import Initializer from '@/components/initializer/Initializer'
+import LoginModel from '@/components/layout/login-model/LoginModel'
 
 export default ({ children }: { children: React.ReactNode }) => {
   return (
@@ -21,6 +22,7 @@ export default ({ children }: { children: React.ReactNode }) => {
         <Provider>
           <Initializer />
           {children}
+          <LoginModel />
         </Provider>
       </body>
     </html>

@@ -9,4 +9,4 @@ const API = {
 } as const
 
 export const searchLogGetTop10 = () =>
-  request.get<void, Result<SearchLogTop10Result>>(`${baseURL}${API.top10}`)
+  request.get<Result<SearchLogTop10Result>>(`${baseURL}${API.top10}`)

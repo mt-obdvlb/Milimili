@@ -244,6 +244,10 @@
   
   --animate-eat-haha-up: eat-haha-up 0.8s;
   --animate-eat-haha-down: eat-haha-down 0.8s;
+  --animate-avatar-fade-small: avatar-fade-small 0.35s both;
+  --animate-avatar-fade-large: avatar-fade-large 0.35s both;
+  --animate-fade-in: fade-in;
+  --animate-fade-out: fade-out;
   
   @keyframes eat-haha-down {
     0%, 50%, 100% {
@@ -261,4 +265,47 @@
       transform: rotate(-45deg);
     }
   }
+  @keyframes avatar-fade-small {
+    0% {
+      transform: scale(1) translate(-36px, 10px);
+    }
+    60% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: scale(0.4) translateY(-2px) translate(3px);
+    }
+  }
+  @keyframes avatar-fade-large {
+    0% {
+      opacity: 0;
+      transform: scale(0.4) translateY(-2px) translate(3px);
+    }
+    30% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) translate(-36px, 10px);
+    }
+  }
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes fade-out {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  
 }

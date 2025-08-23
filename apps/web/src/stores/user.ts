@@ -3,7 +3,7 @@ import { useStore } from 'zustand'
 import type { User } from '@/types/user'
 
 export interface UserState {
-  user: User | null
+  user: User | null | undefined
   setUser: (user: User) => void
   logoutUser: () => void
 }

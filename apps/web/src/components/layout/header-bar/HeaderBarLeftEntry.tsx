@@ -12,8 +12,28 @@ import HeaderBarLinkItemWithBounce from '@/components/layout/header-bar/HeaderBa
 import React from 'react'
 import { cn, toastBuilding } from '@/lib'
 import Link from 'next/link'
+import Image from 'next/image'
 
 const headerBarLeftLinks = ['番剧', '直播', '游戏中心', '会员购', '漫画', '赛事']
+
+const categories = [
+  ['番剧', '电影', '国创', '电视剧', '综艺', '纪录片', '动画', '游戏', '鬼畜', '音乐'],
+  ['舞蹈', '影视', '娱乐', '知识', '科技数码', '资讯', '美食', '小剧场', '汽车', '时尚美妆'],
+  [
+    '体育运动',
+    '动物',
+    'vlog',
+    '绘画',
+    '人工智能',
+    '家装房产',
+    '户外潮流',
+    '健身',
+    '手工',
+    '旅游出行',
+  ],
+  ['三农', '亲子', '健康', '情感', '生活兴趣', '生活经验', '公益', '超高清'],
+  ['专栏', '直播', '活动', '课堂', '社区中心', '新歌热榜'],
+]
 
 const HeaderBarLeftEntry = ({ type }: { type: 'first' | 'second' }) => {
   return (
@@ -76,7 +96,39 @@ const HeaderBarLeftEntry = ({ type }: { type: 'first' | 'second' }) => {
                 'bg-bg1_float border-line_regular text-text1 relative rounded-[8px] border p-0 shadow-[0_0_30px_rgba(0,0,0,0.1)]'
               }
             >
-              <div className={'flex px-0 py-[16px] text-left'}>123</div>
+              <div className={'flex px-0 py-[16px] text-left'}>
+                {categories.map((col, index1) => {
+                  const beforeCount = categories.slice(0, index1).reduce((s, c) => s + c.length, 0)
+                  return (
+                    <div
+                      key={index1}
+                      className={
+                        'border-r-line_regular flex w-[152px] shrink-0 flex-col flex-wrap border-r px-[16px] py-0'
+                      }
+                    >
+                      {col.map((item, index2) => (
+                        <Link
+                          key={item}
+                          onClick={toastBuilding}
+                          href={''}
+                          className={
+                            'text-text1 hover:bg-graph_bg_thick my-[3px] flex h-[32px] cursor-pointer items-center rounded-[4px] p-[6px] text-sm leading-[20px] font-normal transition-colors duration-300'
+                          }
+                        >
+                          <Image
+                            width={24}
+                            height={24}
+                            src={`/svgs/category/icon_${beforeCount + index2 + 1}.svg`}
+                            alt={item}
+                            className={'mr-[10px]'}
+                          />
+                          <span>{item}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  )
+                })}
+              </div>
             </NavigationMenuContent>
           </NavigationMenuItem>
         )}

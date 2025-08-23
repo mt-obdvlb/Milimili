@@ -5,6 +5,7 @@ import { MESSAGE } from '@/constants'
 import { Result } from '@mtobdvlb/shared-types'
 import { UserGetInfoHomeVO } from '@/vos/user/get-info-home.vo'
 import { ParamsDictionary } from 'express-serve-static-core'
+import { UserGetInfoVO } from '@/vos/user/get-info.vo'
 
 export const userLogin: RequestHandler<ParamsDictionary, Result, UserLoginDTO> = async (
   req,
@@ -67,6 +68,22 @@ export const userGetInfoHome: RequestHandler<
     })
   return res.status(200).json({
     data: await UserService.getInfoHome(req.user?.id),
+    code: 0,
+  })
+}
+
+export const userGetInfo: RequestHandler<ParamsDictionary, Result<UserGetInfoVO>> = async (
+  req,
+  res
+) => {
+  if (!req.user?.id)
+    return res.status(401).json({
+      message: MESSAGE.INVALID_TOKEN,
+      code: 1,
+    })
+  const data = await UserService.getInfo(req.user.id)
+  return res.status(200).json({
+    data,
     code: 0,
   })
 }

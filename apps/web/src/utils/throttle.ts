@@ -3,21 +3,21 @@ type ThrottleOptions = {
   trailing?: boolean
 }
 
-export const throttle = <T extends (...args: unknown[]) => ReturnType<T>>(
-  fn: T,
+export const throttle = <Args extends unknown[], R>(
+  fn: (...args: Args) => R,
   wait = 2000,
   options: ThrottleOptions = {
     leading: true,
     trailing: false,
   }
-): ((...args: Parameters<T>) => ReturnType<T> | void) => {
+): ((...args: Args) => R | void) => {
   let lastTime = 0
   let timeout: ReturnType<typeof setTimeout> | null = null
 
-  return (...args: Parameters<T>): ReturnType<T> | void => {
+  return (...args: Args): R | void => {
     const now = Date.now()
 
-    const invoke = (): ReturnType<T> => {
+    const invoke = (): R => {
       lastTime = Date.now()
       return fn(...args)
     }

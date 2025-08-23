@@ -5,10 +5,15 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/h
 import { openNewTable } from '@/utils/openNewTable'
 import Link from 'next/link'
 import React from 'react'
+import { cn } from '@/lib'
+import HeaderBarRightEntryAvatar from '@/components/layout/header-bar/HeaderBarRightEntryAvatar'
 
-const HeaderBarRightEntry = () => {
+const HeaderBarRightEntry = ({ type }: { type: 'first' | 'second' }) => {
+  const color = type === 'first' ? 'text-white' : 'text-text1'
+
   return (
-    <div className={'ml-[10px] flex items-center text-white'}>
+    <div className={cn('ml-[10px] flex items-center', color)}>
+      <HeaderBarRightEntryAvatar />
       <HeaderBarHoverCardWithBounce
         hidden
         building
@@ -47,7 +52,6 @@ const HeaderBarRightEntry = () => {
             viewBox='0 0 20 20'
             fill='none'
             xmlns='http://www.w3.org/2000/svg'
-            className='right-entry-icon'
           >
             <path
               d='M15.435 17.7717H4.567C2.60143 17.7717 1 16.1723 1 14.2047V5.76702C1 3.80144 2.59942 2.20001 4.567 2.20001H15.433C17.3986 2.20001 19 3.79943 19 5.76702V14.2047C19.002 16.1703 17.4006 17.7717 15.435 17.7717ZM4.567 4.00062C3.59327 4.00062 2.8006 4.79328 2.8006 5.76702V14.2047C2.8006 15.1784 3.59327 15.9711 4.567 15.9711H15.433C16.4067 15.9711 17.1994 15.1784 17.1994 14.2047V5.76702C17.1994 4.79328 16.4067 4.00062 15.433 4.00062H4.567Z'
@@ -69,7 +73,6 @@ const HeaderBarRightEntry = () => {
             viewBox='0 0 20 21'
             fill='none'
             xmlns='http://www.w3.org/2000/svg'
-            className='right-entry-icon'
           >
             <g clipPath='url(#clip0)'>
               <path
@@ -119,7 +122,6 @@ const HeaderBarRightEntry = () => {
             viewBox='0 0 20 21'
             fill='none'
             xmlns='http://www.w3.org/2000/svg'
-            className='right-entry-icon'
           >
             <path
               fillRule='evenodd'
@@ -149,7 +151,6 @@ const HeaderBarRightEntry = () => {
             viewBox='0 0 20 21'
             fill='none'
             xmlns='http://www.w3.org/2000/svg'
-            className='right-entry-icon'
           >
             <path
               fillRule='evenodd'
@@ -183,7 +184,6 @@ const HeaderBarRightEntry = () => {
             viewBox='0 0 20 21'
             fill='none'
             xmlns='http://www.w3.org/2000/svg'
-            className='right-entry-icon'
           >
             <mask
               id='mask0'
@@ -224,7 +224,7 @@ const HeaderBarRightEntry = () => {
         <HoverCardTrigger onClick={() => openNewTable('/')} asChild>
           <div
             className={
-              'ml-[10px] flex h-[34px] w-[90px] min-w-[50px] cursor-pointer items-center justify-center rounded-[8px] bg-[#fb7299] transition-colors duration-300 hover:bg-[#fc8bab]'
+              'ml-[10px] flex h-[34px] w-[90px] min-w-[50px] cursor-pointer items-center justify-center rounded-[8px] bg-[#fb7299] text-white transition-colors duration-300 hover:bg-[#fc8bab]'
             }
           >
             <svg
@@ -257,7 +257,7 @@ const HeaderBarRightEntry = () => {
                 strokeLinejoin='round'
               ></path>
             </svg>
-            <span className={'text-[14px] font-black'}>投稿</span>
+            <span className={'text-[14px] font-black text-white'}>投稿</span>
           </div>
         </HoverCardTrigger>
         <HoverCardContent

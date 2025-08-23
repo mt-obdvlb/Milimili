@@ -8,6 +8,7 @@ import MainRecommendedSwiper from '@/features/home/components/main/MainRecommend
 import MainVideoList from '@/features/home/components/main/MainVideoList'
 import { getVideoList } from '@/features/video/api'
 import { getSearchLogTop10 } from '@/features/search-log/api'
+import LoginTip from '@/features/home/components/other/LoginTip'
 
 const Home = async () => {
   const [{ categoryList }, { videoSwiperList }, { searchLogTop10List }] = await Promise.all([
@@ -38,6 +39,7 @@ const Home = async () => {
           </div>
         </div>
       </main>
+      <LoginTip />
     </>
   )
 }

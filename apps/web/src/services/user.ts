@@ -2,16 +2,16 @@ import request from '@/lib/request'
 import { UserGetResponse, UserLoginRequest } from '@/types/user'
 import { Result } from '@mtobdvlb/shared-types'
 
-const baseURL = '/user'
+const baseURL = '/users'
 
 const API = {
   login: '/login',
   logout: '/logout',
-  get: '',
+  get: '/info',
 } as const
 
 export const loginUser = (data: UserLoginRequest) =>
-  request.post<UserLoginRequest, Result>(`${baseURL}${API.login}`, data)
+  request.post<Result>(`${baseURL}${API.login}`, data)
 
 export const logoutUser = () => request.post<void, Result>(`${baseURL}${API.logout}`)
 

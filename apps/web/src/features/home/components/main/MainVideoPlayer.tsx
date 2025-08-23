@@ -1,3 +1,5 @@
+'use client'
+
 import { tv } from 'tailwind-variants'
 import { VideoListItem } from '@/types/video'
 import { useEffect, useRef, useState } from 'react'

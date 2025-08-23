@@ -8,5 +8,4 @@ const API = {
   get: '/',
 } as const
 
-export const categoryGet = () =>
-  request.get<void, Result<CategoryListResponse>>(`${baseURL}${API.get}`)
+export const categoryGet = () => request.get<Result<CategoryListResponse>>(`${baseURL}${API.get}`)
