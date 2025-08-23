@@ -1,6 +1,22 @@
-import { FeedDB, FeedType } from '@mtobdvlb/shared-types'
-import mongoose, { Document, Schema } from 'mongoose'
+import { FeedType } from '@mtobdvlb/shared-types'
+import mongoose, { Document, Schema, Types } from 'mongoose'
 
+type FeedBase = {
+  content: string
+  mediaUrls?: string[]
+  likesCount?: number
+  commentsCount?: number
+  type: FeedType
+  commentsDisabled: boolean
+  isOpen: boolean
+  publishedAt: Date
+}
+
+type FeedDB = FeedBase & {
+  videoId: Types.ObjectId
+  userId: Types.ObjectId
+  _id: Types.ObjectId
+}
 export type IFeed = FeedDB & Document
 
 const feedSchema = new Schema<IFeed>(

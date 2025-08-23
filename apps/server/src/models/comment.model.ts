@@ -1,5 +1,18 @@
-import { Document, model, Schema } from 'mongoose'
-import { CommentDB } from '@mtobdvlb/shared-types'
+import { Document, model, Schema, Types } from 'mongoose'
+import { CommentTargetType } from '@mtobdvlb/shared-types'
+
+type CommentBase = {
+  targetType: CommentTargetType
+  content: string
+  likesCount?: number
+}
+
+type CommentDB = CommentBase & {
+  userId: Types.ObjectId
+  targetId: Types.ObjectId
+  parentId?: Types.ObjectId
+  _id: Types.ObjectId
+}
 
 export type IComment = CommentDB & Document
 

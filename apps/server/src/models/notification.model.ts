@@ -1,6 +1,19 @@
-import { Document, model, Schema } from 'mongoose'
-import { NotificationDB } from '@mtobdvlb/shared-types'
+import { Document, model, Schema, Types } from 'mongoose'
+import { NotificationSourceType, NotificationType } from '@mtobdvlb/shared-types'
 
+type NotificationBase = {
+  type: NotificationType
+  sourceType?: NotificationSourceType
+  content?: string
+  isRead: boolean
+}
+
+type NotificationDB = NotificationBase & {
+  userId: Types.ObjectId
+  fromUserId?: Types.ObjectId
+  sourceId?: Types.ObjectId
+  _id: Types.ObjectId
+}
 export type INotification = NotificationDB & Document
 
 const notificationSchema = new Schema<INotification>(

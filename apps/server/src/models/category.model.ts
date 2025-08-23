@@ -1,6 +1,12 @@
-import { Document, model, Schema } from 'mongoose'
-import { CategoryDB } from '@mtobdvlb/shared-types'
+import { Document, model, Schema, Types } from 'mongoose'
 
+type CategoryBase = {
+  name: string
+}
+
+type CategoryDB = CategoryBase & {
+  _id: Types.ObjectId
+}
 export type ICategory = CategoryDB & Document
 
 const categorySchema = new Schema<ICategory>(

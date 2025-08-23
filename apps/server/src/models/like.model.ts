@@ -1,6 +1,15 @@
-import { Document, model, Schema } from 'mongoose'
-import { LikeDB } from '@mtobdvlb/shared-types'
+import { Document, model, Schema, Types } from 'mongoose'
+import { LikeTargetType } from '@mtobdvlb/shared-types'
 
+type LikeBase = {
+  targetType: LikeTargetType
+}
+
+type LikeDB = LikeBase & {
+  userId: Types.ObjectId
+  targetId: Types.ObjectId
+  _id: Types.ObjectId
+}
 export type ILike = LikeDB & Document
 
 const likeSchema = new Schema<ILike>(

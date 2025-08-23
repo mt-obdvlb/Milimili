@@ -1,5 +1,25 @@
-import { Document, model, Schema } from 'mongoose'
-import { VideoDB, VideoSourceType, VideoStatus } from '@mtobdvlb/shared-types'
+import { Document, model, Schema, Types } from 'mongoose'
+import { VideoSourceType, VideoStatus } from '@mtobdvlb/shared-types'
+
+type VideoBase = {
+  url: string
+  title: string
+  description?: string
+  thumbnail: string
+  time: number
+  status: VideoStatus
+  publishedAt: Date
+  danmakuDisabled: boolean
+  commentsDisabled: boolean
+  sourceType: VideoSourceType
+  isOpen: boolean
+}
+
+type VideoDB = VideoBase & {
+  userId: Types.ObjectId
+  categoryId: Types.ObjectId
+  _id: Types.ObjectId
+}
 
 export type IVideo = VideoDB & Document
 

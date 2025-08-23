@@ -1,6 +1,11 @@
-import { Document, model, Schema } from 'mongoose'
-import { FavoriteDB } from '@mtobdvlb/shared-types'
+import { Document, model, Schema, Types } from 'mongoose'
 
+type FavoriteDB = {
+  userId: Types.ObjectId
+  videoId: Types.ObjectId
+  folderId: Types.ObjectId
+  _id: Types.ObjectId
+}
 export type IFavorite = FavoriteDB & Document
 
 const favoriteSchema = new Schema<IFavorite>(
