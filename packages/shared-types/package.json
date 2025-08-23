@@ -10,9 +10,10 @@
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json"
+    "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
+    "build": "tsup src/index.ts --format esm,cjs --dts"
   },
   "dependencies": {
-    "mongoose": "^8.16.4"
+    "tsup": "^8.5.0"
   }
 }

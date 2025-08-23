@@ -1,6 +1,15 @@
-import { Document, model, Schema } from 'mongoose'
-import { HistoryDB } from '@mtobdvlb/shared-types'
+import { Document, model, Schema, Types } from 'mongoose'
 
+type HistoryBase = {
+  watchedAt: Date
+  duration: number
+}
+
+type HistoryDB = HistoryBase & {
+  userId: Types.ObjectId
+  videoId: Types.ObjectId
+  _id: Types.ObjectId
+}
 export type IHistory = HistoryDB & Document
 
 const historySchema = new Schema<IHistory>(

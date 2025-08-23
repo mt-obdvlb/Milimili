@@ -1,6 +1,12 @@
-import { Document, model, Schema } from 'mongoose'
-import { SearchLogDB } from '@mtobdvlb/shared-types'
+import { Document, model, Schema, Types } from 'mongoose'
 
+export type SearchLogBase = {
+  keyword: string
+}
+
+export type SearchLogDB = SearchLogBase & {
+  _id: Types.ObjectId
+}
 export type ISearchLog = SearchLogDB & Document
 
 const searchLogSchema = new Schema<ISearchLog>(

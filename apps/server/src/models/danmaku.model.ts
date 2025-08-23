@@ -1,6 +1,18 @@
-import { Document, model, Schema } from 'mongoose'
-import { DanmakuDB } from '@mtobdvlb/shared-types'
+import { Document, model, Schema, Types } from 'mongoose'
+import { DanmakuPosition } from '@mtobdvlb/shared-types'
 
+type DanmakuBase = {
+  content: string
+  color?: string
+  position: DanmakuPosition
+  time: number
+}
+
+type DanmakuDB = DanmakuBase & {
+  videoId: Types.ObjectId
+  userId: Types.ObjectId
+  _id: Types.ObjectId
+}
 export type IDanmaku = DanmakuDB & Document
 
 const danmakuSchema = new Schema<IDanmaku>(

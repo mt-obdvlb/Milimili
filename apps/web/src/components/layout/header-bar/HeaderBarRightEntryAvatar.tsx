@@ -78,7 +78,10 @@ const HeaderBarRightEntryAvatar = ({ userHomeInfo }: { userHomeInfo?: UserHomeIn
         >
           <div className={'bg-bg1_float w-[300px] rounded-[8px] px-[24px] pb-[18px]'}>
             <Link href={''} className={'mb-[4px] block size-[80px] opacity-0'}></Link>
-            <Link href={`/space/${userHomeInfo?.user.id}`} className={'text-text1 font-medium'}>
+            <Link
+              href={`/space/${userHomeInfo?.user.id}`}
+              className={'text-text1 -mt-10 mb-0.5 block text-center text-lg font-medium'}
+            >
               {userHomeInfo?.user.name}
             </Link>
             <div className={'mb-[12px] flex justify-between px-[20px]'}>

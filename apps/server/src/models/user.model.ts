@@ -1,6 +1,15 @@
-import { UserDB } from '@mtobdvlb/shared-types'
-import { Document, model, Schema } from 'mongoose'
+import { Document, model, Schema, Types } from 'mongoose'
 
+type UserBase = {
+  email: string
+}
+
+type UserDB = UserBase & {
+  password?: string
+  _id: Types.ObjectId
+  name: string
+  avatar: string
+}
 export type IUser = UserDB & Document
 
 const userSchema = new Schema<IUser>(
