@@ -1,7 +1,11 @@
 export type UserGetInfoHomeVO = {
-  username: string
-  avatar: string
-  following: number
+  user: {
+    id: string
+    name: string
+    avatar: string
+    email: string
+  }
+  followings: number
   followers: number
   feeds: number
 }

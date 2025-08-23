@@ -1,15 +1,17 @@
 import axios, {
   type AxiosError,
+  AxiosHeaders,
   type AxiosInstance,
   type AxiosRequestConfig,
   type AxiosResponse,
   type InternalAxiosRequestConfig,
 } from 'axios'
 import { isServer } from '@/utils'
+import { Result } from '@mtobdvlb/shared-types'
+import { AuthRefreshResult } from '@/types/auth'
 
 interface RetryableAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean
-  // 标记该请求不要触发刷新流程（专用于 /auth/refresh）
   skipAuthRefresh?: boolean
 }
 
@@ -33,76 +35,73 @@ const request: AxiosInstance = (() => {
   const instance = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000/api/v1',
     withCredentials: true,
-    // 建议加个超时，防止网络级挂起（可按需调整/删除）
     timeout: 15000,
   })
 
   // —— request interceptor
   instance.interceptors.request.use(async (config: RetryableAxiosRequestConfig) => {
+    const headers = new AxiosHeaders(config.headers)
+
+    // ⚠️ 如果 headers 已经有 Cookie（说明是 refresh 或者重试时手动设置的），不要覆盖
+    if (headers.get('Cookie')) {
+      config.headers = headers
+      return config
+    }
+
     if (isServer()) {
       const { cookies } = await import('next/headers')
       const cookieStore = await cookies()
-      const accessToken = cookieStore.get('access_token')
-      const refreshToken = cookieStore.get('refresh_token')
+      const accessToken = cookieStore.get('access_token')?.value
+      const refreshToken = cookieStore.get('refresh_token')?.value
 
       const cookieHeader = [
-        accessToken ? `access_token=${accessToken.value}` : '',
-        refreshToken ? `refresh_token=${refreshToken.value}` : '',
+        accessToken ? `access_token=${accessToken}` : '',
+        refreshToken ? `refresh_token=${refreshToken}` : '',
       ]
         .filter(Boolean)
         .join('; ')
 
       if (cookieHeader) {
-        // axios v1 的 headers 支持 set
-        config.headers.set?.('Cookie', cookieHeader)
+        headers.set('Cookie', cookieHeader)
       }
     }
+
+    config.headers = headers
     return config
   })
 
   // —— response interceptor
   instance.interceptors.response.use(
-    // 成功：直接返回后端数据
     (res: AxiosResponse) => res.data,
-    // 失败：尽量返回后端数据；仅无响应时才抛错
     async (error: AxiosError) => {
       const originalRequest = error.config as RetryableAxiosRequestConfig
 
-      // 若是刷新请求本身或显式跳过，直接把后端返回给出去（不参与刷新逻辑）
       if (originalRequest?.skipAuthRefresh) {
         return error.response?.data
       }
 
-      // —— 仅处理 401
       if (error.response?.status === 401) {
-        // 已重试过一次：不再触发刷新，直接把后端返回给出去，避免循环
+        // 已重试过一次，不再触发刷新
         if (originalRequest._retry) {
-          return error.response.data
+          return error.response?.data
         }
 
-        // 如果正在刷新，排队等待刷新结果
+        // 正在刷新 → 先排队，等拿到新的 Cookie 再继续
         if (isRefreshing) {
           return new Promise<string | null>((resolve, reject) => {
             failedQueue.push({ resolve, reject })
+          }).then((cookieHeader) => {
+            originalRequest._retry = true
+            if (cookieHeader) {
+              const hdrs = new AxiosHeaders(originalRequest.headers)
+              hdrs.set('Cookie', cookieHeader)
+              originalRequest.headers = hdrs
+            }
+            return instance(originalRequest)
           })
-            .then((cookieHeader) => {
-              // 标记：这次重发视为已重试，若再 401 则不会再次刷新
-              originalRequest._retry = true
-              if (isServer() && cookieHeader) {
-                originalRequest.headers = originalRequest.headers || {}
-                ;(originalRequest.headers as any).Cookie = cookieHeader
-              }
-              return instance(originalRequest)
-            })
-            .catch((e) => {
-              // 刷新失败时，把后端错误返回（若没有响应，只能抛错）
-              const err = e as AxiosError
-              if (err.response) return err.response.data
-              return Promise.reject(err)
-            })
         }
 
-        // —— 首次触发刷新
+        // 首次触发刷新
         originalRequest._retry = true
         isRefreshing = true
 
@@ -110,66 +109,53 @@ const request: AxiosInstance = (() => {
           const refreshConfig: AxiosRequestConfig & {
             skipAuthRefresh?: boolean
           } = {
-            // 跳过刷新逻辑，防止对 /auth/refresh 自己再次进入 401 分支
             skipAuthRefresh: true,
           }
 
+          // SSR 情况下只传 refresh_token
           if (isServer()) {
             const { cookies } = await import('next/headers')
             const cookieStore = await cookies()
-            const refreshToken = cookieStore.get('refresh_token')
+            const refreshToken = cookieStore.get('refresh_token')?.value
             if (refreshToken) {
-              refreshConfig.headers = {
-                ...(refreshConfig.headers || {}),
-                Cookie: `refresh_token=${refreshToken.value}`,
-              }
+              refreshConfig.headers = new AxiosHeaders({
+                Cookie: `refresh_token=${refreshToken}`,
+              })
             }
           }
 
-          // 用同一个 instance 调用刷新接口，但打了 skipAuthRefresh 标记
-          await instance.post('/auth/refresh', {}, refreshConfig as AxiosRequestConfig)
+          // 调用刷新接口
+          const refreshData = await instance
+            .post<Result<AuthRefreshResult>>('/auth/refresh', {}, refreshConfig)
+            .then((r) => r.data)
 
-          // 读取刷新后的 cookie，拼装给排队请求
-          let newCookieHeader: string | null = null
-          if (isServer()) {
-            const { cookies } = await import('next/headers')
-            const cookieStore = await cookies()
-            const newAccessToken = cookieStore.get('access_token')
-            const refreshToken = cookieStore.get('refresh_token')
-            newCookieHeader = [
-              newAccessToken ? `access_token=${newAccessToken.value}` : '',
-              refreshToken ? `refresh_token=${refreshToken.value}` : '',
-            ]
-              .filter(Boolean)
-              .join('; ')
-          }
+          if (!refreshData) return Promise.reject(new Error('Refresh failed: no data returned'))
 
-          // 唤醒队列
+          const newCookieHeader = [
+            refreshData.accessToken ? `access_token=${refreshData.accessToken}` : '',
+            refreshData.refreshToken ? `refresh_token=${refreshData.refreshToken}` : '',
+          ]
+            .filter(Boolean)
+            .join('; ')
+
+          // 唤醒队列，给所有排队的请求注入最新 Cookie
           processQueue(null, newCookieHeader)
 
-          // 立即重发当前请求
-          if (isServer() && newCookieHeader) {
-            originalRequest.headers = originalRequest.headers || {}
-            ;(originalRequest.headers as any).Cookie = newCookieHeader
-          }
+          // 重发当前请求
+          const hdrs = new AxiosHeaders(originalRequest.headers)
+          hdrs.set('Cookie', newCookieHeader)
+          originalRequest.headers = hdrs
+
           return instance(originalRequest)
         } catch (err) {
-          // 刷新失败：唤醒队列（失败）
           processQueue(err, null)
-
-          // 刷新失败时，把“刷新请求”的后端响应返回；若没有，则返回“原始 401”的后端响应
-          const refreshAxiosErr = err as AxiosError
-          if (refreshAxiosErr.response) return refreshAxiosErr.response.data
-          if (error.response) return error.response.data
-
-          // 两者都没有后端响应（纯网络错误）
           return Promise.reject(err)
         } finally {
           isRefreshing = false
         }
       }
 
-      // —— 非 401：如果有后端响应，原样返回；否则（网络错误）只能抛错
+      // 其他错误
       if (error.response) return error.response.data
       return Promise.reject(error)
     }

@@ -42,16 +42,23 @@ export const UserService = {
     }
   },
   getInfoHome: async (id: string) => {
-    const user = await UserModel.findById(id, 'name avatar')
+    const user = await UserModel.findById(id, {
+      name: 1,
+      avatar: 1,
+      email: 1,
+    })
     if (!user) throw new Error(MESSAGE.USER_NOT_FOUND)
-    const { name: username, avatar } = user
-    const following = await FollowModel.countDocuments({ followerId: id })
+    const followings = await FollowModel.countDocuments({ followerId: id })
     const followers = await FollowModel.countDocuments({ followedId: id })
     const feeds = await FeedModel.countDocuments({ userId: id })
     return {
-      username,
-      avatar,
-      following,
+      user: {
+        id: user._id.toString(),
+        name: user.name,
+        avatar: user.avatar,
+        email: user.email,
+      },
+      followings,
       followers,
       feeds,
     }

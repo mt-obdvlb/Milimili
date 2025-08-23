@@ -5,9 +5,16 @@ export type User = {
   id: string
 }
 
+export type UserHomeInfoResult = {
+  user: User
+  followings: number
+  followers: number
+  feeds: number
+}
+
 export type UserLoginByNameRequest = {
   password: string
-  name: string
+  email: string
 }
 
 export type UserLoginByEmailRequest = {

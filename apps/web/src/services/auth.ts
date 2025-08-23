@@ -7,5 +7,5 @@ const API = {
   sendCode: '/send-code',
 } as const
 
-export const authSendCode = (data: string) =>
+export const authSendCode = (data: { email: string }) =>
   request.post<Result>(`${baseURL}${API.sendCode}`, data)
