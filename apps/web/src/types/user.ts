@@ -2,6 +2,7 @@ export type User = {
   name: string
   email: string
   avatar: string
+  id: string
 }
 
 export type UserLoginByNameRequest = {

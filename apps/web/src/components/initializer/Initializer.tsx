@@ -1,11 +1,12 @@
 import { StoreInitializer } from '@/components/initializer/StoreInitializer'
 import { Toaster } from '@/components/ui/sonner'
+import { getUser } from '@/services/user'
 
-const Initializer = () => {
-  const initialUser = {}
+const Initializer = async () => {
+  const [{ data }] = await Promise.all([getUser()])
   return (
     <>
-      <StoreInitializer initialUser={initialUser} />
+      <StoreInitializer initialUser={{ user: data }} />
       <Toaster />
     </>
   )

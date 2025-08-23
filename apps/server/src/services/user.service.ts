@@ -56,4 +56,14 @@ export const UserService = {
       feeds,
     }
   },
+  getInfo: async (id: string) => {
+    const user = await UserModel.findById(id)
+    if (!user) throw new Error(MESSAGE.USER_NOT_FOUND)
+    return {
+      name: user.name,
+      avatar: user.avatar,
+      email: user.email,
+      id: user._id.toString(),
+    }
+  },
 }

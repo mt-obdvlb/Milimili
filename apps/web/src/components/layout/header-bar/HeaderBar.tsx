@@ -34,7 +34,7 @@ const HeaderBar = ({ searchLogTop10List }: { searchLogTop10List?: SearchLogTop10
       )}
     >
       <HeaderBarLeftEntry type={type} />
-      <HeaderBarSearchBar type={type} searchLogTop10List={searchLogTop10List} />
+      <HeaderBarSearchBar searchLogTop10List={searchLogTop10List} />
       <HeaderBarRightEntry type={type} />
     </div>
   )

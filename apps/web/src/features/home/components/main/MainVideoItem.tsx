@@ -5,10 +5,32 @@ import { cn } from '@/lib'
 import { formatPlayCount, formatTime } from '@/utils'
 import { useState } from 'react'
 import MainVideoPlayer from '@/features/home/components/main/MainVideoPlayer'
+import { useVideoCheck } from '@/hooks/useVideoCheck'
+import Image from 'next/image'
+import MainVideoSkeleton from '@/features/home/components/main/MainVideoSkeleton'
 
 const MainVideoItem = ({ video, margin }: { video: VideoListItem; margin: boolean }) => {
   const [time, setTime] = useState(0)
   const [hover, setHover] = useState(false)
+
+  const status = useVideoCheck(video.url)
+
+  if (status === 'invalid')
+    return (
+      <section className={cn('relative size-full rounded-[8px] pt-[56.25%]', margin && 'mt-5')}>
+        <Image
+          className={'rounded-[8px]'}
+          fill
+          src={'/images/error-video.avif'}
+          alt={'已失效视频'}
+        />
+        <span className={'absolute bottom-2 left-1/2 origin-top-left -translate-1/2'}>
+          已失效视频
+        </span>
+      </section>
+    )
+
+  if (status === 'loading') return <MainVideoSkeleton className={'mt-0'} />
 
   return (
     <section className={cn('text-text1 relative', margin ? 'mt-[20px]' : '')}>

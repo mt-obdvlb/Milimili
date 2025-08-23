@@ -9,7 +9,7 @@ export const API = {
 } as const
 
 export const videoList = (page: number, pageSize: number) =>
-  request.get<void, Result<PageResult<VideoListItem>>>(`${baseURL}${API.list}`, {
+  request.get<Result<PageResult<VideoListItem>>>(`${baseURL}${API.list}`, {
     params: {
       page,
       pageSize,
