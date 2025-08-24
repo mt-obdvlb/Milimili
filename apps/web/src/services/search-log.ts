@@ -1,6 +1,5 @@
 import request from '@/lib/request'
-import { Result } from '@mtobdvlb/shared-types'
-import { SearchLogTop10Result } from '@/types/search-log'
+import { Result, SearchLogTop10List } from '@mtobdvlb/shared-types'
 
 const baseURL = '/search-logs'
 
@@ -9,4 +8,4 @@ const API = {
 } as const
 
 export const searchLogGetTop10 = () =>
-  request.get<Result<SearchLogTop10Result>>(`${baseURL}${API.top10}`)
+  request.get<Result<SearchLogTop10List>>(`${baseURL}${API.top10}`)

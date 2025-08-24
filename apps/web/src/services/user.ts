@@ -1,6 +1,6 @@
 import request from '@/lib/request'
-import { UserGetResponse, UserHomeInfoResult, UserLoginRequest } from '@/types/user'
-import { Result } from '@mtobdvlb/shared-types'
+import { UserLoginRequest } from '@/types/user'
+import { Result, UserGetInfo, UserGetInfoHome } from '@mtobdvlb/shared-types'
 
 const baseURL = '/users'
 
@@ -16,7 +16,7 @@ export const loginUser = (data: UserLoginRequest) =>
 
 export const logoutUser = () => request.post<Result>(`${baseURL}${API.logout}`)
 
-export const getUser = () => request.get<Result<UserGetResponse>>(`${baseURL}${API.get}`)
+export const getUser = () => request.get<Result<UserGetInfo>>(`${baseURL}${API.get}`)
 
 export const userGetHomeInfo = () =>
-  request.get<Result<UserHomeInfoResult>>(`${baseURL}${API.homeInfo}`)
+  request.get<Result<UserGetInfoHome>>(`${baseURL}${API.homeInfo}`)
