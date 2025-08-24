@@ -146,7 +146,7 @@
 }
 
 
-@theme {
+@theme inline {
   --color-brand_pink: var(--brand_pink);
   --color-brand_pink_thin: var(--brand_pink_thin);
   --color-brand_blue: var(--brand_blue);
@@ -241,6 +241,7 @@
   --color-graph_icon_rgb: var(--graph_icon_rgb);
   
   --color-shadow_rgb: var(--shadow_rgb);
+  
   
   --animate-eat-haha-up: eat-haha-up 0.8s;
   --animate-eat-haha-down: eat-haha-down 0.8s;

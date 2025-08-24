@@ -1,4 +1,4 @@
-export type UserGetInfoHomeVO = {
+export type UserGetInfoHome = {
   user: {
     id: string
     name: string

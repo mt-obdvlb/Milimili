@@ -1,4 +1,4 @@
-import { DanmakuPosition } from '@mtobdvlb/shared-types'
+import { DanmakuPosition } from '../danmaku'
 
 export type VideoGetDanmakusItem = {
   content: string
@@ -8,4 +8,4 @@ export type VideoGetDanmakusItem = {
   id: string
 }
 
-export type VideoGetDanmakusVO = VideoGetDanmakusItem[]
+export type VideoGetDanmakusList = VideoGetDanmakusItem[]

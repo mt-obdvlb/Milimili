@@ -13,4 +13,4 @@ export type FeedRecentItem = {
   }
 }
 
-export type FeedRecentVO = FeedRecentItem[]
+export type FeedRecentList = FeedRecentItem[]
