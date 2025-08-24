@@ -7,14 +7,24 @@ import Link from 'next/link'
 import React from 'react'
 import { cn } from '@/lib'
 import HeaderBarRightEntryAvatar from '@/components/layout/header-bar/HeaderBarRightEntryAvatar'
-import { UserHomeInfoResult } from '@/types/user'
+import {
+  FavoriteRecentList,
+  FeedRecentList,
+  HistoryList,
+  NotificationStatisticsList,
+  UserGetInfoHome,
+} from '@mtobdvlb/shared-types'
 
 const HeaderBarRightEntry = ({
   type,
   userHomeInfo,
 }: {
   type: 'first' | 'second'
-  userHomeInfo?: UserHomeInfoResult
+  userHomeInfo?: UserGetInfoHome
+  historyRecentList?: HistoryList
+  favoriteRecentList?: FavoriteRecentList
+  notificationStatistics?: NotificationStatisticsList
+  feedRecentList?: FeedRecentList
 }) => {
   const color = type === 'first' ? 'text-white' : 'text-text1'
 

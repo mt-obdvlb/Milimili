@@ -8,10 +8,12 @@ import {
 } from '@/controllers/video.controller'
 import { authMiddleware, validatorMiddleware } from '@/middlewares'
 import { asyncHandler } from '@/utils'
-import { videoListDTO } from '@/dtos/video/list.dto'
-import { videoCreateDTO } from '@/dtos/video/create.dto'
-import { videoGetDanmakusDTO } from '@/dtos/video/get-danmakus.dto'
-import { videoAddDanmakuDTO } from '@/dtos/video/add-danmaku.dto'
+import {
+  videoAddDanmakuDTO,
+  videoCreateDTO,
+  videoGetDanmakusDTO,
+  videoListDTO,
+} from '@mtobdvlb/shared-types'
 
 const router = Router()
 

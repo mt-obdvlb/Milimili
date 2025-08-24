@@ -1,13 +1,18 @@
 import { RequestHandler } from 'express'
 import { getUploadURL } from '@/utils/ali-oss.util'
 import { MESSAGE } from '@/constants'
-import { PageResult, Result, VideoGetDanmakusList, VideoListItem } from '@mtobdvlb/shared-types'
+import {
+  PageResult,
+  Result,
+  VideoAddDanmakuDTO,
+  VideoCreateDTO,
+  VideoGetDanmakusDTO,
+  VideoGetDanmakusList,
+  VideoListDTO,
+  VideoListItem,
+} from '@mtobdvlb/shared-types'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { VideoService } from '@/services/video.service'
-import { VideoListDTO } from '@/dtos/video/list.dto'
-import { VideoCreateDTO } from '@/dtos/video/create.dto'
-import { VideoGetDanmakusDTO } from '@/dtos/video/get-danmakus.dto'
-import { VideoAddDanmakuDTO } from '@/dtos/video/add-danmaku.dto'
 
 export const videoUploadURL: RequestHandler = async (req, res) => {
   const { fileName } = req.query

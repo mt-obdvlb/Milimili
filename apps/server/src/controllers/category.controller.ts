@@ -1,7 +1,6 @@
 import { RequestHandler } from 'express'
-import { CategoryCreateDTO } from '@/dtos/category/create.dto'
 import { CategoryService } from '@/services/category.service'
-import { CategoryGetAllList, Result } from '@mtobdvlb/shared-types'
+import { CategoryCreateDTO, CategoryGetAllList, Result } from '@mtobdvlb/shared-types'
 import { ParamsDictionary } from 'express-serve-static-core'
 
 export const categoryGetAll: RequestHandler<ParamsDictionary, Result<CategoryGetAllList>> = async (

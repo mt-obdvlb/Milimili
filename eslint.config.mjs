@@ -1,4 +1,3 @@
-import css from '@eslint/css'
 import js from '@eslint/js'
 import json from '@eslint/json'
 import pluginNext from '@next/eslint-plugin-next'
@@ -90,10 +89,6 @@ export default defineConfig([
   {
     files: ['**/*.json5'],
     ...json.configs.recommended,
-  },
-  {
-    files: ['**/*.css'],
-    ...css.configs.recommended,
   },
 
   {

@@ -5,10 +5,9 @@
 
 import { RequestHandler } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { FeedRecentList, Result } from '@mtobdvlb/shared-types'
+import { FeedListDTO, FeedRecentList, Result } from '@mtobdvlb/shared-types'
 import { MESSAGE } from '@/constants'
 import { FeedService } from '@/services/feed.service'
-import { FeedListDTO } from '@/dtos/feed/list.dto'
 
 export const feedRecent: RequestHandler<
   ParamsDictionary,

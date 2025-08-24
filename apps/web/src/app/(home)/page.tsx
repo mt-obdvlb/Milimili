@@ -10,14 +10,42 @@ import { getVideoList } from '@/features/video/api'
 import { getSearchLogTop10 } from '@/features/search-log/api'
 import LoginTip from '@/features/home/components/other/LoginTip'
 import { getUserHomeInfo } from '@/features/user/api'
+import { getHistoryRecent } from '@/features/history/api'
+import { getFeedRecent } from '@/features/feed/api'
+import { getNotificationStatistics } from '@/features'
+import { getFavoriteRecent } from '@/features/favorite/api'
 
 const Home = async () => {
-  const [{ categoryList }, { videoSwiperList }, { searchLogTop10List }, { userHomeInfo }] =
-    await Promise.all([getCategoryList(), getVideoList(), getSearchLogTop10(), getUserHomeInfo()])
+  const [
+    { categoryList },
+    { videoSwiperList },
+    { searchLogTop10List },
+    { userHomeInfo },
+    { historyRecentList },
+    { feedRecentList },
+    { notificationStatistics },
+    { favoriteRecentList },
+  ] = await Promise.all([
+    getCategoryList(),
+    getVideoList(),
+    getSearchLogTop10(),
+    getUserHomeInfo(),
+    getHistoryRecent(),
+    getFeedRecent(),
+    getNotificationStatistics(),
+    getFavoriteRecent(),
+  ])
   return (
     <>
       <header className={'relative max-h-[2560px] min-h-[64px] bg-white'}>
-        <HeaderBar userHomeInfo={userHomeInfo} searchLogTop10List={searchLogTop10List} />
+        <HeaderBar
+          favoriteRecentList={favoriteRecentList}
+          historyRecentList={historyRecentList}
+          notificationStatistics={notificationStatistics}
+          feedRecentList={feedRecentList}
+          userHomeInfo={userHomeInfo}
+          searchLogTop10List={searchLogTop10List}
+        />
         <HeaderBanner />
         <HeaderChannel categoryList={categoryList} />
         <HeaderChannelFixed />

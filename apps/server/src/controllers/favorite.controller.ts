@@ -2,12 +2,12 @@ import { RequestHandler } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import {
   FavoriteFolderList,
+  FavoriteListDTO,
   FavoriteListItem,
   FavoriteRecentList,
   PageResult,
   Result,
 } from '@mtobdvlb/shared-types'
-import { FavoriteListDTO } from '@/dtos/favorite/list.dto'
 import { FavoriteService } from '@/services/favorite.service'
 import { MESSAGE } from '@/constants'
 
