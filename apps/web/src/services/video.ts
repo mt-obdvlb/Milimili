@@ -1,6 +1,5 @@
-import { VideoListItem } from '@/types/video'
 import request from '@/lib/request'
-import { PageResult, Result } from '@mtobdvlb/shared-types'
+import { PageResult, Result, VideoListItem } from '@mtobdvlb/shared-types'
 
 export const baseURL = '/videos'
 

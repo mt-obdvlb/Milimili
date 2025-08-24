@@ -1,6 +1,5 @@
 import request from '@/lib/request'
-import { Result } from '@mtobdvlb/shared-types'
-import { HistoryListResult } from '@/types/history'
+import { HistoryList, Result } from '@mtobdvlb/shared-types'
 
 const baseURL = '/histories'
 
@@ -8,5 +7,4 @@ const API = {
   recent: '/recent',
 } as const
 
-export const historyGetRecent = () =>
-  request.get<Result<HistoryListResult>>(`${baseURL}${API.recent}`)
+export const historyGetRecent = () => request.get<Result<HistoryList>>(`${baseURL}${API.recent}`)
