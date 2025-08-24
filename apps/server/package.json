@@ -7,7 +7,7 @@
     "dev": "ts-node-dev --respawn --transpile-only --require tsconfig-paths/register src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "barrels": "barrelsby -d src --delete --recurse -l all -q -S -H --exclude routes,types"
+    "barrels": "barrelsby -d src/dtos --delete --recurse -l all -q -S -H --exclude '(routes|types)'"
   },
   "keywords": [],
   "author": "",
