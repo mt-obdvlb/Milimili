@@ -1,9 +1,8 @@
 import { Router } from 'express'
 import { authMiddleware, validatorMiddleware } from '@/middlewares'
 import { historyAdd, historyList, historyRecent } from '@/controllers/history.controller'
-import { historyAddDTO } from '@/dtos/history/add.dto'
-import { historyListDTO } from '@/dtos/history/list.dto'
 import { asyncHandler } from '@/utils'
+import { historyAddDTO, historyListDTO } from '@mtobdvlb/shared-types'
 
 const router = Router()
 

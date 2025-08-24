@@ -1,11 +1,11 @@
 import { FeedModel } from '@/models/feed.model'
-import { FeedRecentVO } from '@/vos/feed/recent.vo'
 import { FollowModel } from '@/models/follow.model'
 import { Types } from 'mongoose'
 import { IUser, IVideo } from '@/models'
+import { FeedRecentList } from '@mtobdvlb/shared-types'
 
 export const FeedService = {
-  recent: async (userId: string): Promise<FeedRecentVO> => {
+  recent: async (userId: string): Promise<FeedRecentList> => {
     const follows = await FollowModel.find({ followrId: userId }).select('followingId').lean()
     const followIds = follows.map((f) => new Types.ObjectId(f.followingId))
 

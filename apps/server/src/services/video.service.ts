@@ -1,11 +1,13 @@
 import { DanmakuModel, UserModel, VideoModel, VideoStatsModel } from '@/models'
-import { VideoListItem } from '@/vos/video/list.vo'
-import { VideoCreateDTO } from '@/dtos/video/create.dto'
 import { MESSAGE } from '@/constants'
-import { VideoAddDanmakuDTO } from '@/dtos/video/add-danmaku.dto'
 import { HttpError } from '@/utils/http-error.util'
-import { VideoGetDanmakusVO } from '@/vos/video/get-danmakus.vo'
 import { FeedModel } from '@/models/feed.model'
+import {
+  VideoAddDanmakuDTO,
+  VideoCreateDTO,
+  VideoGetDanmakusList,
+  VideoListItem,
+} from '@mtobdvlb/shared-types'
 
 export const VideoService = {
   list: async ({ page, pageSize }: { page: number; pageSize: number }) => {
@@ -89,7 +91,7 @@ export const VideoService = {
     return data.map((d) => ({
       ...d.toObject(),
       id: d._id.toString(),
-    })) as VideoGetDanmakusVO
+    })) as VideoGetDanmakusList
   },
   addDanmaku: async (body: VideoAddDanmakuDTO) => {
     const video = await VideoModel.findById(body.videoId)

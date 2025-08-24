@@ -2,7 +2,7 @@ import { Router } from 'express'
 import { authMiddleware, validatorMiddleware } from '@/middlewares'
 import { asyncHandler } from '@/utils'
 import { favoriteFolderList, favoriteList, favoriteRecent } from '@/controllers/favorite.controller'
-import { favoriteListDTO } from '@/dtos/favorite/list.dto'
+import { favoriteListDTO } from '@mtobdvlb/shared-types'
 
 const router = Router()
 

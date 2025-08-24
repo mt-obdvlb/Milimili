@@ -1,14 +1,18 @@
 import { FavoriteFolderModel, FavoriteModel } from '@/models'
-import { FavoriteFolderListVO } from '@/vos/favorite/folder-list.vo'
-import { FavoriteListDTO } from '@/dtos/favorite/list.dto'
-import { FavoriteListItem, FavoriteListVO, FavoriteRecentItem } from '@/vos/favorite/list.vo'
 import { Types } from 'mongoose'
+import {
+  FavoriteFolderList,
+  FavoriteList,
+  FavoriteListDTO,
+  FavoriteListItem,
+  FavoriteRecentItem,
+} from '@mtobdvlb/shared-types'
 
 export const FavoriteService = {
   listFolder: async (userId: string) => {
     const folders = await FavoriteFolderModel.find({ userId }).lean()
 
-    const result: FavoriteFolderListVO = await Promise.all(
+    const result: FavoriteFolderList = await Promise.all(
       folders.map(async (folder) => {
         const count = await FavoriteModel.countDocuments({ folderId: folder._id })
 
@@ -110,7 +114,7 @@ export const FavoriteService = {
           id: item.user.id?.toString() ?? '',
         },
       })),
-    } satisfies { total: number; list: FavoriteListVO }
+    } satisfies { total: number; list: FavoriteList }
   },
   listRecent: async (userId: string) => {
     const folders = await FavoriteFolderModel.find({ userId }).lean()

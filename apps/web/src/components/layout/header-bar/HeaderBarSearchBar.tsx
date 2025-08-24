@@ -6,13 +6,13 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { Command, CommandGroup, CommandItem } from '@/components/ui/command'
-import { SearchLogTop10Result } from '@/types/search-log'
 import Image from 'next/image'
+import { SearchLogTop10List } from '@mtobdvlb/shared-types'
 
 const HeaderBarSearchBar = ({
   searchLogTop10List,
 }: {
-  searchLogTop10List?: SearchLogTop10Result
+  searchLogTop10List?: SearchLogTop10List
 }) => {
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)

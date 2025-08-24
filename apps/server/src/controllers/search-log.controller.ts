@@ -1,7 +1,6 @@
 import { RequestHandler } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { Result, SearchLogTop10List } from '@mtobdvlb/shared-types'
-import { SearchLogAddDTO } from '@/dtos/search-log/add.dto'
+import { Result, SearchLogAddDTO, SearchLogTop10List } from '@mtobdvlb/shared-types'
 import { SearchLogService } from '@/services/search-log.service'
 
 export const searchLogAdd: RequestHandler<ParamsDictionary, Result, SearchLogAddDTO> = async (

@@ -10,14 +10,19 @@
     }
   },
   "scripts": {
-    "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
-    "build": "tsup src/index.ts --format esm,cjs --dts",
+    "dev": "tsup --watch",
+    "build": "tsup",
     "barrels": "barrelsby -d src --delete --recurse -l all -q -S -H"
   },
   "dependencies": {
-    "tsup": "^8.5.0"
+    "node": "^24.6.0",
+    "tsup": "^8.5.0",
+    "zod": "^4.0.5"
   },
   "devDependencies": {
-    "barrelsby": "^2.8.1"
+    "@esbuild-plugins/tsconfig-paths": "^0.1.2",
+    "barrelsby": "^2.8.1",
+    "esbuild": "^0.25.9",
+    "esbuild-plugin-tsconfig-paths": "^1.0.1"
   }
 }

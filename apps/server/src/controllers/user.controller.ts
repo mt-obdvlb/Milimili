@@ -1,8 +1,7 @@
-import { UserLoginDTO } from '@/dtos/user/login.dto'
 import { RequestHandler } from 'express'
 import { UserService } from '@/services/user.service'
 import { MESSAGE } from '@/constants'
-import { Result, UserGetInfo, UserGetInfoHome } from '@mtobdvlb/shared-types'
+import { Result, UserGetInfo, UserGetInfoHome, UserLoginDTO } from '@mtobdvlb/shared-types'
 import { ParamsDictionary } from 'express-serve-static-core'
 
 export const userLogin: RequestHandler<ParamsDictionary, Result, UserLoginDTO> = async (

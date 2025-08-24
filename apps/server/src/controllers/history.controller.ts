@@ -1,10 +1,8 @@
 import { RequestHandler } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { HistoryListDTO } from '@/dtos/history/list.dto'
-import { HistoryList, Result } from '@mtobdvlb/shared-types'
+import { HistoryAddDTO, HistoryList, HistoryListDTO, Result } from '@mtobdvlb/shared-types'
 import { MESSAGE } from '@/constants'
 import { HistoryService } from '@/services/history.service'
-import { HistoryAddDTO } from '@/dtos/history/add.dto'
 
 export const historyList: RequestHandler<
   ParamsDictionary,

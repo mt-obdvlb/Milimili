@@ -1,6 +1,6 @@
 import { z } from 'zod/v4'
 import { Types } from 'mongoose'
-import { VideoSourceType, VideoStatus } from '@mtobdvlb/shared-types'
+import { VideoSourceType, VideoStatus } from '@/api'
 
 export const videoCreateDTO = z.object({
   url: z.url(),

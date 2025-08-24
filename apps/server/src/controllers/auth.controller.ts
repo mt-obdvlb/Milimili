@@ -2,8 +2,7 @@ import { MESSAGE } from '@/constants'
 import { RequestHandler } from 'express'
 import { AuthService } from '@/services/auth.service'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { AuthRefresh, Result } from '@mtobdvlb/shared-types'
-import { AuthSendCodeDTO } from '@/dtos/auth/send-code.dto'
+import { AuthRefresh, AuthSendCodeDTO, Result } from '@mtobdvlb/shared-types'
 
 export const authRefresh: RequestHandler<ParamsDictionary, Result<AuthRefresh>> = async (
   req,

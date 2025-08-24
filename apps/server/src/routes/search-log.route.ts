@@ -2,7 +2,7 @@ import { Router } from 'express'
 import { asyncHandler } from '@/utils'
 import { searchLogAdd, searchLogTop10 } from '@/controllers/search-log.controller'
 import { validatorMiddleware } from '@/middlewares'
-import { searchLogAddDTO } from '@/dtos/search-log/add.dto'
+import { searchLogAddDTO } from '@mtobdvlb/shared-types'
 
 const router = Router()
 

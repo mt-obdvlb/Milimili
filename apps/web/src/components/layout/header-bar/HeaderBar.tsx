@@ -4,18 +4,32 @@ import React, { useEffect, useState } from 'react'
 import HeaderBarLeftEntry from '@/components/layout/header-bar/HeaderBarLeftEntry'
 import HeaderBarSearchBar from '@/components/layout/header-bar/HeaderBarSearchBar'
 import HeaderBarRightEntry from '@/components/layout/header-bar/HeaderBarRightEntry'
-import { SearchLogTop10Result } from '@/types/search-log'
 import { useWindowScroll } from 'react-use'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib'
-import { UserHomeInfoResult } from '@/types/user'
+import {
+  FavoriteRecentList,
+  FeedRecentList,
+  HistoryList,
+  NotificationStatisticsList,
+  SearchLogTop10List,
+  UserGetInfoHome,
+} from '@mtobdvlb/shared-types'
 
 const HeaderBar = ({
   searchLogTop10List,
   userHomeInfo,
+  favoriteRecentList,
+  feedRecentList,
+  historyRecentList,
+  notificationStatistics,
 }: {
-  searchLogTop10List?: SearchLogTop10Result
-  userHomeInfo?: UserHomeInfoResult
+  searchLogTop10List?: SearchLogTop10List
+  userHomeInfo?: UserGetInfoHome
+  historyRecentList?: HistoryList
+  favoriteRecentList?: FavoriteRecentList
+  notificationStatistics?: NotificationStatisticsList
+  feedRecentList?: FeedRecentList
 }) => {
   const { y } = useWindowScroll()
   const pathname = usePathname()
@@ -42,7 +56,14 @@ const HeaderBar = ({
     >
       <HeaderBarLeftEntry type={type} />
       <HeaderBarSearchBar searchLogTop10List={searchLogTop10List} />
-      <HeaderBarRightEntry userHomeInfo={userHomeInfo} type={type} />
+      <HeaderBarRightEntry
+        favoriteRecentList={favoriteRecentList}
+        feedRecentList={feedRecentList}
+        notificationStatistics={notificationStatistics}
+        historyRecentList={historyRecentList}
+        userHomeInfo={userHomeInfo}
+        type={type}
+      />
     </div>
   )
 }

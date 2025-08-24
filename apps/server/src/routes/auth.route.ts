@@ -1,8 +1,8 @@
 import { Router } from 'express'
 import { authRefresh, authSendCode } from '@/controllers/auth.controller'
 import { validatorMiddleware } from '@/middlewares'
-import { authSendCodeDTO } from '@/dtos/auth/send-code.dto'
 import { asyncHandler } from '@/utils'
+import { authSendCodeDTO } from '@mtobdvlb/shared-types'
 
 const router = Router()
 
