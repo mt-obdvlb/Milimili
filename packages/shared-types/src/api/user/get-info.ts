@@ -1,4 +1,4 @@
-export type UserGetInfoVO = {
+export type UserGetInfo = {
   name: string
   id: string
   email: string

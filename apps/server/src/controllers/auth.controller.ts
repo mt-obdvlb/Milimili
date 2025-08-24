@@ -2,10 +2,10 @@ import { MESSAGE } from '@/constants'
 import { RequestHandler } from 'express'
 import { AuthService } from '@/services/auth.service'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { AuthRefreshVO } from '@/vos/auth/refresh.vo'
-import { Result } from '@mtobdvlb/shared-types'
+import { AuthRefresh, Result } from '@mtobdvlb/shared-types'
+import { AuthSendCodeDTO } from '@/dtos/auth/send-code.dto'
 
-export const authRefresh: RequestHandler<ParamsDictionary, Result<AuthRefreshVO>> = async (
+export const authRefresh: RequestHandler<ParamsDictionary, Result<AuthRefresh>> = async (
   req,
   res
 ) => {
@@ -47,7 +47,10 @@ export const authRefresh: RequestHandler<ParamsDictionary, Result<AuthRefreshVO>
   }
 }
 
-export const authSendCode: RequestHandler = async (req, res) => {
+export const authSendCode: RequestHandler<ParamsDictionary, Result, AuthSendCodeDTO> = async (
+  req,
+  res
+) => {
   const { email } = req.body
   try {
     await AuthService.sendCode(email)

@@ -13,7 +13,7 @@ export type HistoryListItem = {
   }
 }
 
-export type HistoryListVO = {
+export type HistoryList = {
   todayList: HistoryListItem[]
   yesterdayList: HistoryListItem[]
   lastWeekList: HistoryListItem[]

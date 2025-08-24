@@ -5,15 +5,16 @@
 
 import { RequestHandler } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { Result } from '@mtobdvlb/shared-types'
-import { FeedRecentVO } from '@/vos/feed/recent.vo'
+import { FeedRecentList, Result } from '@mtobdvlb/shared-types'
 import { MESSAGE } from '@/constants'
 import { FeedService } from '@/services/feed.service'
+import { FeedListDTO } from '@/dtos/feed/list.dto'
 
-export const feedRecent: RequestHandler<ParamsDictionary, Result<FeedRecentVO>> = async (
-  req,
-  res
-) => {
+export const feedRecent: RequestHandler<
+  ParamsDictionary,
+  Result<FeedRecentList>,
+  FeedListDTO
+> = async (req, res) => {
   const userId = req.user?.id
   if (!userId)
     return res.status(401).json({

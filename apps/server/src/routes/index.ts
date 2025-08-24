@@ -1,26 +1,13 @@
-import userRoute from '@/routes/user.route'
-import { Router } from 'express'
-import authRoute from '@/routes/auth.route'
-import categoryRoute from '@/routes/category.route'
-import notificationRoute from '@/routes/notification.route'
-import videoRoute from '@/routes/video.route'
-import feedRoute from '@/routes/feed.route'
-import historyRoute from '@/routes/history.route'
-import commentRoute from '@/routes/comment.route'
-import favoriteRoute from '@/routes/favorite.route'
-import searchLogRoute from '@/routes/search-log.route'
-
-const router = Router()
-
-router.use('/auth', authRoute)
-router.use('/users', userRoute)
-router.use('/categories', categoryRoute)
-router.use('/videos', videoRoute)
-router.use('/feeds', feedRoute)
-router.use('/histories', historyRoute)
-router.use('/comments', commentRoute)
-router.use('/favorites', favoriteRoute)
-router.use('/notifications', notificationRoute)
-router.use('/search-logs', searchLogRoute)
-
-export default router
+export * from './auth.route'
+export * from './category.route'
+export * from './comment.route'
+export * from './favorite.route'
+export * from './feed.route'
+export * from './history.route'
+export * from './message.route'
+export * from './notification.route'
+export * from './search-log.route'
+export * from './search.route'
+export * from './tag.route'
+export * from './user.route'
+export * from './video.route'

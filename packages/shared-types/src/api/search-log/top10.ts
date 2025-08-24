@@ -3,4 +3,4 @@ export type SearchLogTop10Item = {
   rank: number
 }
 
-export type SearchLogTop10VO = SearchLogTop10Item[]
+export type SearchLogTop10List = SearchLogTop10Item[]

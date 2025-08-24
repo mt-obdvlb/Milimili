@@ -1,15 +1,14 @@
 import { RequestHandler } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { HistoryListDTO } from '@/dtos/history/list.dto'
-import { Result } from '@mtobdvlb/shared-types'
-import { HistoryListVO } from '@/vos/history/list.vo'
+import { HistoryList, Result } from '@mtobdvlb/shared-types'
 import { MESSAGE } from '@/constants'
 import { HistoryService } from '@/services/history.service'
 import { HistoryAddDTO } from '@/dtos/history/add.dto'
 
 export const historyList: RequestHandler<
   ParamsDictionary,
-  Result<HistoryListVO>,
+  Result<HistoryList>,
   HistoryListDTO
 > = async (req, res) => {
   const userId = req.user?.id
@@ -31,7 +30,7 @@ export const historyList: RequestHandler<
   })
 }
 
-export const historyRecent: RequestHandler<ParamsDictionary, Result<HistoryListVO>> = async (
+export const historyRecent: RequestHandler<ParamsDictionary, Result<HistoryList>> = async (
   req,
   res
 ) => {

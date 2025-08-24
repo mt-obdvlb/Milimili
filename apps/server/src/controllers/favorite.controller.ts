@@ -1,15 +1,19 @@
 import { RequestHandler } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { PageResult, Result } from '@mtobdvlb/shared-types'
+import {
+  FavoriteFolderList,
+  FavoriteListItem,
+  FavoriteRecentList,
+  PageResult,
+  Result,
+} from '@mtobdvlb/shared-types'
 import { FavoriteListDTO } from '@/dtos/favorite/list.dto'
 import { FavoriteService } from '@/services/favorite.service'
 import { MESSAGE } from '@/constants'
-import { FavoriteFolderListVO } from '@/vos/favorite/folder-list.vo'
-import { FavoriteListItem, FavoriteRecentVO } from '@/vos/favorite/list.vo'
 
 export const favoriteFolderList: RequestHandler<
   ParamsDictionary,
-  Result<FavoriteFolderListVO>
+  Result<FavoriteFolderList>
 > = async (req, res) => {
   const userId = req.user?.id
   if (!userId)
@@ -46,7 +50,7 @@ export const favoriteList: RequestHandler<
   })
 }
 
-export const favoriteRecent: RequestHandler<ParamsDictionary, Result<FavoriteRecentVO>> = async (
+export const favoriteRecent: RequestHandler<ParamsDictionary, Result<FavoriteRecentList>> = async (
   req,
   res
 ) => {
