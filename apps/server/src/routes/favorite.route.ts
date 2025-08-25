@@ -1,8 +1,13 @@
 import { Router } from 'express'
 import { authMiddleware, validatorMiddleware } from '@/middlewares'
 import { asyncHandler } from '@/utils'
-import { favoriteFolderList, favoriteList, favoriteRecent } from '@/controllers/favorite.controller'
-import { favoriteListDTO } from '@mtobdvlb/shared-types'
+import {
+  favoriteAdd,
+  favoriteFolderList,
+  favoriteList,
+  favoriteRecent,
+} from '@/controllers/favorite.controller'
+import { favoriteAddDTO, favoriteListDTO } from '@mtobdvlb/shared-types'
 
 const router = Router()
 
@@ -14,5 +19,11 @@ router.get(
   asyncHandler(favoriteList)
 )
 router.get('/recent', authMiddleware, asyncHandler(favoriteRecent))
+router.post(
+  '/',
+  authMiddleware,
+  validatorMiddleware({ body: favoriteAddDTO }),
+  asyncHandler(favoriteAdd)
+)
 
 export default router

@@ -7,8 +7,7 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from 'axios'
 import { isServer } from '@/utils'
-import { Result } from '@mtobdvlb/shared-types'
-import { AuthRefreshResult } from '@/types/auth'
+import { AuthRefresh, Result } from '@mtobdvlb/shared-types'
 
 interface RetryableAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean
@@ -126,7 +125,7 @@ const request: AxiosInstance = (() => {
 
           // 调用刷新接口
           const refreshData = await instance
-            .post<Result<AuthRefreshResult>>('/auth/refresh', {}, refreshConfig)
+            .post<Result<AuthRefresh>>('/auth/refresh', {}, refreshConfig)
             .then((r) => r.data)
 
           if (!refreshData) return Promise.reject(new Error('Refresh failed: no data returned'))
@@ -156,7 +155,16 @@ const request: AxiosInstance = (() => {
       }
 
       // 其他错误
-      if (error.response) return error.response.data
+      if (error.response) {
+        console.log(
+          (
+            error.response.data as {
+              message: string
+            }
+          )?.message
+        )
+        return error.response.data
+      }
       return Promise.reject(error)
     }
   )

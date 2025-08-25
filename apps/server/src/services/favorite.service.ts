@@ -1,12 +1,15 @@
-import { FavoriteFolderModel, FavoriteModel } from '@/models'
+import { FavoriteFolderModel, FavoriteModel, VideoModel } from '@/models'
 import { Types } from 'mongoose'
 import {
+  FavoriteAddDTO,
   FavoriteFolderList,
   FavoriteList,
   FavoriteListDTO,
   FavoriteListItem,
   FavoriteRecentItem,
 } from '@mtobdvlb/shared-types'
+import { HttpError } from '@/utils'
+import { MESSAGE } from '@/constants'
 
 export const FavoriteService = {
   listFolder: async (userId: string) => {
@@ -32,7 +35,7 @@ export const FavoriteService = {
       userId: new Types.ObjectId(userId),
     }
     if (favoriteFolderId) {
-      match.favoriteFolderId = new Types.ObjectId(favoriteFolderId)
+      match.folderId = new Types.ObjectId(favoriteFolderId)
     }
 
     const [result] = await FavoriteModel.aggregate<{
@@ -136,5 +139,17 @@ export const FavoriteService = {
         return item
       })
     )
+  },
+  add: async ({ userId, videoId, folderId }: FavoriteAddDTO) => {
+    console.log(userId, videoId, folderId)
+    const video = await VideoModel.findById(videoId)
+    const folder = await FavoriteFolderModel.findById(folderId)
+    if (!video) throw new HttpError(400, MESSAGE.VIDEO_NOT_FOUND)
+    if (!folder) throw new HttpError(400, MESSAGE.FAVORITE_FOLDER_NOT_FOUND)
+    await FavoriteModel.create({
+      userId,
+      videoId,
+      folderId,
+    })
   },
 }

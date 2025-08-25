@@ -10,4 +10,5 @@ export const MESSAGE = {
   PASSWORD_ERROR: '密码错误',
   INVALID_CODE: '验证码错误',
   VIDEO_NOT_FOUND: '视频不存在',
+  FAVORITE_FOLDER_NOT_FOUND: '收藏夹不存在',
 }

@@ -8,11 +8,11 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu'
-import HeaderBarLinkItemWithBounce from '@/components/layout/header-bar/HeaderBarLinkItemWithBounce'
 import React from 'react'
 import { cn, toastBuilding } from '@/lib'
 import Link from 'next/link'
 import Image from 'next/image'
+import HeaderBarLinkItemWithBounce from '@/components/layout/header-bar/item/HeaderBarLinkItemWithBounce'
 
 const headerBarLeftLinks = ['番剧', '直播', '游戏中心', '会员购', '漫画', '赛事']
 
