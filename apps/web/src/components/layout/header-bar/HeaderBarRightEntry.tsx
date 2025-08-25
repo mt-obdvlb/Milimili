@@ -1,6 +1,5 @@
 'use client'
 
-import HeaderBarHoverCardWithBounce from '@/components/layout/header-bar/HeaderBarHoverCardWithBounce'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
 import { openNewTable } from '@/utils/openNewTable'
 import Link from 'next/link'
@@ -14,10 +13,19 @@ import {
   NotificationStatisticsList,
   UserGetInfoHome,
 } from '@mtobdvlb/shared-types'
+import { Badge, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components'
+import HeaderBarHoverCardWithBounce from '@/components/layout/header-bar/item/HeaderBarHoverCardWithBounce'
+import HeaderBarRightEntryHistoryVideoItem from '@/components/layout/header-bar/item/HeaderBarRightEntryHistoryVideoItem'
+import HeaderBarRightEntryFavoriteVideoItem from '@/components/layout/header-bar/item/HeaderBarRightEntryFavoriteVideoItem'
+import HeaderBarRightEntryFeedVideoItem from '@/components/layout/header-bar/item/HeaderBarRightEntryFeedVideoItem'
 
 const HeaderBarRightEntry = ({
   type,
   userHomeInfo,
+  favoriteRecentList,
+  feedRecentList,
+  historyRecentList,
+  notificationStatistics,
 }: {
   type: 'first' | 'second'
   userHomeInfo?: UserGetInfoHome
@@ -27,6 +35,14 @@ const HeaderBarRightEntry = ({
   feedRecentList?: FeedRecentList
 }) => {
   const color = type === 'first' ? 'text-white' : 'text-text1'
+
+  const nonZeroNotifications = notificationStatistics?.filter((item) => item.count !== 0) ?? []
+  const hasRecentList = !!(
+    (historyRecentList?.todayList.length ?? 0) +
+    (historyRecentList?.yesterdayList.length ?? 0) +
+    (historyRecentList?.lastWeekList.length ?? 0) +
+    (historyRecentList?.olderList.length ?? 0)
+  )
 
   return (
     <div className={cn('ml-[10px] flex items-center', color)}>
@@ -62,6 +78,7 @@ const HeaderBarRightEntry = ({
       ></HeaderBarHoverCardWithBounce>
       <HeaderBarHoverCardWithBounce
         title={'消息'}
+        badge={!!nonZeroNotifications.length}
         Svg={
           <svg
             width='20'
@@ -80,7 +97,61 @@ const HeaderBarRightEntry = ({
             ></path>
           </svg>
         }
-      ></HeaderBarHoverCardWithBounce>
+      >
+        <div className={'w-[142px] overflow-hidden'}>
+          <div className={'flex flex-col py-3'}>
+            {[
+              {
+                url: 'reply',
+                name: '回复我的',
+                number: notificationStatistics?.find((item) => item.type === 'reply')?.count ?? 0,
+              },
+              {
+                url: 'mention',
+                name: '@我的',
+                number: notificationStatistics?.find((item) => item.type === 'mention')?.count ?? 0,
+              },
+              {
+                url: 'like',
+                name: '收到的赞',
+                number: notificationStatistics?.find((item) => item.type === 'like')?.count ?? 0,
+              },
+              {
+                url: 'system',
+                name: '系统消息',
+                number: notificationStatistics?.find((item) => item.type === 'system')?.count ?? 0,
+              },
+              {
+                url: 'private_message',
+                name: '我的消息',
+                number:
+                  notificationStatistics?.find((item) => item.type === 'private_message')?.count ??
+                  0,
+              },
+            ].map((item) => (
+              <Link
+                key={item.url}
+                className={
+                  'text-text2 hover:bg-graph_bg_thick relative flex cursor-pointer items-center py-2.5 pl-[27px] text-left text-sm transition-colors duration-300'
+                }
+                href={`/message/${item.url}`}
+              >
+                {item.name}
+                {!!item.number && (
+                  <Badge
+                    variant={'destructive'}
+                    className={cn(
+                      'absolute right-[17px] m-0 rounded-[8px] bg-[#fa5a57] p-0 px-[5px] text-xs leading-4 text-white'
+                    )}
+                  >
+                    {item.number > 99 ? '99+' : item.number}
+                  </Badge>
+                )}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </HeaderBarHoverCardWithBounce>
       <HeaderBarHoverCardWithBounce
         title={'动态'}
         Svg={
@@ -129,8 +200,70 @@ const HeaderBarRightEntry = ({
             </defs>
           </svg>
         }
-      ></HeaderBarHoverCardWithBounce>
+      >
+        <div
+          className={
+            'max-h-[540px] min-h-[172px] w-[370px] overflow-y-auto overscroll-none text-left'
+          }
+        >
+          {feedRecentList?.length ? (
+            <>
+              <div>
+                <div className={'flex items-center justify-between p-5 pb-2.5'}>
+                  <Link href={'/feed'} className={'text-[16px] leading-[22px] font-semibold'}>
+                    动态
+                  </Link>
+                </div>
+                <div>
+                  <div
+                    className={
+                      'text-text3 relative my-1.5 flex items-center justify-center px-5 text-xs'
+                    }
+                  >
+                    <div
+                      className={'border-t-line_regular absolute top-2 left-0 w-full border-t'}
+                    ></div>
+
+                    <div className={'bg-bg1 z-1 px-2.5'}>历史动态</div>
+                  </div>
+                  {feedRecentList?.map((item) => (
+                    <HeaderBarRightEntryFeedVideoItem key={item.id} feed={item} />
+                  ))}
+                </div>
+              </div>
+              <div>
+                <Link
+                  href={'/feeds'}
+                  className={
+                    'bg-bg2 text-text2 mx-5 my-4 flex h-9 w-[330px] cursor-pointer items-center justify-center rounded-[4px] text-sm leading-9 transition-colors duration-300'
+                  }
+                >
+                  查看全部动态
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    viewBox='0 0 12 12'
+                    width='12'
+                    height='12'
+                    className={'size-3 overflow-hidden'}
+                  >
+                    <path
+                      d='M3.9179099999999973 1.167885C3.527364999999997 1.5584099999999994 3.527364999999997 2.1915700000000005 3.9179099999999973 2.582115L7.600900000000004 6.2651C7.454399999999996 6.11875 7.454399999999996 5.88125 7.600900000000004 5.7349L3.9179099999999973 9.417949999999996C3.527364999999997 9.808399999999995 3.527364999999997 10.441600000000005 3.9179099999999973 10.832050000000004C4.308409999999999 11.2226 4.941574999999998 11.2226 5.332094999999999 10.832050000000004L9.015099999999997 7.1491C9.64975 6.514450000000001 9.64975 5.485549999999999 9.015099999999997 4.8509L5.332094999999999 1.167885C4.941574999999998 0.7773649999999999 4.308409999999999 0.7773649999999999 3.9179099999999973 1.167885z'
+                      fill='currentColor'
+                    ></path>
+                  </svg>
+                </Link>
+              </div>
+            </>
+          ) : (
+            <div className={'text-text3 flex h-100 w-full items-center justify-center'}>
+              还没有什么动态呢~
+            </div>
+          )}
+        </div>
+      </HeaderBarHoverCardWithBounce>
       <HeaderBarHoverCardWithBounce
+        align={'end'}
+        alignOffset={-150}
         title={'收藏'}
         Svg={
           <svg
@@ -158,7 +291,70 @@ const HeaderBarRightEntry = ({
             ></path>
           </svg>
         }
-      ></HeaderBarHoverCardWithBounce>
+      >
+        <Tabs
+          defaultValue={favoriteRecentList?.at(0)?.folderId}
+          className={'flex w-[520px] flex-row text-left'}
+        >
+          <TabsList
+            className={
+              'border-r-line_regular flex h-[540px] w-[150px] shrink-0 flex-col overflow-y-auto overscroll-none border-r px-0 py-3'
+            }
+          >
+            {favoriteRecentList?.map((item) => (
+              <TabsTrigger
+                className={
+                  'text-text1 data-[state=active]:bg-brand_blue flex h-[46px] cursor-pointer items-center justify-between px-4 text-sm leading-[22px] transition-colors duration-300 data-[state=active]:text-white'
+                }
+                value={item.folderId}
+                key={item.folderId}
+              >
+                <span
+                  className={'w-[85px] overflow-hidden font-medium text-ellipsis whitespace-nowrap'}
+                >
+                  {item.folderName}
+                </span>
+                <span className={'text-text3 text-xs leading-5 in-data-[state=active]:text-white'}>
+                  {item.list.length}
+                </span>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          {favoriteRecentList?.map((item) => (
+            <TabsContent
+              key={item.folderId}
+              value={item.folderId}
+              className={'relative h-[540px] flex-1 overflow-hidden rounded-[8px]'}
+            >
+              {item.list.length ? (
+                <>
+                  <div className={'h-[493px] overflow-y-auto overscroll-none py-3'}>
+                    {item.list.map((item) => (
+                      <HeaderBarRightEntryFavoriteVideoItem key={item.id} favorite={item} />
+                    ))}
+                  </div>
+                  <div
+                    className={
+                      'border-bg3 absolute bottom-0 flex w-full items-center justify-around border'
+                    }
+                  >
+                    <Link
+                      href={'/favorite'}
+                      className={'text-text1 h-[45px] flex-1 text-center text-sm leading-[45px]'}
+                    >
+                      查看全部
+                    </Link>
+                  </div>
+                </>
+              ) : (
+                <div className={'text-text3 flex h-100 items-center justify-center text-sm'}>
+                  该收藏夹还没有视频哦~
+                </div>
+              )}
+            </TabsContent>
+          ))}
+        </Tabs>
+      </HeaderBarHoverCardWithBounce>
       <HeaderBarHoverCardWithBounce
         title={'历史'}
         Svg={
@@ -189,7 +385,74 @@ const HeaderBarRightEntry = ({
             ></path>
           </svg>
         }
-      ></HeaderBarHoverCardWithBounce>
+      >
+        <Tabs defaultValue={'video'} className={'h-[540px] w-[370px] bg-transparent'}>
+          <TabsList
+            defaultValue={'video'}
+            className={
+              'border-b-line_regular m-0 flex h-auto w-full items-center justify-between rounded-none border-b border-none bg-transparent p-0'
+            }
+          >
+            <TabsTrigger
+              className={
+                'data-[state=active]:border-b-brand_blue data-[state=active]:text-brand_blue m-0 block w-full flex-1 cursor-pointer rounded-none border-0 border-b-[3px] bg-transparent p-0 py-[15px] text-center text-sm data-[state=active]:border-b-[3px] data-[state=active]:bg-transparent'
+              }
+              value={'video'}
+            >
+              视频
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent
+            className={'m-0 h-120 overflow-y-auto overscroll-none p-0 text-left'}
+            value={'video'}
+          >
+            {!hasRecentList && (
+              <div className={'text-text3 flex h-100 items-center justify-center text-sm'}>
+                好像最近没有看过视频呢~
+              </div>
+            )}
+
+            {[
+              {
+                name: '今天',
+                list: historyRecentList?.todayList ?? [],
+              },
+              {
+                name: '昨天',
+                list: historyRecentList?.yesterdayList ?? [],
+              },
+              {
+                name: '最近7天',
+                list: historyRecentList?.lastWeekList ?? [],
+              },
+              {
+                name: '更早',
+                list: historyRecentList?.olderList ?? [],
+              },
+            ].map((item) => (
+              <div key={item.name}>
+                {!!item.list.length && (
+                  <p className={'text-text1 mt-3 mb-[5px] px-5 text-sm leading-4 font-medium'}>
+                    {item.name}
+                  </p>
+                )}
+                {item.list.map((history) => (
+                  <HeaderBarRightEntryHistoryVideoItem history={history} key={history.video.id} />
+                ))}
+              </div>
+            ))}
+            <Link
+              target={'_blank'}
+              href={'/history'}
+              className={
+                'bg-bg2 text-text2 hover:text-text1 mx-auto my-4 block h-9 w-[330px] cursor-pointer rounded-[8px] text-center text-sm leading-9 transition-colors duration-300'
+              }
+            >
+              查看全部
+            </Link>
+          </TabsContent>
+        </Tabs>
+      </HeaderBarHoverCardWithBounce>
 
       <HeaderBarHoverCardWithBounce
         hidden

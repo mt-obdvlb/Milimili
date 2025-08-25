@@ -1,4 +1,4 @@
-import { NotificationType } from './base'
+import { NotificationType } from '@/api'
 
 export type NotificationStatisticsItem = {
   type: NotificationType

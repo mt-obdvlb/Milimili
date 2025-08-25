@@ -8,7 +8,7 @@ export const FeedService = {
   recent: async (userId: string): Promise<FeedRecentList> => {
     const follows = await FollowModel.find({ followrId: userId }).select('followingId').lean()
     const followIds = follows.map((f) => new Types.ObjectId(f.followingId))
-
+    followIds.push(new Types.ObjectId(userId))
     if (followIds.length === 0) return []
 
     const feeds = await FeedModel.find({

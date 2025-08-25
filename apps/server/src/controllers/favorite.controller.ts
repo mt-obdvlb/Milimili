@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import {
+  FavoriteAddDTO,
   FavoriteFolderList,
   FavoriteListDTO,
   FavoriteListItem,
@@ -64,5 +65,22 @@ export const favoriteRecent: RequestHandler<ParamsDictionary, Result<FavoriteRec
   return res.status(200).json({
     code: 0,
     data,
+  })
+}
+
+export const favoriteAdd: RequestHandler<ParamsDictionary, Result, FavoriteAddDTO> = async (
+  req,
+  res
+) => {
+  if (!req.user?.id)
+    return res.status(401).json({
+      code: 401,
+      message: MESSAGE.AUTH_ERROR,
+    })
+  req.body.userId = req.user.id
+  console.log(req.body)
+  await FavoriteService.add(req.body)
+  return res.status(200).json({
+    code: 0,
   })
 }

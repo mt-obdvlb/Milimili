@@ -1,4 +1,5 @@
-import { VideoListItem } from '@/types/video'
+'use client'
+
 import Link from 'next/link'
 import dayjs from 'dayjs'
 import { cn } from '@/lib'
@@ -8,6 +9,7 @@ import MainVideoPlayer from '@/features/home/components/main/MainVideoPlayer'
 import { useVideoCheck } from '@/hooks/useVideoCheck'
 import Image from 'next/image'
 import MainVideoSkeleton from '@/features/home/components/main/MainVideoSkeleton'
+import { VideoListItem } from '@mtobdvlb/shared-types'
 
 const MainVideoItem = ({ video, margin }: { video: VideoListItem; margin: boolean }) => {
   const [time, setTime] = useState(0)

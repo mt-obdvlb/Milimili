@@ -8,6 +8,7 @@ export type VideoListItem = {
   username: string
   publishedAt: string
   userId: string
+  url: string
 }
 
 export type VideoList = VideoListItem[]

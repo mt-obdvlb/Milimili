@@ -1,8 +1,10 @@
-import { DanmakuGetItem } from '@/types/danmaku'
+'use client'
+
 import { useEffect, useRef, useState } from 'react'
 import { cn } from '@/lib'
+import { VideoGetDanmakusItem } from '@mtobdvlb/shared-types'
 
-const MainVideoPlayerDanmakuItem = ({ danmaku }: { danmaku: DanmakuGetItem }) => {
+const MainVideoPlayerDanmakuItem = ({ danmaku }: { danmaku: VideoGetDanmakusItem }) => {
   const elRef = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(true)
 
