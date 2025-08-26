@@ -6,10 +6,18 @@ import { cn } from '@/lib'
 import React, { useState } from 'react'
 import Image from 'next/image'
 import { Separator } from '@/components/ui/separator'
-import { UserHomeInfoResult } from '@/types/user'
+import { useUserLogout } from '@/features'
+import { UserGetInfoHome } from '@mtobdvlb/shared-types'
 
-const HeaderBarRightEntryAvatar = ({ userHomeInfo }: { userHomeInfo?: UserHomeInfoResult }) => {
+const HeaderBarRightEntryAvatar = ({ userHomeInfo }: { userHomeInfo?: UserGetInfoHome }) => {
   const [isOpen, setIsOpen] = useState(false)
+
+  const { logout } = useUserLogout()
+
+  const handleLogout = async () => {
+    await logout()
+    window.location.reload()
+  }
 
   return (
     <HoverCard openDelay={150} closeDelay={150} onOpenChange={(open) => setIsOpen(open)}>
@@ -207,6 +215,7 @@ const HeaderBarRightEntryAvatar = ({ userHomeInfo }: { userHomeInfo?: UserHomeIn
               className={
                 'text-text2 hover:bg-graph_bg_thick flex cursor-pointer items-center rounded-[8px] px-3.5 py-2.5 font-medium transition-colors duration-300'
               }
+              onClick={handleLogout}
             >
               <svg
                 width='18'

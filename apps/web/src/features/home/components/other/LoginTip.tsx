@@ -64,7 +64,7 @@ const LoginTip = () => {
               xmlns='http://www.w3.org/2000/svg'
               className='absolute bottom-[23px] left-7.5 z-1 h-[58px] w-[50px]'
             >
-              <g clip-path='url(#clip0_5121_279027)'>
+              <g clipPath='url(#clip0_5121_279027)'>
                 <path
                   d='M38.1783 59.2421C39.0604 58.2498 39.6183 57.4039 39.9474 56.8345L42.4835 58.5032L45.3289 61.031L41.7215 65.091L38.8859 62.5698L36.3828 60.9306C36.814 60.618 37.4196 60.0963 38.1799 59.2421H38.1783Z'
                   fill='white'

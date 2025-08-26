@@ -6,6 +6,7 @@ import path from 'path'
 const ATTR_MAP: Record<string, string> = {
   'fill-rule': 'fillRule',
   'clip-rule': 'clipRule',
+  'clip-path': 'clipPath',
   'stroke-width': 'strokeWidth',
   'stroke-linecap': 'strokeLinecap',
   'stroke-linejoin': 'strokeLinejoin',

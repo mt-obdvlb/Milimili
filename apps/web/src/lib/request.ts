@@ -128,11 +128,9 @@ const request: AxiosInstance = (() => {
             .post<Result<AuthRefresh>>('/auth/refresh', {}, refreshConfig)
             .then((r) => r.data)
 
-          if (!refreshData) return Promise.reject(new Error('Refresh failed: no data returned'))
-
           const newCookieHeader = [
-            refreshData.accessToken ? `access_token=${refreshData.accessToken}` : '',
-            refreshData.refreshToken ? `refresh_token=${refreshData.refreshToken}` : '',
+            refreshData?.accessToken ? `access_token=${refreshData.accessToken}` : '',
+            refreshData?.refreshToken ? `refresh_token=${refreshData.refreshToken}` : '',
           ]
             .filter(Boolean)
             .join('; ')

@@ -48,7 +48,7 @@ const Home = async () => {
         />
         <HeaderBanner />
         <HeaderChannel categoryList={categoryList} />
-        <HeaderChannelFixed />
+        <HeaderChannelFixed categoryList={categoryList} />
       </header>
       <main className={'max-w-[calc(1920px+2*60px)] px-[60px] text-sm'}>
         <div className={'text-text1'}>
