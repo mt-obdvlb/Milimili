@@ -135,7 +135,6 @@
   bottom: auto !important;
   transform: translate(-50%, -50%) !important;
   pointer-events: none;
-  z-index: 9999;
   background-color: rgba(0, 0, 0, 0.86) !important;
   color: #fff !important;
   border: none !important;
@@ -147,7 +146,7 @@
   max-width: min(420px, calc(100vw - 32px));
   margin: 0 auto !important;
   width: auto !important;
-  
+  z-index: 10000000 !important;
 }
 
 

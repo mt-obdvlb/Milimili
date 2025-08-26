@@ -44,26 +44,6 @@ const LoginModelCode = ({
 
   const { label, btnWrap, btnPrimary, input, item } = formStyles
 
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
-    const { error, success } = await schema.safeParseAsync(data)
-    if (!success) {
-      toast(error.message)
-      return
-    }
-    const res = await login(data)
-    toast(res.message ?? '')
-    window.location.reload()
-  }
-
-  const onError: SubmitErrorHandler<FormData> = (errors) => {
-    toast(
-      Object.values(errors)
-        .map((error) => error?.message)
-        .filter(Boolean)
-        .join(',')
-    )
-  }
-
   // 发送验证码
   const handleSendCode = async () => {
     const email = form.getValues('email')
@@ -87,6 +67,26 @@ const LoginModelCode = ({
 
   const emailValue = form.watch('email')
   const emailValid = z.email().safeParse(emailValue).success
+  const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
+    const { error, success } = await schema.safeParseAsync(data)
+    if (!success) {
+      toast(error.message)
+      return
+    }
+    const res = await login(data)
+    toast(res.message ?? '')
+    if (res.code) return
+    window.location.reload()
+  }
+
+  const onError: SubmitErrorHandler<FormData> = (errors) => {
+    toast(
+      Object.values(errors)
+        .map((error) => error?.message)
+        .filter(Boolean)
+        .join(',')
+    )
+  }
 
   return (
     <Form {...form}>
