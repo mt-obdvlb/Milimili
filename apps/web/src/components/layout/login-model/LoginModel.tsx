@@ -38,6 +38,7 @@ const LoginModel = () => {
     <Dialog open={uiState.loginModel}>
       <DialogContent showCloseButton={false} className={'m-0 h-auto min-h-auto w-auto p-0'}>
         <DialogTitle hidden></DialogTitle>
+
         <div
           className={cn(
             `fixed top-1/2 left-1/2 box-border min-h-[430px] w-[820px] -translate-x-1/2 -translate-y-1/2 rounded-[8px] bg-[#fff] bg-[url('/images/login-model-left.png'),url('/images/login-model-right.png')] bg-[length:14%] bg-position-[0_100%,100%_100%] bg-no-repeat p-[52px_65px_29px_92px] select-none`,
@@ -45,6 +46,12 @@ const LoginModel = () => {
               "bg-[url('/images/login-model-left-hd.png'),url('/images/login-model-right-hd.png')]"
           )}
         >
+          <div
+            onClick={() => uiState.setLoginModel(false)}
+            className={
+              "absolute top-5 right-5 z-2 size-[32px] cursor-pointer bg-[url('/svgs/x.svg')] bg-position-[100%_100%]"
+            }
+          ></div>
           <div className={'flex w-full flex-col items-center'}>
             <Tabs value={tabsValue} className={'w-[400px] bg-transparent'}>
               <TabsList
