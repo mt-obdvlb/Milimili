@@ -9,7 +9,7 @@ import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { useAuthSendCode } from '@/features/auth/api'
 import { useUserLogin } from '@/features/user/api'
 
@@ -20,7 +20,13 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
-const LoginModelCode = ({ formStyles }: { formStyles: LoginModelFormStyles }) => {
+const LoginModelCode = ({
+  formStyles,
+  setPasswordFocus,
+}: {
+  formStyles: LoginModelFormStyles
+  setPasswordFocus: Dispatch<SetStateAction<boolean>>
+}) => {
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -86,7 +92,6 @@ const LoginModelCode = ({ formStyles }: { formStyles: LoginModelFormStyles }) =>
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit, onError)}>
         <div className='h-[90px] w-full rounded-[8px] border border-[#e3e5e7] leading-5 text-[#212121]'>
-          {/* 邮箱 */}
           <FormField
             control={form.control}
             name='email'
@@ -114,7 +119,6 @@ const LoginModelCode = ({ formStyles }: { formStyles: LoginModelFormStyles }) =>
 
           <Separator className='my-0' />
 
-          {/* 验证码 */}
           <FormField
             control={form.control}
             name='code'
@@ -122,7 +126,13 @@ const LoginModelCode = ({ formStyles }: { formStyles: LoginModelFormStyles }) =>
               <FormItem className={item()}>
                 <FormLabel className={label()}>验证码</FormLabel>
                 <FormControl>
-                  <Input {...field} className={input()} placeholder='请输入验证码' />
+                  <Input
+                    {...field}
+                    className={input()}
+                    placeholder='请输入验证码'
+                    onBlur={() => setPasswordFocus(false)}
+                    onFocus={() => setPasswordFocus(true)}
+                  />
                 </FormControl>
               </FormItem>
             )}

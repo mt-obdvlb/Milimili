@@ -18,6 +18,7 @@ import HeaderBarHoverCardWithBounce from '@/components/layout/header-bar/item/He
 import HeaderBarRightEntryHistoryVideoItem from '@/components/layout/header-bar/item/HeaderBarRightEntryHistoryVideoItem'
 import HeaderBarRightEntryFavoriteVideoItem from '@/components/layout/header-bar/item/HeaderBarRightEntryFavoriteVideoItem'
 import HeaderBarRightEntryFeedVideoItem from '@/components/layout/header-bar/item/HeaderBarRightEntryFeedVideoItem'
+import HeaderBarRightEntryAvatarNoLogin from '@/components/layout/header-bar/HeaderBarRightEntryAvatarNoLogin'
 
 const HeaderBarRightEntry = ({
   type,
@@ -46,7 +47,12 @@ const HeaderBarRightEntry = ({
 
   return (
     <div className={cn('ml-[10px] flex items-center', color)}>
-      <HeaderBarRightEntryAvatar userHomeInfo={userHomeInfo} />
+      {userHomeInfo ? (
+        <HeaderBarRightEntryAvatar userHomeInfo={userHomeInfo} />
+      ) : (
+        <HeaderBarRightEntryAvatarNoLogin />
+      )}
+
       <HeaderBarHoverCardWithBounce
         hidden
         building
