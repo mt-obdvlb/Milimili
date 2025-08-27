@@ -231,6 +231,9 @@ importers:
       cmdk:
         specifier: ^1.1.1
         version: 1.1.1(@types/react-dom@19.1.1)(@types/react@19.1.0)(react-dom@19.1.0)(react@19.1.0)
+      comment-core-library:
+        specifier: ^0.11.1
+        version: 0.11.1
       dayjs:
         specifier: ^1.11.13
         version: 1.11.13
@@ -3514,6 +3517,10 @@ packages:
     requiresBuild: true
     dev: false
     optional: true
+
+  /comment-core-library@0.11.1:
+    resolution: {integrity: sha512-EgUR2zZjAHJO6rue+7sTOy+kYdF2M9hALi+U0Dm4mzmyTYz/E82CPEsi17DMjnuOox0CbBoPUS/QzsXHFPnUWw==}
+    dev: false
 
   /concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}

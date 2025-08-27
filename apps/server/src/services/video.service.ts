@@ -79,8 +79,9 @@ export const VideoService = {
     })
   },
   getDanmakus: async (videoId: string) => {
+    console.log(videoId)
     const data = await DanmakuModel.find(
-      { videoId },
+      {},
       {
         content: 1,
         time: 1,
