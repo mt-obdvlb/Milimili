@@ -12,17 +12,11 @@ import {
 export const VideoService = {
   list: async ({ page, pageSize }: { page: number; pageSize: number }) => {
     console.log(page, pageSize)
-    const videoIds = await VideoModel.find({ isOpen: true }, { _id: 1 }).lean()
-    const total = videoIds.length
-    if (total === 0) return []
 
-    const idsToFetch = Array.from({ length: pageSize }, (_, i) => {
-      const index = (page * pageSize + i) % total
-      return videoIds[index]!._id
-    })
-
-    const videos = await VideoModel.aggregate<VideoListItem>([
-      { $match: { _id: { $in: idsToFetch } } },
+    // 直接用 $sample 随机取 pageSize 个视频
+    return VideoModel.aggregate<VideoListItem>([
+      { $match: { isOpen: true } },
+      { $sample: { size: pageSize } }, // 随机抽取
       {
         $lookup: {
           from: 'users',
@@ -40,9 +34,7 @@ export const VideoService = {
           as: 'videostat',
         },
       },
-      {
-        $unwind: '$videostat',
-      },
+      { $unwind: '$videostat' },
       {
         $project: {
           _id: 0,
@@ -59,9 +51,6 @@ export const VideoService = {
         },
       },
     ])
-
-    const videoMap = new Map(videos.map((v) => [v.id, v]))
-    return idsToFetch.map((id) => videoMap.get(id.toString())!).filter(Boolean)
   },
   create: async (body: VideoCreateDTO, userId: string) => {
     const user = await UserModel.findById(userId)
@@ -79,20 +68,44 @@ export const VideoService = {
     })
   },
   getDanmakus: async (videoId: string) => {
-    console.log(videoId)
+    const video = await VideoModel.findById(videoId, { time: 1 }).lean()
+    if (!video) return []
+
     const data = await DanmakuModel.find(
       {},
       {
         content: 1,
-        time: 1,
         position: 1,
         color: 1,
       }
-    )
-    return data.map((d) => ({
-      ...d.toObject(),
-      id: d._id.toString(),
-    })) as VideoGetDanmakusList
+    ).lean()
+
+    const danmakus: VideoGetDanmakusList = []
+
+    // 先把弹幕内容打平，保证至少能循环使用
+    const baseDanmakus = data.map((d) => ({
+      content: d.content!,
+      position: d.position!,
+      color: d.color!,
+    }))
+
+    const interval = 5 // 每 5 秒
+    const countPerInterval = 5 // 每个区间至少 5 条
+
+    const totalIntervals = Math.ceil(video.time / interval)
+
+    for (let i = 0; i < totalIntervals; i++) {
+      for (let j = 0; j < countPerInterval; j++) {
+        const danmaku = baseDanmakus[Math.floor(Math.random() * baseDanmakus.length)]
+        danmakus.push({
+          ...danmaku!,
+          time: Math.floor(Math.random() * interval) + i * interval,
+          id: crypto.randomUUID(),
+        })
+      }
+    }
+
+    return danmakus
   },
   addDanmaku: async (body: VideoAddDanmakuDTO) => {
     const video = await VideoModel.findById(body.videoId)

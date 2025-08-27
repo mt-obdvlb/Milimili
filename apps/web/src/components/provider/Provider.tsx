@@ -5,11 +5,11 @@ import { SocketProvider } from '@/components/provider/SocketProvider'
 
 const Provider = ({ children }: { children: React.ReactNode }) => {
   return (
-    <SocketProvider>
-      <QueryProvider>
+    <QueryProvider>
+      <SocketProvider>
         <ThemeProvider>{children}</ThemeProvider>
-      </QueryProvider>
-    </SocketProvider>
+      </SocketProvider>
+    </QueryProvider>
   )
 }
 
