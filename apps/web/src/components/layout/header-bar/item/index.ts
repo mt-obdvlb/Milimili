@@ -1,4 +1,6 @@
 export * from './HeaderBarHoverCardWithBounce'
 export * from './HeaderBarLinkItemWithBounce'
 export * from './HeaderBarRightEntryFavoriteVideoItem'
+export * from './HeaderBarRightEntryFeedVideoItem'
 export * from './HeaderBarRightEntryHistoryVideoItem'
+export * from './HeaderBarRightEntryNoLoginItem'
