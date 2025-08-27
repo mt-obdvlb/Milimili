@@ -113,7 +113,7 @@ const MainVideoPlayer = ({ video, hover, setTime, time: currentTime }: MainVideo
       text: item.content,
       mode: item.position === 'scroll' ? 1 : item.position === 'top' ? 5 : 4,
       stime: item.time,
-      size: 12,
+      size: 16,
       color: hexToNumber(item.color || '#ffffff'),
       left: containerWidth, // 滚动弹幕需要
       align: item.position === 'scroll' ? undefined : 'center',
