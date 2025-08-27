@@ -50,6 +50,7 @@ const MainVideoPlayer = ({ video, hover, setTime, time: currentTime }: MainVideo
       if (!ref.current) return null
       const cm = new window.CommentManager(ref.current)
       cm.init()
+      cm.options.global.scale = 1.5
       return cm
     }
 
