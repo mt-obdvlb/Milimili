@@ -10,12 +10,12 @@ export const getVideoList = async () => {
 
 export const useVideoList = () => {
   const { data: videoRecommendList } = useQuery({
-    queryKey: ['videoRecommendList'],
+    queryKey: ['video', 'recommend'],
     queryFn: () => videoList(1, 11),
   })
 
   const { data: videoRandomList, fetchNextPage } = useInfiniteQuery({
-    queryKey: ['videoRandomList'],
+    queryKey: ['video'],
     queryFn: ({ pageParam = 1 }) => videoList(pageParam as number, 10),
     getNextPageParam: (_lastPage, allPages) => allPages.length + 1,
     initialPageParam: 1,

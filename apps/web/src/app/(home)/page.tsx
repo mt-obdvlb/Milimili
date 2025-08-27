@@ -8,6 +8,7 @@ import MainVideoList from '@/features/home/components/main/MainVideoList'
 import { getVideoList } from '@/features/video/api'
 import LoginTip from '@/features/home/components/other/LoginTip'
 import HeaderBarWrapper from '@/components/layout/header-bar/HeaderBarWrapper'
+import PaletteButton from '@/features/home/components/other/PaletteButton'
 
 const Home = async () => {
   const [{ categoryList }, { videoSwiperList }] = await Promise.all([
@@ -38,6 +39,7 @@ const Home = async () => {
         </div>
       </main>
       <LoginTip />
+      <PaletteButton />
     </>
   )
 }

@@ -27,7 +27,12 @@ const danmakuSchema = new Schema<IDanmaku>(
       ref: 'User',
       required: true,
     },
-    content: { type: String, required: true, trim: true },
+    content: {
+      type: String,
+      required: true,
+      trim: true,
+      default: '',
+    },
     color: {
       type: String,
       default: '#FFFFFF',
