@@ -4,5 +4,5 @@ import { io } from '@/server'
 export const pushNewHistory = (userId: string) => {
   const socketId = getSocketIdByUserId(userId)
   if (!socketId) return
-  io.to(socketId).emit('new_history')
+  io.to(socketId).emit('new_favorite')
 }

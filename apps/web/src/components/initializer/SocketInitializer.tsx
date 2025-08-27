@@ -34,7 +34,7 @@ export const SocketInitializer = () => {
   useEffect(() => {
     if (!socket) return
     socket.on('new_notification', async () => {
-      await queryClient.invalidateQueries({ queryKey: ['notification', 'recent'] })
+      await queryClient.invalidateQueries({ queryKey: ['notification', 'statistics'] })
     })
     socket.on('new_history', async () => {
       await queryClient.invalidateQueries({ queryKey: ['history', 'recent'] })
@@ -42,10 +42,14 @@ export const SocketInitializer = () => {
     socket.on('new_favorite', async () => {
       await queryClient.invalidateQueries({ queryKey: ['favorite', 'recent'] })
     })
+    socket.on('new_feed', async () => {
+      await queryClient.invalidateQueries({ queryKey: ['feed', 'recent'] })
+    })
     return () => {
       socket.off('new_notification')
       socket.off('new_history')
       socket.off('new_favorite')
+      socket.off('new_feed')
     }
   }, [socket, queryClient])
 
