@@ -1,6 +1,8 @@
 import { createStore, type StoreApi } from 'zustand/vanilla'
 import { useStore } from 'zustand'
-import type { User } from '@/types/user'
+import { UserGetInfo } from '@mtobdvlb/shared-types'
+
+export type User = UserGetInfo
 
 export interface UserState {
   user: User | null | undefined
