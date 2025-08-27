@@ -7,33 +7,29 @@ import HeaderBarRightEntry from '@/components/layout/header-bar/HeaderBarRightEn
 import { useWindowScroll } from 'react-use'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib'
+import { SearchLogTop10List, UserGetInfoHome } from '@mtobdvlb/shared-types'
 import {
-  FavoriteRecentList,
-  FeedRecentList,
-  HistoryList,
-  NotificationStatisticsList,
-  SearchLogTop10List,
-  UserGetInfoHome,
-} from '@mtobdvlb/shared-types'
+  useFavoriteGetRecent,
+  useFeedGetRecent,
+  useHistoryGetRecent,
+  useNotificationStatistics,
+} from '@/features'
 
 const HeaderBar = ({
   searchLogTop10List,
   userHomeInfo,
-  favoriteRecentList,
-  feedRecentList,
-  historyRecentList,
-  notificationStatistics,
 }: {
   searchLogTop10List?: SearchLogTop10List
   userHomeInfo?: UserGetInfoHome
-  historyRecentList?: HistoryList
-  favoriteRecentList?: FavoriteRecentList
-  notificationStatistics?: NotificationStatisticsList
-  feedRecentList?: FeedRecentList
 }) => {
   const { y } = useWindowScroll()
   const pathname = usePathname()
   const [type, setType] = useState<'first' | 'second'>('first')
+
+  const { favoriteRecentList } = useFavoriteGetRecent()
+  const { notificationStatistics } = useNotificationStatistics()
+  const { historyRecentList } = useHistoryGetRecent()
+  const { feedRecentList } = useFeedGetRecent()
 
   useEffect(() => {
     if (pathname !== '/') {

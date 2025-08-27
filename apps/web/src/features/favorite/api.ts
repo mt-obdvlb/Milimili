@@ -1,15 +1,12 @@
-import { favoriteGetFolderList, favoriteGetRecent } from '@/services/favorite'
+import { favoriteGetRecent } from '@/services/favorite'
+import { useQuery } from '@tanstack/react-query'
 
-export const getFavoriteRecent = async () => {
-  const { data: favoriteRecentList } = await favoriteGetRecent()
+export const useFavoriteGetRecent = () => {
+  const { data: favoriteRecentList } = useQuery({
+    queryKey: ['favorite', 'recent'],
+    queryFn: () => favoriteGetRecent(),
+  })
   return {
-    favoriteRecentList,
-  }
-}
-
-export const getFavoriteList = async () => {
-  const { data: favoriteFolderList } = await favoriteGetFolderList()
-  return {
-    favoriteFolderList,
+    favoriteRecentList: favoriteRecentList?.data,
   }
 }
