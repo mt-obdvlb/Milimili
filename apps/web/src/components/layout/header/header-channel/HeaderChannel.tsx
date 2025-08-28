@@ -5,6 +5,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/h
 import { useState } from 'react'
 import { cn, toastBuilding } from '@/lib'
 import { CategoryGetAllList } from '@mtobdvlb/shared-types'
+import { usePathname } from 'next/navigation'
 
 const headerChannelIcons = [
   {
@@ -224,8 +225,16 @@ const headerChannelRightLinks = [
   },
 ]
 
-const HeaderChannel = ({ categoryList }: { categoryList?: CategoryGetAllList }) => {
+const HeaderChannel = ({
+  categoryList,
+  categoryName,
+}: {
+  categoryList?: CategoryGetAllList
+  categoryName?: string
+}) => {
   const [hoverOpen, setHoverOpen] = useState<boolean>(false)
+
+  const pathname = usePathname()
 
   const categoryMoreList = categoryList?.slice(21) ?? []
   console.log(categoryMoreList)
@@ -264,11 +273,14 @@ const HeaderChannel = ({ categoryList }: { categoryList?: CategoryGetAllList }) 
           {categoryList?.slice(0, 21).map((item) => (
             <Link
               key={item.id}
-              className={
-                'border-line_light text-text2 bg-graph_bg_thin hover:bg-graph_bg_thick hover:text-text1 box-content inline-block h-[26px] w-full rounded-[6px] border text-center text-sm leading-[26px] transition duration-300 ' +
-                cn({ 'tracking-[2px]': item.name.length < 4 })
-              }
+              className={cn(
+                'border-line_light text-text2 bg-graph_bg_thin hover:bg-graph_bg_thick hover:text-text1 box-content inline-block h-[26px] w-full rounded-[6px] border text-center text-sm leading-[26px] transition duration-300',
+                item.name.length < 4 && 'tracking-[2px]',
+                item.name === categoryName &&
+                  'hover:border-brand_blue text-brand_blue hover:bg-graph_bg_thin hover:text-brand_blue'
+              )}
               href={`/category/${item.id}`}
+              target={pathname.includes('category') ? '_self' : '_blank'}
             >
               {item.name}
             </Link>

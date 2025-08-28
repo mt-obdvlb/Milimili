@@ -17,12 +17,7 @@ interface MainVideoPlayerProps {
 // 颜色字符串 '#ffffff' 转数字 0xffffff
 const hexToNumber = (hex: string) => Number(`0x${hex.replace(/^#/, '')}`)
 
-const HomeMainVideoPlayer = ({
-  video,
-  hover,
-  setTime,
-  time: currentTime,
-}: MainVideoPlayerProps) => {
+const TinyVideoPlayer = ({ video, hover, setTime, time: currentTime }: MainVideoPlayerProps) => {
   const player = tv({
     slots: {
       base: 'flex size-full flex-col flex-nowrap abp',
@@ -197,4 +192,4 @@ const HomeMainVideoPlayer = ({
   )
 }
 
-export default HomeMainVideoPlayer
+export default TinyVideoPlayer

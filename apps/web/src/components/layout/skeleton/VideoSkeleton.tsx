@@ -3,7 +3,7 @@
 import React, { forwardRef } from 'react'
 import { cn } from '@/lib'
 
-const HomeMainVideoSkeleton = forwardRef<SVGSVGElement | null, React.SVGProps<SVGSVGElement>>(
+const VideoSkeleton = forwardRef<SVGSVGElement | null, React.SVGProps<SVGSVGElement>>(
   ({ className, ...props }, ref) => {
     return (
       <svg
@@ -38,4 +38,4 @@ const HomeMainVideoSkeleton = forwardRef<SVGSVGElement | null, React.SVGProps<SV
   }
 )
 
-export default HomeMainVideoSkeleton
+export default VideoSkeleton

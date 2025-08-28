@@ -1,9 +1,14 @@
 'use client'
 
+import Script from 'next/script'
+
 export const DanmakuInitializer = () => {
   return (
     <>
-      <script src='comment-core-library/dist/CommentCoreLibrary.js'></script>
+      <Script
+        src='/comment-core-library/dist/CommentCoreLibrary.js'
+        strategy='afterInteractive' // 页面渲染后加载
+      />
     </>
   )
 }
