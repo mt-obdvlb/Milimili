@@ -8,8 +8,8 @@ export interface AuthenticatedSocket extends Socket {
   userId: string
 }
 
-// 用户 map
-const userSocketMap = new Map<string, string>() // userId -> socketId
+// 用户 map: userId -> socketId[] (Set 保证不重复)
+const userSocketMap = new Map<string, Set<string>>()
 
 export const initSocket = (server: http.Server) => {
   const io = new Server(server, {
@@ -27,17 +27,20 @@ export const initSocket = (server: http.Server) => {
     const cookieHeader = socket.handshake.headers.cookie
     if (!cookieHeader) return next(new Error('No cookie'))
 
-    // 获取 token
     const accessMatch = cookieHeader.match(/access_token=([^;]+)/)
     const refreshMatch = cookieHeader.match(/refresh_token=([^;]+)/)
-    console.log(accessMatch, refreshMatch)
 
     const accessToken = accessMatch?.[1]
     const refreshToken = refreshMatch?.[1]
 
-    let payload = accessToken ? verifyToken(accessToken) : null
+    let payload
 
-    // access_token 不存在或过期，尝试 refresh_token
+    try {
+      payload = accessToken ? verifyToken(accessToken) : null
+    } catch {
+      return next(new Error('Unauthorized'))
+    }
+
     if (!payload) {
       if (!refreshToken) return next(new Error('Unauthorized'))
 
@@ -49,10 +52,7 @@ export const initSocket = (server: http.Server) => {
       }
     }
 
-    if (!payload)
-      return next(new Error('Unauthorized'))
-
-      // TS 安全绑定 userId
+    if (!payload) return next(new Error('Unauthorized'))
     ;(socket as AuthenticatedSocket).userId = payload.id
     next()
   })
@@ -60,18 +60,37 @@ export const initSocket = (server: http.Server) => {
   io.on('connect', (socket) => {
     const authSocket = socket as AuthenticatedSocket
     const userId = authSocket.userId
-    userSocketMap.set(userId, authSocket.id)
+
+    // 添加 socketId
+    if (!userSocketMap.has(userId)) {
+      userSocketMap.set(userId, new Set())
+    }
+    userSocketMap.get(userId)!.add(authSocket.id)
 
     console.log('✅ 用户已连接:', userId, authSocket.id)
 
     socket.on('disconnect', () => {
-      userSocketMap.delete(userId)
-      console.log('❌ 用户断开:', userId)
+      const socketSet = userSocketMap.get(userId)
+      if (socketSet) {
+        socketSet.delete(authSocket.id)
+        if (socketSet.size === 0) {
+          userSocketMap.delete(userId)
+        }
+      }
+      console.log('❌ 用户断开:', userId, authSocket.id)
     })
   })
 
   return io
 }
 
-// 导出工具
-export const getSocketIdByUserId = (userId: string) => userSocketMap.get(userId)
+// 获取某用户所有 socketId
+export const getSocketIdsByUserId = (userId: string) => userSocketMap.get(userId) ?? new Set()
+
+// 向某个用户的所有连接广播消息
+export const emitToUser = <T = undefined>(io: Server, userId: string, event: string, data?: T) => {
+  const socketIds = getSocketIdsByUserId(userId)
+  for (const socketId of socketIds) {
+    io.to(socketId).emit(event, data)
+  }
+}

@@ -15,6 +15,8 @@ const buttonVariants = cva('  m-0 p-0 border-0 text-transparent ', {
       secondary: 'bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80',
       ghost: 'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
       link: 'text-primary underline-offset-4 hover:underline',
+      primary:
+        'flex justify-center h-[31px] rounded-[8px] text-xs py-[7px] px-3 text-text1 border border-line_regular ml-2 origin-center transition duration-200 cursor-pointer',
     },
     size: {
       default: '',

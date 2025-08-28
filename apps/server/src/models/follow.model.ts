@@ -3,7 +3,7 @@ import { Document, model, Schema, Types } from 'mongoose'
 type FollowBase = object
 
 type FollowDB = FollowBase & {
-  followrId: Types.ObjectId
+  followerId: Types.ObjectId
   followingId: Types.ObjectId
   _id: Types.ObjectId
 }
@@ -12,7 +12,7 @@ export type IFollow = FollowDB & Document
 
 const followSchema = new Schema<IFollow>(
   {
-    followrId: {
+    followerId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,

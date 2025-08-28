@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import { HistoryListItem } from '@mtobdvlb/shared-types'
 import { tv } from 'tailwind-variants'

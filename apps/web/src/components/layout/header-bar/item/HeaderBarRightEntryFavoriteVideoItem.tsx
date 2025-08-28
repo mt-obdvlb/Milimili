@@ -1,3 +1,5 @@
+'use client'
+
 import { tv } from 'tailwind-variants'
 import Link from 'next/link'
 import { formatTime } from '@/utils'

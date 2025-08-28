@@ -5,7 +5,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { cn } from '@/lib'
 import { useRotation } from '@/hooks/useRotation'
 
-const MainRollBtn = () => {
+const HomeMainRollBtn = () => {
   const queryClient = useQueryClient()
   const { rotate, style } = useRotation()
 
@@ -44,10 +44,10 @@ const MainRollBtn = () => {
             fill='currentColor'
           ></path>
         </svg>
-        <span>换一批</span>
+        <span>换一换</span>
       </Button>
     </div>
   )
 }
 
-export default MainRollBtn
+export default HomeMainRollBtn

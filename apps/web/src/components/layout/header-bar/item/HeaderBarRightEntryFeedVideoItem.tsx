@@ -1,3 +1,5 @@
+'use client'
+
 import { FeedRecentItem } from '@mtobdvlb/shared-types'
 import { tv } from 'tailwind-variants'
 import Link from 'next/link'

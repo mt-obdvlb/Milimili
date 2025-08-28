@@ -10,7 +10,7 @@ import { cn } from '@/lib'
 import Link from 'next/link'
 import { VideoList } from '@mtobdvlb/shared-types'
 
-const MainRecommendedSwiper = ({ videoSwiperList }: { videoSwiperList?: VideoList }) => {
+const HomeMainRecommendedSwiper = ({ videoSwiperList }: { videoSwiperList?: VideoList }) => {
   const [activeIndex, setActiveIndex] = useState(0)
   const [type, setType] = useState<'next' | 'prev'>('next')
 
@@ -182,4 +182,4 @@ const MainRecommendedSwiper = ({ videoSwiperList }: { videoSwiperList?: VideoLis
   )
 }
 
-export default MainRecommendedSwiper
+export default HomeMainRecommendedSwiper

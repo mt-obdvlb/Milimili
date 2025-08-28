@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from 'react'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
 import { motion } from 'motion/react'

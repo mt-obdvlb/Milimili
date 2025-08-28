@@ -4,8 +4,11 @@ import { tv } from 'tailwind-variants'
 import { useRotation } from '@/hooks/useRotation'
 import { cn } from '@/lib'
 import { useQueryClient } from '@tanstack/react-query'
+import { Button } from '@/components'
+import { useWindowScroll } from 'react-use'
+import { useEffect, useState } from 'react'
 
-const PaletteButton = () => {
+const HomePaletteButton = () => {
   const paletteButtonStyles = tv({
     slots: {
       base: 'fixed inset-0 z-10 bg-transparent translate-z-0 pointer-events-none',
@@ -19,11 +22,17 @@ const PaletteButton = () => {
   })
   const { rotate, style } = useRotation()
   const queryClient = useQueryClient()
+  const { y } = useWindowScroll()
+  const [isShow, setIsShow] = useState(false)
 
   const handleRoll = async () => {
     rotate()
     await queryClient.invalidateQueries({ queryKey: ['video', 'recommend'] })
   }
+
+  useEffect(() => {
+    setIsShow(y > 500)
+  }, [y])
 
   const { base, top, roll, wrap, inner } = paletteButtonStyles()
   return (
@@ -32,9 +41,10 @@ const PaletteButton = () => {
         <div className={wrap()}>
           <div className={roll()}>
             <div
-              className={
-                'bg-brand_blue group flex h-10 shrink-0 items-center justify-end rounded-[6px] px-2 text-sm font-normal text-white hover:bg-[#40C5F1]'
-              }
+              className={cn(
+                'bg-brand_blue group flex h-10 shrink-0 items-center justify-end rounded-[6px] px-2 text-sm font-normal text-white transition-opacity duration-300 hover:bg-[#40C5F1]',
+                isShow ? 'opacity-100' : 'opacity-0'
+              )}
               onClick={handleRoll}
             >
               <svg
@@ -65,11 +75,41 @@ const PaletteButton = () => {
               </div>
             </div>
           </div>
-          <div className={top()}></div>
+          <div className={top()}>
+            <Button
+              variant={'primary'}
+              className={cn(
+                'hover:bg-graph_bg_thick pointer-events-auto mt-3 ml-0 h-auto min-h-10 w-10 flex-col items-center px-0 pt-2 pb-1.5 text-[22px] opacity-100 transition-opacity duration-300 select-auto',
+                isShow ? 'opacity-100' : 'opacity-0'
+              )}
+              onClick={() =>
+                window.scrollTo({
+                  top: 0,
+                  behavior: 'smooth',
+                })
+              }
+            >
+              <svg
+                data-v-d05c53ac=''
+                xmlns='http://www.w3.org/2000/svg'
+                viewBox='0 0 24 24'
+                width='24'
+                height='24'
+                fill='currentColor'
+                className={'size-3'}
+              >
+                <path
+                  d='M20.3964 12.83585C21.65635 14.0958 20.76405 16.2501 18.9822 16.2501L5.01774 16.2501C3.23594 16.2501 2.34359 14.0958 3.60353 12.83585L10.58575 5.85361C11.3668 5.07256 12.63315 5.07256 13.4142 5.85361L20.3964 12.83585z'
+                  fill='currentColor'
+                ></path>
+              </svg>
+              <span className={'mt-0.5 text-center text-xs leading-3.5'}>顶部</span>
+            </Button>
+          </div>
         </div>
       </div>
     </div>
   )
 }
 
-export default PaletteButton
+export default HomePaletteButton

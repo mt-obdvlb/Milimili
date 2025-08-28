@@ -5,7 +5,6 @@ import HeaderBarLeftEntry from '@/components/layout/header-bar/HeaderBarLeftEntr
 import HeaderBarSearchBar from '@/components/layout/header-bar/HeaderBarSearchBar'
 import HeaderBarRightEntry from '@/components/layout/header-bar/HeaderBarRightEntry'
 import { useWindowScroll } from 'react-use'
-import { usePathname } from 'next/navigation'
 import { cn } from '@/lib'
 import { SearchLogTop10List, UserGetInfoHome } from '@mtobdvlb/shared-types'
 import {
@@ -18,12 +17,13 @@ import {
 const HeaderBar = ({
   searchLogTop10List,
   userHomeInfo,
+  isFixed,
 }: {
   searchLogTop10List?: SearchLogTop10List
   userHomeInfo?: UserGetInfoHome
+  isFixed?: boolean
 }) => {
   const { y } = useWindowScroll()
-  const pathname = usePathname()
   const [type, setType] = useState<'first' | 'second'>('first')
 
   const { favoriteRecentList } = useFavoriteGetRecent()
@@ -32,7 +32,7 @@ const HeaderBar = ({
   const { feedRecentList } = useFeedGetRecent()
 
   useEffect(() => {
-    if (pathname !== '/') {
+    if (isFixed) {
       setType('second')
     } else {
       if (y > 64) {
@@ -41,7 +41,7 @@ const HeaderBar = ({
         setType('first')
       }
     }
-  }, [y, type, pathname])
+  }, [y, type, isFixed])
   return (
     <div
       className={cn(
