@@ -1,5 +1,5 @@
-import HeaderBarWrapper from '@/components/layout/header-bar/HeaderBarWrapper'
-import HeaderBanner from '@/components/layout/header-banner/HeaderBanner'
+import HeaderBarWrapper from '@/components/layout/header/header-bar/HeaderBarWrapper'
+import HeaderBanner from '@/components/layout/header/header-banner/HeaderBanner'
 import HotTabs from '@/features/hot/components/HotTabs'
 
 const Hot = () => {

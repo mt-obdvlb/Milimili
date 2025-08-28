@@ -12,7 +12,7 @@ import React from 'react'
 import { cn, toastBuilding } from '@/lib'
 import Link from 'next/link'
 import Image from 'next/image'
-import HeaderBarLinkItemWithBounce from '@/components/layout/header-bar/item/HeaderBarLinkItemWithBounce'
+import HeaderBarLinkItemWithBounce from '@/components/layout/header/header-bar/item/HeaderBarLinkItemWithBounce'
 
 const headerBarLeftLinks = ['番剧', '直播', '游戏中心', '会员购', '漫画', '赛事']
 
@@ -45,7 +45,11 @@ const HeaderBarLeftEntry = ({ type }: { type: 'first' | 'second' }) => {
       <NavigationMenuList className={'h-[64px] gap-[0.25rem] whitespace-nowrap'}>
         {type === 'first' ? (
           <NavigationMenuItem>
-            <NavigationMenuLink type={type} className={'items-center'} href='/'>
+            <NavigationMenuLink
+              type={type}
+              className={'items-center data-[state=active]:text-white'}
+              href='/apps/web/public'
+            >
               <svg
                 width='18'
                 height='18'
@@ -72,7 +76,7 @@ const HeaderBarLeftEntry = ({ type }: { type: 'first' | 'second' }) => {
               }
             >
               <Link
-                href={'/'}
+                href={'/apps/web/public'}
                 className={'flex h-[56px] cursor-pointer items-center justify-between font-normal'}
               >
                 <svg

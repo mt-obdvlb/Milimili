@@ -25,7 +25,7 @@ const HeaderBarRightEntryAvatar = ({ userHomeInfo }: { userHomeInfo?: UserGetInf
         <div className={'relative box-content size-[50px] cursor-pointer pr-[10px]'}>
           <div className={'relative z-2'}>
             <Link
-              href={'/'}
+              href={'/apps/web/public'}
               target={'_blank'}
               className={cn(
                 'absolute top-[5px] left-[10px] z-2 block size-[38px] rounded-full transition-all',
@@ -46,7 +46,7 @@ const HeaderBarRightEntryAvatar = ({ userHomeInfo }: { userHomeInfo?: UserGetInf
               </picture>
             </Link>
             <Link
-              href={'/'}
+              href={'/apps/web/public'}
               target={'_blank'}
               className={cn(
                 'absolute top-[5px] left-[10px] z-2 block origin-top-left rounded-full transition-all duration-350 will-change-transform',
@@ -109,7 +109,7 @@ const HeaderBarRightEntryAvatar = ({ userHomeInfo }: { userHomeInfo?: UserGetInf
               ].map((item) => (
                 <Link
                   key={item.name}
-                  href={'/'}
+                  href={'/apps/web/public'}
                   className={
                     'group hover:text-brand_blue flex flex-col items-center justify-between transition-colors duration-200'
                   }
