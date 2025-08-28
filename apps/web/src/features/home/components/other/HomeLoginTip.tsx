@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import { cn } from '@/lib'
 import { useUiStore } from '@/stores/ui'
 
-const LoginTip = () => {
+const HomeLoginTip = () => {
   const user = useUserStore((state) => state.user)
 
   const setLoginModel = useUiStore((state) => state.setLoginModel)
@@ -299,4 +299,4 @@ const LoginTip = () => {
   return <></>
 }
 
-export default LoginTip
+export default HomeLoginTip

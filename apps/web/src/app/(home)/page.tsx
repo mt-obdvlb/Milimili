@@ -1,14 +1,14 @@
-import HeaderBanner from '@/features/home/components/header/HeaderBanner'
-import HeaderChannel from '@/features/home/components/header/HeaderChannel'
-import HeaderChannelFixed from '@/features/home/components/header/HeaderChannelFixed'
+import HomeHeaderChannel from '@/features/home/components/header/HomeHeaderChannel'
+import HomeHeaderChannelFixed from '@/features/home/components/header/HomeHeaderChannelFixed'
 import { getCategoryList } from '@/features/category/api'
-import MainRollBtn from '@/features/home/components/main/MainRollBtn'
-import MainRecommendedSwiper from '@/features/home/components/main/MainRecommendedSwiper'
-import MainVideoList from '@/features/home/components/main/MainVideoList'
+import HomeMainRollBtn from '@/features/home/components/main/HomeMainRollBtn'
+import HomeMainRecommendedSwiper from '@/features/home/components/main/HomeMainRecommendedSwiper'
+import HomeMainVideoList from '@/features/home/components/main/HomeMainVideoList'
 import { getVideoList } from '@/features/video/api'
-import LoginTip from '@/features/home/components/other/LoginTip'
+import HomeLoginTip from '@/features/home/components/other/HomeLoginTip'
 import HeaderBarWrapper from '@/components/layout/header-bar/HeaderBarWrapper'
-import PaletteButton from '@/features/home/components/other/PaletteButton'
+import HomePaletteButton from '@/features/home/components/other/HomePaletteButton'
+import HeaderBanner from '@/components/layout/header-banner/HeaderBanner'
 
 const Home = async () => {
   const [{ categoryList }, { videoSwiperList }] = await Promise.all([
@@ -20,8 +20,8 @@ const Home = async () => {
       <header className={'relative max-h-[2560px] min-h-[64px] bg-white'}>
         <HeaderBarWrapper />
         <HeaderBanner />
-        <HeaderChannel categoryList={categoryList} />
-        <HeaderChannelFixed categoryList={categoryList} />
+        <HomeHeaderChannel categoryList={categoryList} />
+        <HomeHeaderChannelFixed categoryList={categoryList} />
       </header>
       <main className={'max-w-[calc(1920px+2*60px)] px-[60px] text-sm'}>
         <div className={'text-text1'}>
@@ -31,15 +31,15 @@ const Home = async () => {
                 'relative grid min-h-100 w-full grid-flow-row auto-rows-auto grid-cols-5 gap-[20px]'
               }
             >
-              <MainRecommendedSwiper videoSwiperList={videoSwiperList} />
-              <MainVideoList />
+              <HomeMainRecommendedSwiper videoSwiperList={videoSwiperList} />
+              <HomeMainVideoList />
             </div>
-            <MainRollBtn />
+            <HomeMainRollBtn />
           </div>
         </div>
       </main>
-      <LoginTip />
-      <PaletteButton />
+      <HomeLoginTip />
+      <HomePaletteButton />
     </>
   )
 }

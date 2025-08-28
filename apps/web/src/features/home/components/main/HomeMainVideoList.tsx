@@ -2,11 +2,11 @@
 
 import { useVideoList } from '@/features/video/api'
 import { useEffect, useMemo } from 'react'
-import MainVideoItem from '@/features/home/components/main/MainVideoItem'
-import MainVideoSkeleton from '@/features/home/components/main/MainVideoSkeleton'
+import HomeMainVideoItem from '@/features/home/components/main/HomeMainVideoItem'
+import HomeMainVideoSkeleton from '@/features/home/components/main/HomeMainVideoSkeleton'
 import { useInView } from 'react-intersection-observer'
 
-const MainVideoList = () => {
+const HomeMainVideoList = () => {
   const { videoRecommendList, videoRandomList, fetchNextPage } = useVideoList()
   const { ref, inView } = useInView({
     rootMargin: '100px',
@@ -27,13 +27,13 @@ const MainVideoList = () => {
   return (
     <>
       {totalList.map((item, index) => (
-        <MainVideoItem key={item.id + index} margin={index >= 6} video={item} />
+        <HomeMainVideoItem key={item.id + index} margin={index >= 6} video={item} />
       ))}
       {Array.from({ length: 15 }, (_, index) => (
-        <MainVideoSkeleton ref={index === 0 ? ref : null} key={index} />
+        <HomeMainVideoSkeleton ref={index === 0 ? ref : null} key={index} />
       ))}
     </>
   )
 }
 
-export default MainVideoList
+export default HomeMainVideoList

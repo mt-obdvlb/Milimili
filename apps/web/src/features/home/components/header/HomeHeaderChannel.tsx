@@ -1,10 +1,10 @@
 'use client'
 
-import { CategoryListResponse } from '@/types/category'
 import Link from 'next/link'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
 import { useState } from 'react'
 import { cn, toastBuilding } from '@/lib'
+import { CategoryGetAllList } from '@mtobdvlb/shared-types'
 
 const headerChannelIcons = [
   {
@@ -52,7 +52,7 @@ const headerChannelIcons = [
     bgc: 'bg-[#ff9212]',
   },
   {
-    link: '/',
+    link: '/hot',
     icon: (
       <svg
         width='22'
@@ -224,7 +224,7 @@ const headerChannelRightLinks = [
   },
 ]
 
-const HeaderChannel = ({ categoryList }: { categoryList?: CategoryListResponse }) => {
+const HomeHeaderChannel = ({ categoryList }: { categoryList?: CategoryGetAllList }) => {
   const [hoverOpen, setHoverOpen] = useState<boolean>(false)
 
   const categoryMoreList = categoryList?.slice(21) ?? []
@@ -238,8 +238,9 @@ const HeaderChannel = ({ categoryList }: { categoryList?: CategoryListResponse }
       <div className={'mr-[8px] flex items-center'}>
         {headerChannelIcons.map((item) => (
           <Link
-            href={'/'}
+            href={item.link}
             key={item.title}
+            target={'_blank'}
             className={'text-text1 relative mr-[24px] flex flex-col'}
           >
             <div
@@ -347,4 +348,4 @@ const HeaderChannel = ({ categoryList }: { categoryList?: CategoryListResponse }
   )
 }
 
-export default HeaderChannel
+export default HomeHeaderChannel

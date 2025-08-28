@@ -8,7 +8,7 @@ import Link from 'next/link'
 import { tv } from 'tailwind-variants'
 import { useEffect, useState } from 'react'
 
-const HeaderChannelFixed = ({ categoryList }: { categoryList?: CategoryGetAllList }) => {
+const HomeHeaderChannelFixed = ({ categoryList }: { categoryList?: CategoryGetAllList }) => {
   const { y } = useWindowScroll()
   const [show, setShow] = useState(false)
 
@@ -83,7 +83,7 @@ const HeaderChannelFixed = ({ categoryList }: { categoryList?: CategoryGetAllLis
               ),
             },
             {
-              url: '/',
+              url: '/hot',
               name: '热门',
               svg: (
                 <svg
@@ -163,4 +163,4 @@ const HeaderChannelFixed = ({ categoryList }: { categoryList?: CategoryGetAllLis
   )
 }
 
-export default HeaderChannelFixed
+export default HomeHeaderChannelFixed

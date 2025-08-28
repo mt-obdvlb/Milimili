@@ -1,3 +1,5 @@
+'use client'
+
 import { useUiStore } from '@/stores'
 
 const HeaderBarRightEntryNoLoginItem = ({ title }: { title: string }) => {

@@ -1,8 +1,6 @@
-import { getSocketIdByUserId } from '@/socket/index'
 import { io } from '@/server'
+import { emitToUser } from '@/socket/index'
 
 export const pushNewHistory = (userId: string) => {
-  const socketId = getSocketIdByUserId(userId)
-  if (!socketId) return
-  io.to(socketId).emit('new_history')
+  emitToUser(io, userId, 'new_history')
 }

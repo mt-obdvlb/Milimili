@@ -1,1 +1,2 @@
-export * from './LoginTip'
+export * from './HomeLoginTip'
+export * from './HomePaletteButton'

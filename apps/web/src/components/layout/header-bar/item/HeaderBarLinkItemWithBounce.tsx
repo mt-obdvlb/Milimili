@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from 'react'
 import { NavigationMenuItem, NavigationMenuLink } from '@/components/ui/navigation-menu'
 import { motion } from 'motion/react'
