@@ -102,7 +102,7 @@ const HeaderBarSearchBar = ({
               <div className={'w-full'}>
                 {searchLogTop10List?.map((item) => (
                   <Link
-                    href={'/'}
+                    href={'/apps/web/public'}
                     key={item.keyword}
                     className={
                       'flex h-[38px] items-center pl-[16px] hover:bg-[#E3E5E7] hover:outline-none'

@@ -5,7 +5,7 @@ import { openNewTable } from '@/utils/openNewTable'
 import Link from 'next/link'
 import React from 'react'
 import { cn } from '@/lib'
-import HeaderBarRightEntryAvatar from '@/components/layout/header-bar/HeaderBarRightEntryAvatar'
+import HeaderBarRightEntryAvatar from '@/components/layout/header/header-bar/HeaderBarRightEntryAvatar'
 import {
   FavoriteRecentList,
   FeedRecentList,
@@ -14,12 +14,12 @@ import {
   UserGetInfoHome,
 } from '@mtobdvlb/shared-types'
 import { Badge, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components'
-import HeaderBarHoverCardWithBounce from '@/components/layout/header-bar/item/HeaderBarHoverCardWithBounce'
-import HeaderBarRightEntryHistoryVideoItem from '@/components/layout/header-bar/item/HeaderBarRightEntryHistoryVideoItem'
-import HeaderBarRightEntryFavoriteVideoItem from '@/components/layout/header-bar/item/HeaderBarRightEntryFavoriteVideoItem'
-import HeaderBarRightEntryFeedVideoItem from '@/components/layout/header-bar/item/HeaderBarRightEntryFeedVideoItem'
-import HeaderBarRightEntryAvatarNoLogin from '@/components/layout/header-bar/HeaderBarRightEntryAvatarNoLogin'
-import HeaderBarRightEntryNoLoginItem from '@/components/layout/header-bar/item/HeaderBarRightEntryNoLoginItem'
+import HeaderBarHoverCardWithBounce from '@/components/layout/header/header-bar/item/HeaderBarHoverCardWithBounce'
+import HeaderBarRightEntryHistoryVideoItem from '@/components/layout/header/header-bar/item/HeaderBarRightEntryHistoryVideoItem'
+import HeaderBarRightEntryFavoriteVideoItem from '@/components/layout/header/header-bar/item/HeaderBarRightEntryFavoriteVideoItem'
+import HeaderBarRightEntryFeedVideoItem from '@/components/layout/header/header-bar/item/HeaderBarRightEntryFeedVideoItem'
+import HeaderBarRightEntryAvatarNoLogin from '@/components/layout/header/header-bar/HeaderBarRightEntryAvatarNoLogin'
+import HeaderBarRightEntryNoLoginItem from '@/components/layout/header/header-bar/item/HeaderBarRightEntryNoLoginItem'
 
 const HeaderBarRightEntry = ({
   type,

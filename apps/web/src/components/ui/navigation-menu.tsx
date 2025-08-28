@@ -125,9 +125,9 @@ function NavigationMenuLink({
 }) {
   const typeClassMap: Record<NavigationMenuLinkType, string> = {
     first:
-      'mr-[15px] hover:bg-transparent  h-full cursor-pointer items-center focus:bg-transparent hover:text-white focus:text-transparent ',
+      'mr-[15px] hover:bg-transparent  h-full cursor-pointer items-center focus:bg-transparent hover:text-white ',
     second:
-      'mr-[15px] hover:bg-transparent  h-full cursor-pointer items-center focus:bg-transparent hover:text-text1 focus:text-transparent',
+      'mr-[15px] hover:bg-transparent  h-full cursor-pointer items-center focus:bg-transparent hover:text-text1 ',
   }
 
   const typeClassName = type ? typeClassMap[type] : ''
@@ -135,7 +135,7 @@ function NavigationMenuLink({
     <NavigationMenuPrimitive.Link
       data-slot='navigation-menu-link'
       className={cn(
-        "data-[active=true]:focus:bg-accent data-[active=true]:hover:bg-accent data-[active=true]:bg-accent/50 data-[active=true]:text-accent-foreground hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus-visible:ring-ring/50 [&_svg:not([class*='text-'])]:text-muted-foreground flex rounded-sm text-sm transition-all outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&_svg:not([class*='size-'])]:size-4",
+        "flex rounded-sm text-sm transition-all [&_svg:not([class*='size-'])]:size-4",
         typeClassName,
         className
       )}

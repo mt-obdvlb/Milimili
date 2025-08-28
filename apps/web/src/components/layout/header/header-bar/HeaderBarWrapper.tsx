@@ -1,4 +1,4 @@
-import HeaderBar from '@/components/layout/header-bar/HeaderBar'
+import HeaderBar from '@/components/layout/header/header-bar/HeaderBar'
 import { getSearchLogTop10, getUserHomeInfo } from '@/features'
 
 const HeaderBarWrapper = async ({ isFixed }: { isFixed?: boolean }) => {

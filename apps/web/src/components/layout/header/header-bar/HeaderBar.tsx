@@ -1,9 +1,9 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import HeaderBarLeftEntry from '@/components/layout/header-bar/HeaderBarLeftEntry'
-import HeaderBarSearchBar from '@/components/layout/header-bar/HeaderBarSearchBar'
-import HeaderBarRightEntry from '@/components/layout/header-bar/HeaderBarRightEntry'
+import HeaderBarLeftEntry from '@/components/layout/header/header-bar/HeaderBarLeftEntry'
+import HeaderBarSearchBar from '@/components/layout/header/header-bar/HeaderBarSearchBar'
+import HeaderBarRightEntry from '@/components/layout/header/header-bar/HeaderBarRightEntry'
 import { useWindowScroll } from 'react-use'
 import { cn } from '@/lib'
 import { SearchLogTop10List, UserGetInfoHome } from '@mtobdvlb/shared-types'

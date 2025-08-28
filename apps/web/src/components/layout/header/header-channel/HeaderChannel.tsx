@@ -224,7 +224,7 @@ const headerChannelRightLinks = [
   },
 ]
 
-const HomeHeaderChannel = ({ categoryList }: { categoryList?: CategoryGetAllList }) => {
+const HeaderChannel = ({ categoryList }: { categoryList?: CategoryGetAllList }) => {
   const [hoverOpen, setHoverOpen] = useState<boolean>(false)
 
   const categoryMoreList = categoryList?.slice(21) ?? []
@@ -268,7 +268,7 @@ const HomeHeaderChannel = ({ categoryList }: { categoryList?: CategoryGetAllList
                 'border-line_light text-text2 bg-graph_bg_thin hover:bg-graph_bg_thick hover:text-text1 box-content inline-block h-[26px] w-full rounded-[6px] border text-center text-sm leading-[26px] transition duration-300 ' +
                 cn({ 'tracking-[2px]': item.name.length < 4 })
               }
-              href={`/${item.id}`}
+              href={`/category/${item.id}`}
             >
               {item.name}
             </Link>
@@ -334,7 +334,7 @@ const HomeHeaderChannel = ({ categoryList }: { categoryList?: CategoryGetAllList
                 'text-text2 hover:text-brand_blue inline-flex h-[28px] items-center justify-end text-sm transition duration-300 ' +
                 cn({ 'tracking-[2px]': item.title.length < 4 })
               }
-              href={'/'}
+              href={'/apps/web/public'}
               key={item.title}
               onClick={toastBuilding}
             >
@@ -348,4 +348,4 @@ const HomeHeaderChannel = ({ categoryList }: { categoryList?: CategoryGetAllList
   )
 }
 
-export default HomeHeaderChannel
+export default HeaderChannel
