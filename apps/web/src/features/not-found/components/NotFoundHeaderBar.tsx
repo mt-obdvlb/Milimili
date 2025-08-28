@@ -1,10 +1,9 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import HeaderBarLeftEntry from '@/components/layout/header/header-bar/HeaderBarLeftEntry'
 import HeaderBarSearchBar from '@/components/layout/header/header-bar/HeaderBarSearchBar'
 import HeaderBarRightEntry from '@/components/layout/header/header-bar/HeaderBarRightEntry'
-import { useWindowScroll } from 'react-use'
 import { cn } from '@/lib'
 import { SearchLogTop10List, UserGetInfoHome } from '@mtobdvlb/shared-types'
 import {
@@ -14,43 +13,25 @@ import {
   useNotificationStatistics,
 } from '@/features'
 
-const HeaderBar = ({
+const NotFoundHeaderBar = ({
   searchLogTop10List,
   userHomeInfo,
-  isFixed,
-  bg,
 }: {
   searchLogTop10List?: SearchLogTop10List
   userHomeInfo?: UserGetInfoHome
-  isFixed?: boolean
-  bg?: string
 }) => {
-  const { y } = useWindowScroll()
-  const [type, setType] = useState<'first' | 'second'>('first')
-
+  const type = 'second'
   const { favoriteRecentList } = useFavoriteGetRecent()
   const { notificationStatistics } = useNotificationStatistics()
   const { historyRecentList } = useHistoryGetRecent()
   const { feedRecentList } = useFeedGetRecent()
 
-  useEffect(() => {
-    if (isFixed) {
-      setType('second')
-    } else {
-      if (y > 64) {
-        setType('second')
-      } else {
-        setType('first')
-      }
-    }
-  }, [y, type, isFixed])
   return (
     <div
       className={cn(
-        'absolute top-0 left-0 z-1002 flex h-[64px] w-full items-center px-[24px]',
-        type === 'second' &&
-          'bg-bg1_float fixed top-0 animate-none shadow-[inset_0_-1px_0_var(--line_regular)]',
-        bg
+        'flex h-[64px] w-full items-center px-[24px]',
+
+        'bg-bg1_float animate-none shadow-[inset_0_-1px_0_var(--line_regular)]'
       )}
     >
       <HeaderBarLeftEntry type={type} />
@@ -67,4 +48,4 @@ const HeaderBar = ({
   )
 }
 
-export default HeaderBar
+export default NotFoundHeaderBar

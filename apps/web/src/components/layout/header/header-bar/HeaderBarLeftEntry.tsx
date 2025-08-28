@@ -48,7 +48,7 @@ const HeaderBarLeftEntry = ({ type }: { type: 'first' | 'second' }) => {
             <NavigationMenuLink
               type={type}
               className={'items-center data-[state=active]:text-white'}
-              href='/apps/web/public'
+              href='/'
             >
               <svg
                 width='18'
@@ -76,7 +76,7 @@ const HeaderBarLeftEntry = ({ type }: { type: 'first' | 'second' }) => {
               }
             >
               <Link
-                href={'/apps/web/public'}
+                href={'/'}
                 className={'flex h-[56px] cursor-pointer items-center justify-between font-normal'}
               >
                 <svg
