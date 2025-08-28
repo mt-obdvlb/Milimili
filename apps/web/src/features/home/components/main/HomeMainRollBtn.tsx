@@ -15,7 +15,7 @@ const HomeMainRollBtn = () => {
     await queryClient.invalidateQueries({ queryKey: ['video', 'recommend'] })
   }
   return (
-    <div className={'absolute top-0 left-[100%] z-2 translate-2.5'}>
+    <div className={'absolute top-0 left-[100%] z-2 translate-x-2.5'}>
       <Button
         className={
           'bg-bg1_float text-text1 border-line_regular hover:bg-graph_bg_thick ml-0 flex h-auto w-10 origin-center translate-z-0 cursor-pointer flex-col items-center justify-center rounded-[8px] border p-[9px] text-xs transition duration-200'
