@@ -10,7 +10,15 @@ import { cn } from '@/lib'
 import Link from 'next/link'
 import { VideoList } from '@mtobdvlb/shared-types'
 
-const HomeMainRecommendedSwiper = ({ videoSwiperList }: { videoSwiperList?: VideoList }) => {
+const RecommendedSwiper = ({
+  videoSwiperList,
+  className,
+  pt,
+}: {
+  videoSwiperList?: VideoList
+  className?: string
+  pt?: string
+}) => {
   const [activeIndex, setActiveIndex] = useState(0)
   const [type, setType] = useState<'next' | 'prev'>('next')
 
@@ -31,8 +39,8 @@ const HomeMainRecommendedSwiper = ({ videoSwiperList }: { videoSwiperList?: Vide
   )
 
   return (
-    <div className={'relative col-span-2 row-span-2'}>
-      <div className={'relative pt-[69%]'}>
+    <div className={cn('relative col-span-2 row-span-2', className)}>
+      <div className={cn('relative pt-[69%]', pt)}>
         <div
           className={
             'bg-graph_bg_regular absolute inset-0 flex flex-col overflow-hidden rounded-[6px]'
@@ -182,4 +190,4 @@ const HomeMainRecommendedSwiper = ({ videoSwiperList }: { videoSwiperList?: Vide
   )
 }
 
-export default HomeMainRecommendedSwiper
+export default RecommendedSwiper

@@ -1,6 +1,7 @@
 import HeaderBarWrapper from '@/components/layout/header/header-bar/HeaderBarWrapper'
 import HeaderBanner from '@/components/layout/header/header-banner/HeaderBanner'
 import HotTabs from '@/features/hot/components/HotTabs'
+import HotToTopBtn from '@/features/hot/components/HotToTopBtn'
 
 const Hot = () => {
   return (
@@ -11,6 +12,7 @@ const Hot = () => {
       </header>
       <main className={'mx-auto my-0 max-w-[1483px] cursor-default'}>
         <HotTabs />
+        <HotToTopBtn />
       </main>
     </>
   )

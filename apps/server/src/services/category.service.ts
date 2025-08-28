@@ -11,4 +11,11 @@ export const CategoryService = {
       name: item.name,
     }))
   },
+  getById: async (id: string) => {
+    const res = await CategoryModel.findById(id)
+    return {
+      id: res?._id.toString() ?? '',
+      name: res?.name ?? '',
+    }
+  },
 }

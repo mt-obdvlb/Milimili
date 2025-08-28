@@ -5,10 +5,10 @@ import dayjs from 'dayjs'
 import { cn } from '@/lib'
 import { formatPlayCount, formatTime } from '@/utils'
 import { useState } from 'react'
-import HomeMainVideoPlayer from '@/features/home/components/main/HomeMainVideoPlayer'
+import TinyVideoPlayer from '@/components/layout/video/TinyVideoPlayer'
 import { VideoListItem } from '@mtobdvlb/shared-types'
 
-const HomeMainVideoItem = ({ video, margin }: { video: VideoListItem; margin: boolean }) => {
+const TinyVideoItem = ({ video, margin = false }: { video: VideoListItem; margin?: boolean }) => {
   const [time, setTime] = useState(0)
   const [hover, setHover] = useState(false)
 
@@ -47,7 +47,7 @@ const HomeMainVideoItem = ({ video, margin }: { video: VideoListItem; margin: bo
             >
               <div className={'relative size-full scale-[1.01] text-xs'}>
                 <div className={'relative size-full shadow-none'}>
-                  <HomeMainVideoPlayer hover={hover} time={time} setTime={setTime} video={video} />
+                  <TinyVideoPlayer hover={hover} time={time} setTime={setTime} video={video} />
                 </div>
               </div>
             </div>
@@ -188,4 +188,4 @@ const HomeMainVideoItem = ({ video, margin }: { video: VideoListItem; margin: bo
   )
 }
 
-export default HomeMainVideoItem
+export default TinyVideoItem
