@@ -1,8 +1,9 @@
 import { FavoriteFolderModel, FollowModel, UserModel } from '@/models'
 import { MESSAGE } from '@/constants'
-import { comparePassword, signToken } from '@/utils'
+import { comparePassword, hashPassword, HttpError, signToken } from '@/utils'
 import redis from '@/utils/redis.util'
 import { FeedModel } from '@/models/feed.model'
+import { UserFindPasswordDTO } from '@mtobdvlb/shared-types'
 
 export const UserService = {
   loginByPassword: async (email: string, password: string) => {
@@ -72,5 +73,18 @@ export const UserService = {
       email: user.email,
       id: user._id.toString(),
     }
+  },
+  getByEmail: async (email: string) => {
+    const user = await UserModel.findOne({ email })
+    if (!user) throw new HttpError(400, MESSAGE.USER_NOT_FOUND)
+  },
+  findPassword: async (body: UserFindPasswordDTO) => {
+    const user = await UserModel.findOne({ email: body.email })
+    if (!user) throw new HttpError(400, MESSAGE.USER_NOT_FOUND)
+    const key = `email_code:${body.email}`
+    if (!(await redis.exists(key)) || (await redis.get(key)) !== body.code)
+      throw new Error(MESSAGE.INVALID_CODE)
+    const hashed = await hashPassword(body.password)
+    await UserModel.updateOne({ email: body.email }, { password: hashed })
   },
 }

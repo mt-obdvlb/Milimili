@@ -6,6 +6,7 @@ import 'comment-core-library/dist/css/style.css'
 import Provider from '@/components/provider/Provider'
 import Initializer from '@/components/initializer/Initializer'
 import LoginModel from '@/components/layout/login-model/LoginModel'
+import Footer from '@/components/layout/footer/Footer'
 
 export default ({ children }: { children: React.ReactNode }) => {
   return (
@@ -23,6 +24,7 @@ export default ({ children }: { children: React.ReactNode }) => {
         <Provider>
           <Initializer />
           {children}
+          <Footer />
           <LoginModel />
         </Provider>
       </body>

@@ -1,4 +1,5 @@
 export * from './format'
+export * from './getRandomIndex'
 export * from './isServer'
 export * from './openNewTable'
 export * from './throttle'

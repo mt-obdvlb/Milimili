@@ -20,7 +20,7 @@ const NotFoundErrorManga = () => {
 
   useEffect(() => {
     const originalBackgroundColor = document.body.style.backgroundColor
-    document.body.style.backgroundColor = '#f0f0f0'
+    document.body.style.backgroundColor = '#f1f2f3'
     return () => {
       document.body.style.backgroundColor = originalBackgroundColor
     }

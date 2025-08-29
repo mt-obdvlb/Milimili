@@ -45,11 +45,6 @@ const userSchema = new Schema<IUser>(
     password: {
       type: String,
       required: false,
-      minlength: 8,
-      validate: {
-        validator: (val: string) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])/.test(val),
-        message: '密码需包含大写字母、小写字母、数字和特殊字符',
-      },
     },
   },
   { versionKey: false, timestamps: true }

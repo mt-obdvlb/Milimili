@@ -9,9 +9,9 @@ import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import { useAuthSendCode } from '@/features/auth/api'
+import { Dispatch, SetStateAction } from 'react'
 import { useUserLogin } from '@/features/user/api'
+import { useSendCode } from '@/hooks/useSendCode'
 
 const schema = z.object({
   code: z.string().min(1, '请输入验证码'),
@@ -37,33 +37,10 @@ const LoginModelCode = ({
     reValidateMode: 'onSubmit',
   })
 
-  const [countdown, setCountdown] = useState(0)
-
-  const { sendCode } = useAuthSendCode()
+  const { handleSendCode, countdown } = useSendCode()
   const { login } = useUserLogin()
 
   const { label, btnWrap, btnPrimary, input, item } = formStyles
-
-  // 发送验证码
-  const handleSendCode = async () => {
-    const email = form.getValues('email')
-    const { error, success } = await schema.pick({ email: true }).safeParseAsync({ email })
-    if (!success) {
-      toast(error.message)
-      return
-    }
-    const res = await sendCode({ email })
-    toast(res.code ? (res.message ?? '') : '验证码已发送')
-    setCountdown(60)
-  }
-
-  useEffect(() => {
-    if (countdown <= 0) return
-    const timer = setInterval(() => {
-      setCountdown((prev) => prev - 1)
-    }, 1000)
-    return () => clearInterval(timer)
-  }, [countdown])
 
   const emailValue = form.watch('email')
   const emailValid = z.email().safeParse(emailValue).success
@@ -74,7 +51,6 @@ const LoginModelCode = ({
       return
     }
     const res = await login(data)
-    toast(res.message ?? '')
     if (res.code) return
     window.location.reload()
   }
@@ -103,7 +79,7 @@ const LoginModelCode = ({
                 </FormControl>
                 <Separator className='mx-0 my-0 mr-5 h-[26px]' orientation='vertical' />
                 <div
-                  onClick={countdown ? () => {} : handleSendCode}
+                  onClick={countdown ? () => {} : () => handleSendCode(emailValue)}
                   className={cn(
                     'm-0 w-[90px] p-0 text-center text-sm leading-5 font-normal',
                     emailValid && !countdown

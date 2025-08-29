@@ -56,7 +56,6 @@ const LoginModelPassword = ({
       return
     }
     const res = await login(data)
-    toast(res.message ?? '')
     if (res.code) return
     window.location.reload()
   }
