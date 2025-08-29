@@ -8,6 +8,7 @@ import axios, {
 } from 'axios'
 import { isServer } from '@/utils'
 import { AuthRefresh, Result } from '@mtobdvlb/shared-types'
+import { toast } from '@/lib/toast'
 
 interface RetryableAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean
@@ -71,7 +72,10 @@ const request: AxiosInstance = (() => {
 
   // —— response interceptor
   instance.interceptors.response.use(
-    (res: AxiosResponse) => res.data,
+    (res: AxiosResponse) => {
+      console.log(res.data)
+      return res.data
+    },
     async (error: AxiosError) => {
       const originalRequest = error.config as RetryableAxiosRequestConfig
 
@@ -146,7 +150,17 @@ const request: AxiosInstance = (() => {
           return instance(originalRequest)
         } catch (err) {
           processQueue(err, null)
-          return Promise.reject(err)
+
+          if (!isServer()) {
+            toast(
+              (
+                error.response.data as {
+                  message: string
+                }
+              )?.message
+            )
+          }
+          return error.response.data
         } finally {
           isRefreshing = false
         }
@@ -154,16 +168,21 @@ const request: AxiosInstance = (() => {
 
       // 其他错误
       if (error.response) {
-        console.log(
-          (
-            error.response.data as {
-              message: string
-            }
-          )?.message
-        )
+        if (!isServer()) {
+          toast(
+            (
+              error.response.data as {
+                message: string
+              }
+            )?.message
+          )
+        }
         return error.response.data
       }
-      return Promise.reject(error)
+      return {
+        code: 1,
+        message: error.message,
+      }
     }
   )
 

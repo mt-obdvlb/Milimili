@@ -1,4 +1,4 @@
-import NotFoundHeaderBarWrapper from '@/features/not-found/components/NotFoundHeaderBarWrapper'
+import NotFoundHeaderBarWrapper from '@/components/layout/header/header-bar/HeaderBarTypeTwoWrapper'
 import NotFoundErrorPanel from '@/features/not-found/components/NotFoundErrorPanel'
 import NotFoundErrorManga from '@/features/not-found/components/NotFoundErrorManga'
 

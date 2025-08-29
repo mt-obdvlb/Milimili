@@ -1,5 +1,4 @@
 import { z } from 'zod/v4'
-import { Types } from 'mongoose'
 import { VideoSourceType, VideoStatus } from '@/api'
 
 export const videoCreateDTO = z.object({
@@ -7,9 +6,7 @@ export const videoCreateDTO = z.object({
   title: z.string().min(1).max(200),
   description: z.string().max(1000).optional(),
   thumbnail: z.string(),
-  categoryId: z.string().refine((v) => Types.ObjectId.isValid(v), {
-    message: 'categoryId 必须是合法的 ObjectId',
-  }),
+  categoryId: z.string(),
   time: z.number().min(0),
   status: z
     .enum(['pending', 'scheduled', 'published'] satisfies [VideoStatus, ...VideoStatus[]])

@@ -1,6 +1,2 @@
-export * from '../../../../components/layout/Swiper/RecommendedSwiper'
 export * from './HomeMainRollBtn'
-export * from '../../../../components/layout/video/TinyVideoItem'
 export * from './HomeMainVideoList'
-export * from '../../../../components/layout/video/TinyVideoPlayer'
-export * from '../../../../components/layout/skeleton/VideoSkeleton'

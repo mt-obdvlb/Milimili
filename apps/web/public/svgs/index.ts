@@ -38,6 +38,25 @@ const removeUnusedNamespaces = (content: string): string => {
 }
 
 /**
+ * 删除不允许的自定义属性
+ * @param content SVG 文件内容
+ */
+const removeDisallowedAttributes = (content: string): string => {
+  const disallowedAttrs = ['t', 'p-id']
+  disallowedAttrs.forEach((attr) => {
+    // 严格匹配完整属性名，不会误删 height/width 等
+    const regexDoubleQuote = new RegExp(`\\s${attr}="[^"]*"`, 'g')
+    const regexSingleQuote = new RegExp(`\\s${attr}='[^']*'`, 'g')
+    const regexNoQuote = new RegExp(`\\s${attr}=[^\\s>]+`, 'g')
+
+    content = content.replace(regexDoubleQuote, '')
+    content = content.replace(regexSingleQuote, '')
+    content = content.replace(regexNoQuote, '')
+  })
+  return content
+}
+
+/**
  * 处理单个 SVG 文件
  * @param filePath 文件路径
  */
@@ -45,12 +64,13 @@ const processSvgFile = (filePath: string) => {
   let content = fs.readFileSync(filePath, 'utf-8')
   content = fixSvgEmptyTags(content)
   content = removeUnusedNamespaces(content)
+  content = removeDisallowedAttributes(content)
   fs.writeFileSync(filePath, content, 'utf-8')
   console.log(`Processed: ${filePath}`)
 }
 
 // 使用示例
-const svgDir = path.resolve('./') // 替换成你的 SVG 文件夹
+const svgDir = path.resolve('./') // 替换成你的 SVG 文件夹路径
 const svgFiles = getFiles(svgDir, '.svg')
 
 svgFiles.forEach(processSvgFile)

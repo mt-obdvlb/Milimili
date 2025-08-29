@@ -12,10 +12,9 @@
   "scripts": {
     "dev": "tsup --watch",
     "build": "tsup",
-    "barrels": "barrelsby -d src --delete --recurse -l all -q -S -H"
+    "barrels": "barrelsby -d src --delete --recurse -l all -q -S -H --exclude \\\\.d\\\\.ts$"
   },
   "dependencies": {
-    "node": "^24.6.0",
     "tsup": "^8.5.0",
     "zod": "^4.0.5"
   },

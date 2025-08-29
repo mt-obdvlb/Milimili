@@ -1,5 +1,4 @@
 import { toast as sonnerToast } from 'sonner'
-import 'client-only'
 import { throttle } from '@/utils/throttle'
 
 export const toast = throttle((message: string | number) => {

@@ -13,7 +13,7 @@ import {
   useNotificationStatistics,
 } from '@/features'
 
-const NotFoundHeaderBar = ({
+const HeaderBarTypeTwo = ({
   searchLogTop10List,
   userHomeInfo,
 }: {
@@ -48,4 +48,4 @@ const NotFoundHeaderBar = ({
   )
 }
 
-export default NotFoundHeaderBar
+export default HeaderBarTypeTwo

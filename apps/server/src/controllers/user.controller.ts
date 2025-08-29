@@ -1,7 +1,14 @@
 import { RequestHandler } from 'express'
 import { UserService } from '@/services/user.service'
 import { MESSAGE } from '@/constants'
-import { Result, UserGetInfo, UserGetInfoHome, UserLoginDTO } from '@mtobdvlb/shared-types'
+import {
+  Result,
+  UserFindPasswordDTO,
+  UserGetByEmailDTO,
+  UserGetInfo,
+  UserGetInfoHome,
+  UserLoginDTO,
+} from '@mtobdvlb/shared-types'
 import { ParamsDictionary } from 'express-serve-static-core'
 
 export const userLogin: RequestHandler<ParamsDictionary, Result, UserLoginDTO> = async (
@@ -81,6 +88,30 @@ export const userGetInfo: RequestHandler<ParamsDictionary, Result<UserGetInfo>> 
   const data = await UserService.getInfo(req.user.id)
   return res.status(200).json({
     data,
+    code: 0,
+  })
+}
+
+export const userGetByEmail: RequestHandler<
+  ParamsDictionary,
+  Result<UserGetInfo>,
+  UserGetByEmailDTO
+> = async (req, res) => {
+  const { email } = req.body
+
+  await UserService.getByEmail(email)
+  return res.status(200).json({
+    code: 0,
+  })
+}
+
+export const userFindPassword: RequestHandler<
+  ParamsDictionary,
+  Result,
+  UserFindPasswordDTO
+> = async (req, res) => {
+  await UserService.findPassword(req.body)
+  return res.status(200).json({
     code: 0,
   })
 }
