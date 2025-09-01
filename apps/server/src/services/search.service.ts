@@ -77,7 +77,8 @@ export const SearchService = {
       all: { publishedAt: -1 },
       publishedAt: { publishedAt: -1 },
       view: { 'stats.views': -1 },
-      like: { 'stats.likes': -1 },
+      danmaku: { 'stats.danmakus': -1 },
+      favorite: { 'stats.favorite': -1 },
     }
 
     // ===== 视频聚合 =====

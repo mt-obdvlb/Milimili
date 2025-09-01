@@ -15,7 +15,7 @@ const HeaderBarSearchBarHistory = ({
   if (!historys) return <></>
   if (historys?.length === 0) return <></>
   return (
-    <div className={'max-w-[314px]'}>
+    <div className={''}>
       <div className={'flex items-center justify-between px-4'}>
         <div className={'h-6 text-[16px] leading-6 font-medium'}>搜索历史</div>
         <div

@@ -4,7 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 
 import { cn } from '@/lib/utils'
 
-const buttonVariants = cva('  m-0 p-0 border-0 text-transparent ', {
+const buttonVariants = cva('  m-0 p-0 border-0 text-inherit ', {
   variants: {
     variant: {
       default: '',
