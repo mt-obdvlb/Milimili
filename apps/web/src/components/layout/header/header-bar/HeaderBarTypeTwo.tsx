@@ -34,7 +34,7 @@ const HeaderBarTypeTwo = ({
         'flex h-[64px] w-full items-center px-[24px]',
 
         'bg-bg1_float animate-none shadow-[inset_0_-1px_0_var(--line_regular)]',
-        hidden && 'justify-betweenw'
+        hidden && 'justify-between'
       )}
     >
       <HeaderBarLeftEntry type={type} />

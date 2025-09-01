@@ -3,8 +3,12 @@ import { searchGet } from '@/services/search'
 import type { SearchGetRequest } from '@/types/search'
 import { Result, SearchGetList } from '@mtobdvlb/shared-types'
 
-export const useSearch = (params: SearchGetRequest) => {
-  return useInfiniteQuery<Result<SearchGetList>, unknown>({
+export const useSearch = (
+  params: Omit<SearchGetRequest, 'page'> & {
+    page?: number
+  }
+) => {
+  const { data, fetchNextPage } = useInfiniteQuery<Result<SearchGetList>, unknown>({
     queryKey: ['search', params],
     queryFn: async ({ pageParam = 1 }) => {
       // pageParam 是前端累加页码
@@ -25,4 +29,11 @@ export const useSearch = (params: SearchGetRequest) => {
     },
     initialPageParam: 1,
   })
+  const searchList = data?.pages.flatMap((page) => page.data!.list.list) || []
+  console.log(searchList)
+  return {
+    searchList,
+    fetchNextPage,
+    searchUser: data?.pages[0]?.data?.user,
+  }
 }

@@ -4,14 +4,11 @@ import React, { useEffect, useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import Link from 'next/link'
-import { Command, CommandItem, CommandList } from '@/components/ui/command'
-import Image from 'next/image'
 import { SearchLogTop10List } from '@mtobdvlb/shared-types'
-import HeaderBarSearchBarHistory from '@/components/layout/header/header-bar/HeaderBarSearchBarHistory'
 import { useSearchLogGet } from '@/features'
 import { openNewTab } from '@/utils'
 import { useLocalStorage } from 'react-use'
+import HeaderBarSearchBarContent from '@/components/layout/header/header-bar/HeaderBarSearchBarContent'
 
 const HeaderBarSearchBar = ({
   searchLogTop10List,
@@ -63,7 +60,7 @@ const HeaderBarSearchBar = ({
       }}
       onClickCapture={() => {
         startedInsideRef.current = false
-      }} // 一次点击结束复位
+      }}
     >
       <form
         onSubmit={(e) => {
@@ -144,80 +141,15 @@ const HeaderBarSearchBar = ({
 
       {open && (
         <div className='absolute top-full left-0 z-50 w-full overflow-y-auto rounded-b-[8px] border border-t-0 border-[#E3E5E7] bg-white p-0 pt-[13px] pb-[16px]'>
-          {(query.length === 0 || !searchLogList?.length) && (
-            <>
-              <HeaderBarSearchBarHistory
-                historys={historys}
-                setHistorys={setHistorys}
-                remove={remove}
-              />
-              <div className={'flex w-full flex-col items-center'}>
-                <div className={'flex w-full items-center justify-between px-[16px]'}>
-                  <h2 className={'h-[24px] text-[16px] leading-[24px] font-medium'}>
-                    milimili热搜
-                  </h2>
-                </div>
-                <div className={'w-full'}>
-                  {searchLogTop10List?.map((item) => (
-                    <Link
-                      href={`/search?kw=${item.keyword}`}
-                      key={item.keyword}
-                      target={'_blank'}
-                      onClick={(e) => {
-                        e.preventDefault()
-                        void handleSearch(item.keyword)
-                      }}
-                      className={
-                        'flex h-[38px] items-center pl-[16px] hover:bg-[#E3E5E7] hover:outline-none'
-                      }
-                    >
-                      <p
-                        className={cn(
-                          'mr-[7px] h-[17px] w-[15px] min-w-[15px] text-center text-[14px] leading-[17px] text-[#18191C]',
-                          item.rank > 3 && 'text-text3'
-                        )}
-                      >
-                        {item.rank}
-                      </p>
-                      <p
-                        className={
-                          'mr-[6px] h-[17px] overflow-hidden text-sm leading-[17px] tracking-[0] text-ellipsis whitespace-nowrap'
-                        }
-                      >
-                        {item.keyword}
-                      </p>
-                      {item.rank % 3 === 0 && (
-                        <Image height={14} width={14} src={'/images/hot.png'} alt={'hot'} />
-                      )}
-                      {item.rank % 3 === 1 && (
-                        <Image height={14} width={14} src={'/images/new.png'} alt={'new'} />
-                      )}
-                      {item.rank % 3 === 2 && (
-                        <Image height={14} width={14} src={'/images/gen.png'} alt={'gen'} />
-                      )}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
-          {query.length > 0 && searchLogList?.length && (
-            <Command className={'size-full'}>
-              <CommandList className={'mt-1.5 -mb-1.5 max-w-[383px]'}>
-                {searchLogList?.map((r, index) => (
-                  <CommandItem
-                    className={
-                      'hover:bg-graph_bg_thick relative mb-1 block h-[32px] cursor-pointer overflow-hidden px-4 text-left text-sm leading-[32px] overflow-ellipsis whitespace-nowrap'
-                    }
-                    key={r.keyword + index}
-                    onSelect={() => handleSearch(r.keyword)}
-                  >
-                    {r.keyword}
-                  </CommandItem>
-                ))}
-              </CommandList>
-            </Command>
-          )}
+          <HeaderBarSearchBarContent
+            query={query}
+            searchLogList={searchLogList}
+            historys={historys}
+            setHistorys={setHistorys}
+            remove={remove}
+            handleSearch={handleSearch}
+            searchLogTop10List={searchLogTop10List}
+          />
         </div>
       )}
     </div>

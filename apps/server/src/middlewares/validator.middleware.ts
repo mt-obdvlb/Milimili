@@ -24,6 +24,7 @@ export const validatorMiddleware =
 
     if (schemas.query) {
       const queryResult = schemas.query.safeParse(req.query)
+      console.log(queryResult.error?.message)
       if (!queryResult.success) {
         return res.status(400).json({
           code: 1,
