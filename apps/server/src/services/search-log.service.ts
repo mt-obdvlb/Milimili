@@ -31,4 +31,10 @@ export const SearchLogService = {
       rank: index + 1,
     }))
   },
+  get: async () => {
+    const res = await SearchLogModel.aggregate([{ $sample: { size: 10 } }])
+    return res.map((item) => ({
+      keyword: item.keyword,
+    }))
+  },
 }

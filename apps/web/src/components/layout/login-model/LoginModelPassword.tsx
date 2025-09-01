@@ -12,7 +12,7 @@ import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import Image from 'next/image'
-import { openNewTable } from '@/utils/openNewTable'
+import { openNewTab } from '@/utils/openNewTab'
 import { useUserLogin } from '@/features/user/api'
 
 const schema = z.object({
@@ -172,7 +172,7 @@ const LoginModelPassword = ({
                       {
                         title: '去找回密码',
                         desc: '通过绑定的邮箱重置密码',
-                        onClick: () => openNewTable('/find-password'),
+                        onClick: () => openNewTab('/find-password'),
                       },
                     ].map((item) => (
                       <div

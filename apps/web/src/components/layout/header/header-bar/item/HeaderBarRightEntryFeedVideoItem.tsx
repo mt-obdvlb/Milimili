@@ -4,7 +4,7 @@ import { FeedRecentItem } from '@mtobdvlb/shared-types'
 import { tv } from 'tailwind-variants'
 import Link from 'next/link'
 import Image from 'next/image'
-import { formatWatchAt, openNewTable } from '@/utils'
+import { formatWatchAt, openNewTab } from '@/utils'
 import { cn, toastBuilding } from '@/lib'
 
 const HeaderBarRightEntryFeedVideoItem = ({ feed }: { feed: FeedRecentItem }) => {
@@ -58,7 +58,7 @@ const HeaderBarRightEntryFeedVideoItem = ({ feed }: { feed: FeedRecentItem }) =>
   } = feedStyles()
 
   return (
-    <div onClick={() => openNewTable(`/video/${feed.video.id}`)}>
+    <div onClick={() => openNewTab(`/video/${feed.video.id}`)}>
       <div className={base()}>
         <div className={container()}>
           <div className={boxLeft()}>
