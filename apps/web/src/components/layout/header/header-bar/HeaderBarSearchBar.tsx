@@ -5,42 +5,72 @@ import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { Command, CommandGroup, CommandItem } from '@/components/ui/command'
+import { Command, CommandItem, CommandList } from '@/components/ui/command'
 import Image from 'next/image'
 import { SearchLogTop10List } from '@mtobdvlb/shared-types'
+import HeaderBarSearchBarHistory from '@/components/layout/header/header-bar/HeaderBarSearchBarHistory'
+import { useSearchLogGet } from '@/features'
+import { openNewTab } from '@/utils'
+import { useLocalStorage } from 'react-use'
 
 const HeaderBarSearchBar = ({
   searchLogTop10List,
+  hidden,
 }: {
   searchLogTop10List?: SearchLogTop10List
+  hidden?: boolean
 }) => {
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
-  // 模拟搜索结果
-  const results = ['鬼灭之刃', '进击的巨人', '柯南', '海贼王']
+  const containerRef = useRef<HTMLDivElement>(null)
+  const startedInsideRef = useRef(false)
 
-  // 点击或聚焦 input 时打开下拉
+  const { searchLogList } = useSearchLogGet(query)
+  const [historys, setHistorys, remove] = useLocalStorage<string[]>('historys', [])
+
   const handleFocus = () => setOpen(true)
 
-  // 点击其他地方关闭下拉
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (!inputRef.current) return
+      if (!containerRef.current) return
       if (!(e.target instanceof Node)) return
-      if (!inputRef.current.contains(e.target)) setOpen(false)
+      if (!containerRef.current.contains(e.target)) {
+        setOpen(false)
+      }
     }
     document.addEventListener('click', handleClickOutside)
     return () => document.removeEventListener('click', handleClickOutside)
   }, [])
+
+  const handleSearch = async (keyword: string) => {
+    if (!keyword) keyword = searchLogList?.at(0)?.keyword ?? ''
+    if (!keyword) return
+    setHistorys([keyword, ...(historys?.filter((item) => item !== keyword) || [])])
+    setQuery(keyword)
+    openNewTab(`/search?kw=${keyword}`)
+  }
 
   return (
     <div
       className={
         'max-w[500px] relative min-h-[38px] min-w-[181px] flex-1 ' + cn({ 'border-b-none': open })
       }
+      hidden={hidden}
+      ref={containerRef}
+      onMouseDownCapture={() => {
+        startedInsideRef.current = true
+      }}
+      onClickCapture={() => {
+        startedInsideRef.current = false
+      }} // 一次点击结束复位
     >
       <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          void handleSearch(query)
+        }}
+        onFocus={handleFocus}
         className={cn(
           'relative z-1 flex h-[40px] items-center overflow-hidden rounded-[8px] border border-[#E3E5E7] bg-[#F1F2F3] pr-[48px] pl-[4px] text-[38px] text-[#18191C] opacity-90 transition-colors duration-300 hover:bg-white hover:opacity-100',
           {
@@ -60,20 +90,40 @@ const HeaderBarSearchBar = ({
             name={'keyword'}
             ref={inputRef}
             value={query}
-            onFocus={handleFocus}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder={'东方'}
+            placeholder={searchLogList?.at(0)?.keyword}
+            autoComplete='off'
             className={
-              'focus-visible:border-input h-auto flex-1 rounded-none border-none bg-transparent py-0 pr-[8px] pl-0 text-[14px] leading-[20px] shadow-none ring-0 outline-none focus:border-none focus:shadow-none focus:ring-0 focus:outline-none focus-visible:ring-0'
+              'text-text2 focus:text-text1 h-auto flex-1 rounded-none border-none bg-transparent py-0 pr-[8px] pl-0 text-[14px] leading-[20px] shadow-none ring-0 outline-none focus:border-none focus:shadow-none'
             }
           />
+          {query.length > 0 && (
+            <div className='group size-4 cursor-pointer' onClick={() => setQuery('')}>
+              <svg
+                width='16'
+                height='16'
+                viewBox='0 0 16 16'
+                fill='none'
+                xmlns='http://www.w3.org/2000/svg'
+                className={'text-graph_weak absolute size-4'}
+              >
+                <path
+                  className={'group-hover:fill-graph_icon'}
+                  fillRule='evenodd'
+                  clipRule='evenodd'
+                  d='M8 14.75C11.7279 14.75 14.75 11.7279 14.75 8C14.75 4.27208 11.7279 1.25 8 1.25C4.27208 1.25 1.25 4.27208 1.25 8C1.25 11.7279 4.27208 14.75 8 14.75ZM9.64999 5.64303C9.84525 5.44777 10.1618 5.44777 10.3571 5.64303C10.5524 5.83829 10.5524 6.15487 10.3571 6.35014L8.70718 8.00005L10.3571 9.64997C10.5524 9.84523 10.5524 10.1618 10.3571 10.3571C10.1618 10.5523 9.84525 10.5523 9.64999 10.3571L8.00007 8.70716L6.35016 10.3571C6.15489 10.5523 5.83831 10.5523 5.64305 10.3571C5.44779 10.1618 5.44779 9.84523 5.64305 9.64997L7.29296 8.00005L5.64305 6.35014C5.44779 6.15487 5.44779 5.83829 5.64305 5.64303C5.83831 5.44777 6.15489 5.44777 6.35016 5.64303L8.00007 7.29294L9.64999 5.64303Z'
+                  fill='#C9CCD0'
+                ></path>
+              </svg>
+            </div>
+          )}
         </div>
         <Button
+          type={'submit'}
           className={
             'absolute top-[3px] right-[7px] m-0 flex h-8 w-8 cursor-pointer items-center justify-center ' +
             'text-text1 rounded-[6px] border-0 bg-transparent p-0 leading-[32px] shadow-none transition-colors duration-300 hover:bg-[#E3E5E7]'
           }
-          onClick={() => alert(`搜索: ${query}`)}
         >
           <svg
             width='17'
@@ -94,69 +144,78 @@ const HeaderBarSearchBar = ({
 
       {open && (
         <div className='absolute top-full left-0 z-50 w-full overflow-y-auto rounded-b-[8px] border border-t-0 border-[#E3E5E7] bg-white p-0 pt-[13px] pb-[16px]'>
-          {query.length === 0 && (
-            <div className={'flex w-full flex-col items-center'}>
-              <div className={'flex w-full items-center justify-between px-[16px]'}>
-                <h2 className={'h-[24px] text-[16px] leading-[24px] font-medium'}>milimili热搜</h2>
-              </div>
-              <div className={'w-full'}>
-                {searchLogTop10List?.map((item) => (
-                  <Link
-                    href={'/apps/web/public'}
-                    key={item.keyword}
-                    className={
-                      'flex h-[38px] items-center pl-[16px] hover:bg-[#E3E5E7] hover:outline-none'
-                    }
-                  >
-                    <p
-                      className={cn(
-                        'mr-[7px] h-[17px] w-[15px] min-w-[15px] text-center text-[14px] leading-[17px] text-[#18191C]',
-                        item.rank > 3 && 'text-text3'
-                      )}
-                    >
-                      {item.rank}
-                    </p>
-                    <p
+          {(query.length === 0 || !searchLogList?.length) && (
+            <>
+              <HeaderBarSearchBarHistory
+                historys={historys}
+                setHistorys={setHistorys}
+                remove={remove}
+              />
+              <div className={'flex w-full flex-col items-center'}>
+                <div className={'flex w-full items-center justify-between px-[16px]'}>
+                  <h2 className={'h-[24px] text-[16px] leading-[24px] font-medium'}>
+                    milimili热搜
+                  </h2>
+                </div>
+                <div className={'w-full'}>
+                  {searchLogTop10List?.map((item) => (
+                    <Link
+                      href={`/search?kw=${item.keyword}`}
+                      key={item.keyword}
+                      target={'_blank'}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        void handleSearch(item.keyword)
+                      }}
                       className={
-                        'mr-[6px] h-[17px] overflow-hidden text-sm leading-[17px] tracking-[0] text-ellipsis whitespace-nowrap'
+                        'flex h-[38px] items-center pl-[16px] hover:bg-[#E3E5E7] hover:outline-none'
                       }
                     >
-                      {item.keyword}
-                    </p>
-                    {item.rank % 3 === 0 && (
-                      <Image height={14} width={14} src={'/images/hot.png'} alt={'hot'} />
-                    )}
-                    {item.rank % 3 === 1 && (
-                      <Image height={14} width={14} src={'/images/new.png'} alt={'new'} />
-                    )}
-                    {item.rank % 3 === 2 && (
-                      <Image height={14} width={14} src={'/images/gen.png'} alt={'gen'} />
-                    )}
-                  </Link>
-                ))}
+                      <p
+                        className={cn(
+                          'mr-[7px] h-[17px] w-[15px] min-w-[15px] text-center text-[14px] leading-[17px] text-[#18191C]',
+                          item.rank > 3 && 'text-text3'
+                        )}
+                      >
+                        {item.rank}
+                      </p>
+                      <p
+                        className={
+                          'mr-[6px] h-[17px] overflow-hidden text-sm leading-[17px] tracking-[0] text-ellipsis whitespace-nowrap'
+                        }
+                      >
+                        {item.keyword}
+                      </p>
+                      {item.rank % 3 === 0 && (
+                        <Image height={14} width={14} src={'/images/hot.png'} alt={'hot'} />
+                      )}
+                      {item.rank % 3 === 1 && (
+                        <Image height={14} width={14} src={'/images/new.png'} alt={'new'} />
+                      )}
+                      {item.rank % 3 === 2 && (
+                        <Image height={14} width={14} src={'/images/gen.png'} alt={'gen'} />
+                      )}
+                    </Link>
+                  ))}
+                </div>
               </div>
-            </div>
+            </>
           )}
-          {query.length > 0 && (
-            <Command>
-              <CommandGroup>
-                {results.length ? (
-                  results.map((r) => (
-                    <CommandItem
-                      key={r}
-                      onSelect={() => {
-                        setQuery(r)
-                        setOpen(false)
-                        inputRef.current?.focus()
-                      }}
-                    >
-                      {r}
-                    </CommandItem>
-                  ))
-                ) : (
-                  <CommandItem disabled>无搜索结果</CommandItem>
-                )}
-              </CommandGroup>
+          {query.length > 0 && searchLogList?.length && (
+            <Command className={'size-full'}>
+              <CommandList className={'mt-1.5 -mb-1.5 max-w-[383px]'}>
+                {searchLogList?.map((r, index) => (
+                  <CommandItem
+                    className={
+                      'hover:bg-graph_bg_thick relative mb-1 block h-[32px] cursor-pointer overflow-hidden px-4 text-left text-sm leading-[32px] overflow-ellipsis whitespace-nowrap'
+                    }
+                    key={r.keyword + index}
+                    onSelect={() => handleSearch(r.keyword)}
+                  >
+                    {r.keyword}
+                  </CommandItem>
+                ))}
+              </CommandList>
             </Command>
           )}
         </div>

@@ -16,9 +16,11 @@ import {
 const HeaderBarTypeTwo = ({
   searchLogTop10List,
   userHomeInfo,
+  hidden,
 }: {
   searchLogTop10List?: SearchLogTop10List
   userHomeInfo?: UserGetInfoHome
+  hidden?: boolean
 }) => {
   const type = 'second'
   const { favoriteRecentList } = useFavoriteGetRecent()
@@ -31,11 +33,12 @@ const HeaderBarTypeTwo = ({
       className={cn(
         'flex h-[64px] w-full items-center px-[24px]',
 
-        'bg-bg1_float animate-none shadow-[inset_0_-1px_0_var(--line_regular)]'
+        'bg-bg1_float animate-none shadow-[inset_0_-1px_0_var(--line_regular)]',
+        hidden && 'justify-betweenw'
       )}
     >
       <HeaderBarLeftEntry type={type} />
-      <HeaderBarSearchBar searchLogTop10List={searchLogTop10List} />
+      <HeaderBarSearchBar hidden={hidden} searchLogTop10List={searchLogTop10List} />
       <HeaderBarRightEntry
         favoriteRecentList={favoriteRecentList}
         feedRecentList={feedRecentList}

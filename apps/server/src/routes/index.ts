@@ -9,6 +9,7 @@ import historyRoute from '@/routes/history.route'
 import commentRoute from '@/routes/comment.route'
 import favoriteRoute from '@/routes/favorite.route'
 import searchLogRoute from '@/routes/search-log.route'
+import searchRoute from '@/routes/search.route'
 
 const router = Router()
 
@@ -22,5 +23,6 @@ router.use('/comments', commentRoute)
 router.use('/favorites', favoriteRoute)
 router.use('/notifications', notificationRoute)
 router.use('/search-logs', searchLogRoute)
+router.use('/searches', searchRoute)
 
 export default router

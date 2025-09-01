@@ -1,7 +1,7 @@
 'use client'
 
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
-import { openNewTable } from '@/utils/openNewTable'
+import { openNewTab } from '@/utils/openNewTab'
 import Link from 'next/link'
 import React from 'react'
 import { cn } from '@/lib'
@@ -530,7 +530,7 @@ const HeaderBarRightEntry = ({
         }
       ></HeaderBarHoverCardWithBounce>
       <HoverCard openDelay={150} closeDelay={150}>
-        <HoverCardTrigger onClick={() => openNewTable('/')} asChild>
+        <HoverCardTrigger onClick={() => openNewTab('/')} asChild>
           <div
             className={
               'ml-[10px] flex h-[34px] w-[90px] min-w-[50px] cursor-pointer items-center justify-center rounded-[8px] bg-[#fb7299] text-white transition-colors duration-300 hover:bg-[#fc8bab]'

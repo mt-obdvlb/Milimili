@@ -1,6 +1,7 @@
 export * from './useInfiniteScroll'
 export * from './useQueryClient'
 export * from './useRotation'
+export * from './useSendCode'
 export * from './useShow'
 export * from './useSocket'
 export * from './useVideoCheck'
