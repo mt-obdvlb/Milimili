@@ -4,7 +4,7 @@ import { useVideoList } from '@/features'
 import SkeletonWrapper from '@/components/layout/skeleton/SkeletonWrapper'
 import { useMemo } from 'react'
 import TinyVideoItem from '@/components/layout/video/TinyVideoItem'
-import RecommendedSwiper from '@/components/layout/Swiper/RecommendedSwiper'
+import RecommendedSwiper from '@/components/layout/swiper/RecommendedSwiper'
 import { VideoList } from '@mtobdvlb/shared-types'
 
 const CategoryMainVideoList = ({ videoSwiperList }: { videoSwiperList?: VideoList }) => {

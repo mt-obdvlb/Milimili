@@ -38,6 +38,7 @@ const SearchSearchBar = ({
       }
     }
     document.addEventListener('click', handleClickOutside)
+    inputRef.current?.focus()
     return () => document.removeEventListener('click', handleClickOutside)
   }, [])
 

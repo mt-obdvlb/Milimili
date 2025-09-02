@@ -24,10 +24,12 @@ export type SearchGetItem = {
   user: SearchUserItem
 }
 
+export type SearchRecommendUser = {
+  user: SearchUserItem
+  video: SearchVideoItem[]
+}
+
 export type SearchGetList = {
   list: PageResult<SearchGetItem>
-  user?: {
-    user: SearchUserItem
-    video: SearchVideoItem[]
-  }
+  user?: SearchRecommendUser
 }
