@@ -1,4 +1,4 @@
-export * from './Swiper/index'
+export * from '@/components/layout/swiper/index'
 export * from './footer/index'
 export * from './header/index'
 export * from './login-model/index'

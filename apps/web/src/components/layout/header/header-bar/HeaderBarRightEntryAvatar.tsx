@@ -23,7 +23,7 @@ const HeaderBarRightEntryAvatar = ({ userHomeInfo }: { userHomeInfo?: UserGetInf
     <HoverCard openDelay={150} closeDelay={150} onOpenChange={(open) => setIsOpen(open)}>
       <HoverCardTrigger asChild>
         <div className={'relative box-content size-[50px] cursor-pointer pr-[10px]'}>
-          <div className={'relative z-2'}>
+          <div className={'relative z-55'}>
             <Link
               href={'/apps/web/public'}
               target={'_blank'}
