@@ -4,7 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 
 import { cn } from '@/lib/utils'
 
-const buttonVariants = cva('  m-0 p-0 border-0 text-inherit ', {
+const buttonVariants = cva(' cursor-pointer m-0 p-0 border-0 text-inherit ', {
   variants: {
     variant: {
       default: '',
@@ -22,7 +22,7 @@ const buttonVariants = cva('  m-0 p-0 border-0 text-inherit ', {
       default: '',
       sm: 'h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5',
       lg: 'h-10 rounded-md px-6 has-[>svg]:px-4',
-      icon: 'size-9',
+      icon: '',
     },
   },
   defaultVariants: {
@@ -36,6 +36,7 @@ function Button({
   variant,
   size,
   asChild = false,
+  disabled,
   ...props
 }: React.ComponentProps<'button'> &
   VariantProps<typeof buttonVariants> & {
@@ -51,8 +52,10 @@ function Button({
           variant,
           size,
           className,
-        })
+        }),
+        disabled && 'cursor-not-allowed'
       )}
+      disabled={disabled}
       {...props}
     />
   )

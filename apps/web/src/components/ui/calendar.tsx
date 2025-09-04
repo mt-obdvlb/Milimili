@@ -1,28 +1,45 @@
 'use client'
 
 import * as React from 'react'
-import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
-import { DayButton, DayPicker, getDefaultClassNames } from 'react-day-picker'
-
+import { Dispatch, SetStateAction } from 'react'
+import {
+  DateRange,
+  Day,
+  DayButton,
+  DayPicker,
+  DayProps,
+  getDefaultClassNames,
+} from 'react-day-picker'
+import { zhCN } from 'react-day-picker/locale'
 import { cn } from '@/lib/utils'
-import { Button, buttonVariants } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
+import { DatePickerSelectMode } from '@/features'
 
 function Calendar({
   className,
   classNames,
   showOutsideDays = true,
   captionLayout = 'label',
-  buttonVariant = 'ghost',
   formatters,
   components,
+  selectMode,
+  setHoverDate,
+  range,
+  hoverDate,
   ...props
 }: React.ComponentProps<typeof DayPicker> & {
   buttonVariant?: React.ComponentProps<typeof Button>['variant']
+} & {
+  selectMode: DatePickerSelectMode
+  setHoverDate: Dispatch<SetStateAction<Date | undefined>>
+  range?: DateRange
+  hoverDate?: Date
 }) {
   const defaultClassNames = getDefaultClassNames()
 
   return (
     <DayPicker
+      locale={zhCN}
       showOutsideDays={showOutsideDays}
       className={cn(
         'bg-background group/calendar p-3 [--cell-size:--spacing(8)] [[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent',
@@ -35,76 +52,29 @@ function Calendar({
         formatMonthDropdown: (date) => date.toLocaleString('zh-cn', { month: 'short' }),
         ...formatters,
       }}
+      modifiersClassNames={{
+        hoverRange: cn(''),
+        hoverEnd: cn(''),
+      }}
       classNames={{
-        root: cn('w-fit', defaultClassNames.root),
-        months: cn('flex gap-4 flex-col md:flex-row relative', defaultClassNames.months),
-        month: cn('flex flex-col w-full gap-4', defaultClassNames.month),
-        nav: cn(
-          'flex items-center gap-1 w-full absolute top-0 inset-x-0 justify-between',
-          defaultClassNames.nav
+        root: cn('w-fit'),
+        months: cn('relative'),
+        month: cn('p-4'),
+        month_grid: cn('size-full flex flex-col'),
+        table: cn('block size-full'),
+        weekdays: cn(
+          'flex justify-between relative items-center text-[#212121] whitespace-nowrap font-bold'
         ),
-        button_previous: cn(
-          buttonVariants({ variant: buttonVariant }),
-          'size-(--cell-size) aria-disabled:opacity-50 p-0 select-none',
-          defaultClassNames.button_previous
-        ),
-        button_next: cn(
-          buttonVariants({ variant: buttonVariant }),
-          'size-(--cell-size) aria-disabled:opacity-50 p-0 select-none',
-          defaultClassNames.button_next
-        ),
-        month_caption: cn(
-          'flex items-center justify-center h-(--cell-size) w-full px-(--cell-size)',
-          defaultClassNames.month_caption
-        ),
-        dropdowns: cn(
-          'w-full flex items-center text-sm font-medium justify-center h-(--cell-size) gap-1.5',
-          defaultClassNames.dropdowns
-        ),
-        dropdown_root: cn(
-          'relative has-focus:border-ring border border-input shadow-xs has-focus:ring-ring/50 has-focus:ring-[3px] rounded-md',
-          defaultClassNames.dropdown_root
-        ),
-        dropdown: cn('absolute bg-popover inset-0 opacity-0', defaultClassNames.dropdown),
-        caption_label: cn(
-          'select-none font-medium',
-          captionLayout === 'label'
-            ? 'text-sm'
-            : 'rounded-md pl-2 pr-1 flex items-center gap-1 text-sm h-8 [&>svg]:text-muted-foreground [&>svg]:size-3.5',
-          defaultClassNames.caption_label
-        ),
-        table: 'w-full border-collapse',
-        weekdays: cn('flex', defaultClassNames.weekdays),
-        weekday: cn(
-          'text-muted-foreground rounded-md flex-1 font-normal text-[0.8rem] select-none',
-          defaultClassNames.weekday
-        ),
-        week: cn('flex w-full mt-2', defaultClassNames.week),
-        week_number_header: cn('select-none w-(--cell-size)', defaultClassNames.week_number_header),
-        week_number: cn(
-          'text-[0.8rem] select-none text-muted-foreground',
-          defaultClassNames.week_number
-        ),
-        day: cn(
-          'relative w-full h-full p-0 text-center [&:first-child[data-selected=true]_button]:rounded-l-md [&:last-child[data-selected=true]_button]:rounded-r-md group/day aspect-square select-none',
-          defaultClassNames.day
-        ),
-        range_start: cn(
-          'bg-brand_blue text-white flex items-center justify-center rounded-[8px] transition-all duration-300 size-[30px]'
-        ),
-        range_middle: cn('rounded-none', defaultClassNames.range_middle, 'bg-brand_blue_thin'),
-        range_end: cn(
-          'bg-brand_blue text-white flex items-center justify-center rounded-[8px] transition-all duration-300 size-[30px]'
-        ),
-        today: cn(
-          'bg-accent text-accent-foreground rounded-md data-[selected=true]:rounded-none',
-          defaultClassNames.today
-        ),
-        outside: cn(
-          'text-muted-foreground aria-selected:text-muted-foreground',
-          defaultClassNames.outside
-        ),
-        disabled: cn('text-muted-foreground opacity-50', defaultClassNames.disabled),
+        weekday: cn('grow-0 flex justify-center items-center text-text4 size-[30px]'),
+        week: cn('flex items-center justify-center text-sm ', defaultClassNames.week),
+
+        day: cn('   rounded-l-[8px] cursor-pointer text-text1'),
+        range_start: cn('rounded-l-[8px] bg-brand_blue_thin'),
+        range_middle: cn('rounded-l-none  bg-brand_blue_thin'),
+        range_end: cn(''),
+        today: cn(''),
+        outside: cn('text-text2 '),
+        disabled: cn('cursor-not-allowed text-text4', defaultClassNames.disabled),
         hidden: cn('invisible', defaultClassNames.hidden),
         ...classNames,
       }}
@@ -112,27 +82,18 @@ function Calendar({
         Root: ({ className, rootRef, ...props }) => {
           return <div data-slot='calendar' ref={rootRef} className={cn(className)} {...props} />
         },
-        Chevron: ({ className, orientation, ...props }) => {
-          if (orientation === 'left') {
-            return <ChevronLeftIcon className={cn('size-4', className)} {...props} />
-          }
-
-          if (orientation === 'right') {
-            return <ChevronRightIcon className={cn('size-4', className)} {...props} />
-          }
-
-          return <ChevronDownIcon className={cn('size-4', className)} {...props} />
-        },
-        DayButton: CalendarDayButton,
-        WeekNumber: ({ children, ...props }) => {
-          return (
-            <td {...props}>
-              <div className='flex size-(--cell-size) items-center justify-center text-center'>
-                {children}
-              </div>
-            </td>
-          )
-        },
+        Day: ({ ...props }) => (
+          <CalendarDay
+            selectMode={selectMode}
+            range={range}
+            setHoverDate={setHoverDate}
+            hoverDate={hoverDate}
+            {...props}
+          />
+        ),
+        DayButton: ({ ...props }) => (
+          <CalendarDayButton hoverDate={hoverDate} {...props} selectMode={selectMode} />
+        ),
         ...components,
       }}
       {...props}
@@ -140,33 +101,156 @@ function Calendar({
   )
 }
 
+const CalendarDay = ({
+  day,
+  modifiers,
+  children,
+  setHoverDate,
+  range,
+  selectMode,
+  className,
+  hoverDate,
+  ...props
+}: DayProps & {
+  setHoverDate: Dispatch<SetStateAction<Date | undefined>>
+  selectMode: DatePickerSelectMode
+  range?: DateRange
+  hoverDate?: Date
+}) => {
+  if (!day) return null
+
+  const dateTime = day.date.getTime()
+  const fromTime = range?.from?.getTime()
+  const toTime = range?.to?.getTime()
+
+  // 基准点：normal/end 用 from，start 用 to
+  const baseTime = selectMode === 'start' ? toTime : fromTime
+  const hoverTs = hoverDate?.getTime()
+
+  const isLeft = baseTime !== undefined && hoverTs !== undefined && hoverTs < baseTime
+  const isRight = baseTime !== undefined && hoverTs !== undefined && hoverTs > baseTime
+
+  // 只选择了一个点
+  const selectedSingle =
+    modifiers.selected && !modifiers.range_start && !modifiers.range_end && !modifiers.range_middle
+
+  const isHoverRightOfSelectedSingle = selectedSingle && hoverTs !== undefined && hoverTs > dateTime
+
+  const isEndPoint = modifiers.range_start || modifiers.range_end
+
+  const handleMouseEnter = () => {
+    if (modifiers.disabled) {
+      setHoverDate(undefined)
+      return
+    }
+    if (selectMode === 'normal' && fromTime && !toTime) setHoverDate(day.date)
+    if (selectMode === 'start' && toTime) setHoverDate(day.date)
+    if (selectMode === 'end' && fromTime) setHoverDate(day.date)
+  }
+
+  const handleMouseLeave = () => setHoverDate(undefined)
+
+  return (
+    <Day
+      day={day}
+      className={cn('group w-full cursor-pointer pt-2 last-of-type:w-fit')}
+      modifiers={modifiers}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div
+        className={cn(
+          className,
+
+          // hover 范围的底色
+          modifiers.hoverRange && 'bg-brand_blue_thin rounded-none',
+
+          // hover 端点的左右圆角
+          modifiers.hoverEnd && isLeft && 'rounded-l-[8px] rounded-r-none',
+          modifiers.hoverEnd && isRight && 'rounded-l-none rounded-r-[8px]',
+          modifiers.hoverEnd && !selectedSingle && 'bg-brand_blue_thin text-brand_blue',
+          // 单选情况下，hover 在右侧
+          isHoverRightOfSelectedSingle && 'bg-brand_blue_thin rounded-l-[8px] rounded-r-none',
+          isEndPoint && modifiers.hoverEnd && 'bg-inherit',
+          hoverDate && !modifiers.hoverRange && 'bg-inherit',
+          hoverDate && modifiers.hoverEnd && !isEndPoint && 'text-brand_blue bg-brand_blue_thin',
+          hoverDate &&
+            isLeft &&
+            modifiers.range_start &&
+            hoverDate.getTime() === day.date.getTime() &&
+            'bg-brand_blue_thin',
+          hoverDate && modifiers.range_start && selectMode === 'end' && 'bg-brand_blue_thin',
+          modifiers.range_start && modifiers.range_end && 'bg-inherit'
+        )}
+        {...props}
+      >
+        {children}
+      </div>
+    </Day>
+  )
+}
+
 function CalendarDayButton({
   className,
   day,
   modifiers,
+  disabled,
+  selectMode,
+  hoverDate,
   ...props
-}: React.ComponentProps<typeof DayButton>) {
-  const defaultClassNames = getDefaultClassNames()
-
+}: React.ComponentProps<typeof DayButton> & {
+  selectMode: DatePickerSelectMode
+  hoverDate?: Date
+}) {
   const ref = React.useRef<HTMLButtonElement>(null)
+
   React.useEffect(() => {
     if (modifiers.focused) ref.current?.focus()
   }, [modifiers.focused])
+
+  const selectedSingle =
+    modifiers.selected && !modifiers.range_start && !modifiers.range_end && !modifiers.range_middle
 
   return (
     <Button
       ref={ref}
       data-day={day.date.toLocaleDateString()}
-      data-selected-single={
-        modifiers.selected &&
-        !modifiers.range_start &&
-        !modifiers.range_end &&
-        !modifiers.range_middle
-      }
+      data-selected-single={selectedSingle}
       data-range-start={modifiers.range_start}
       data-range-end={modifiers.range_end}
       data-range-middle={modifiers.range_middle}
-      className={cn('', defaultClassNames.day, className)}
+      disabled={disabled}
+      className={cn(
+        'border-brand_blue flex size-[30px] items-center justify-center rounded-[8px] transition-all duration-300',
+
+        // hover 状态（非选中/禁用）
+        !modifiers.selected &&
+          !modifiers.hoverEnd &&
+          !modifiers.disabled &&
+          'group-hover:text-brand_blue group-hover:bg-brand_blue_thin',
+
+        // 单选
+        selectedSingle && 'bg-brand_blue text-white',
+
+        // 范围
+        modifiers.range_start && 'bg-brand_blue rounded-l-[8px] text-white',
+        modifiers.range_end && 'bg-brand_blue rounded-r-[8px] text-white',
+        modifiers.range_start &&
+          selectMode === 'end' &&
+          hoverDate?.getTime() !== day.date.getTime() &&
+          'opacity-50',
+        modifiers.range_end &&
+          selectMode === 'start' &&
+          hoverDate?.getTime() !== day.date.getTime() &&
+          'opacity-50',
+        // today
+        modifiers.today && 'border',
+        modifiers.range_start && modifiers.range_end && 'opacity-100',
+        // 禁用
+        modifiers.disabled && 'text-text4',
+
+        className
+      )}
       {...props}
     />
   )

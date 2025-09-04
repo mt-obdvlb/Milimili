@@ -1,82 +1,105 @@
 'use client'
 
-import * as React from 'react'
+import React, { Dispatch, SetStateAction, useState } from 'react'
+import 'react-day-picker/style.css'
+import { Calendar } from '@/components'
+import DatePickerRoot from '@/components/layout/date-picker/DatePickerRoot'
+import { useDatePicker } from '@/components/layout/date-picker/DatePickerProvider'
+import { DatePickerSelectMode } from '@/features'
 import { DateRange } from 'react-day-picker'
-import { Calendar } from '@/components/ui/calendar'
 
-const DatePicker = () => {
-  const [range, setRange] = React.useState<DateRange>()
-  const [month, setMonth] = React.useState<Date>(new Date())
-  const [viewMode, setViewMode] = React.useState<'month' | 'year'>('month')
-
-  // 自定义 Caption
-  const CustomCaption = () => {
-    const year = month.getFullYear()
-    const monthLabel = month.toLocaleString('zh-CN', { month: 'long' })
-
-    return (
-      <div className='flex items-center justify-between px-2 py-1'>
-        <button className='font-bold text-blue-500' onClick={() => setViewMode('year')}>
-          {year}年
-        </button>
-        <span>{monthLabel}</span>
-      </div>
-    )
-  }
-
-  // 年份选择面板
-  const YearView = () => {
-    const currentYear = new Date().getFullYear()
-    const years: number[] = []
-    for (let y = currentYear - 15; y <= currentYear + 5; y++) {
-      years.push(y)
-    }
-
-    return (
-      <div className='grid grid-cols-3 gap-4 p-4'>
-        {years.map((y) => (
-          <button
-            key={y}
-            className={`rounded-md px-3 py-2 ${
-              y === month.getFullYear() ? 'bg-blue-500 text-white' : 'hover:bg-gray-100'
-            }`}
-            onClick={() => {
-              const newMonth = new Date(month)
-              newMonth.setFullYear(y)
-              setMonth(newMonth)
-              setViewMode('month')
-            }}
-          >
-            {y}
-          </button>
-        ))}
-      </div>
-    )
-  }
-
+const DatePicker = ({
+  setOpen,
+  selectMode,
+  disabledRange,
+  setCurrentMonth,
+  currentMonth,
+}: {
+  setOpen: Dispatch<SetStateAction<boolean>>
+  selectMode: DatePickerSelectMode
+  disabledRange: DateRange
+  currentMonth: Date
+  setCurrentMonth: Dispatch<SetStateAction<Date>>
+}) => {
+  const { range, setRange } = useDatePicker()
+  const [hoverDate, setHoverDate] = useState<Date | undefined>()
   return (
-    <div className='rounded-md border'>
-      {viewMode === 'year' ? (
-        <YearView />
-      ) : (
-        <Calendar
-          mode='range'
-          month={month}
-          onMonthChange={setMonth}
-          selected={range}
-          onSelect={setRange}
-          required
-          components={{ CaptionLabel: CustomCaption }}
-          className={''}
-          showOutsideDays
-          navLayout={'after'}
-          disabled={{ after: new Date() }}
-          endMonth={new Date()}
-          animate
-          min={0}
-        />
-      )}
-    </div>
+    <Calendar
+      components={{
+        Root: DatePickerRoot,
+        Nav: () => <></>,
+        MonthCaption: () => <></>,
+      }}
+      selectMode={selectMode}
+      numberOfMonths={1}
+      mode={'range'}
+      month={currentMonth}
+      onMonthChange={setCurrentMonth}
+      min={0}
+      required
+      selected={range}
+      onSelect={(val) => {
+        if (!val) return
+
+        if (selectMode === 'normal') {
+          if (!range?.from || (range?.from && range?.to)) {
+            setRange({ from: val.from, to: undefined })
+          } else if (range?.from && !range?.to) {
+            const second = val.from! // DayPicker 里第二次点击的那天
+            const first = range.from
+
+            const [start, end] =
+              first.getTime() < second.getTime() ? [first, second] : [second, first]
+
+            setRange({ from: start, to: end })
+            setOpen(false)
+          }
+        } else if (selectMode === 'start') {
+          if (val.from) {
+            setRange({ from: val.from, to: range?.to })
+            setOpen(false)
+          }
+        } else if (selectMode === 'end') {
+          if (val.to) {
+            setRange({ from: range?.from, to: val.to })
+            setOpen(false)
+          }
+        }
+      }}
+      modifiers={{
+        hoverRange:
+          hoverDate && (range?.from || range?.to)
+            ? (date: Date) => {
+                const current = date.getTime()
+                let start: number
+                let end: number
+
+                if (selectMode === 'normal' && range?.from && !range?.to) {
+                  start = range.from.getTime()
+                  end = hoverDate.getTime()
+                } else if (selectMode === 'start' && range?.to) {
+                  start = hoverDate.getTime()
+                  end = range.to.getTime()
+                } else if (selectMode === 'end' && range?.from) {
+                  start = range.from.getTime()
+                  end = hoverDate.getTime()
+                } else {
+                  return false
+                }
+
+                return current > Math.min(start, end) && current < Math.max(start, end)
+              }
+            : undefined,
+        hoverEnd: hoverDate,
+      }}
+      disabled={{
+        before: disabledRange.from ?? new Date(2009, 0),
+        after: disabledRange.to ?? new Date(),
+      }}
+      setHoverDate={setHoverDate}
+      range={range}
+      hoverDate={hoverDate}
+    />
   )
 }
 

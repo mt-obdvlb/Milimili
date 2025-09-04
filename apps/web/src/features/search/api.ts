@@ -1,39 +1,19 @@
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { searchGet } from '@/services/search'
 import type { SearchGetRequest } from '@/types/search'
 import { Result, SearchGetList } from '@mtobdvlb/shared-types'
 
-export const useSearch = (
-  params: Omit<SearchGetRequest, 'page'> & {
-    page?: number
-  }
-) => {
-  const { data, fetchNextPage } = useInfiniteQuery<Result<SearchGetList>, unknown>({
+export const useSearch = (params: SearchGetRequest) => {
+  const { data } = useQuery<Result<SearchGetList>, unknown>({
     queryKey: ['search', params],
-    queryFn: async ({ pageParam = 1 }) => {
-      // pageParam 是前端累加页码
-      return await searchGet({
-        ...params,
-        page: pageParam as number,
-      })
-    },
-    getNextPageParam: (lastPage, allPages) => {
-      const loadedItems = allPages.reduce((sum, page) => sum + page.data!.list.list.length, 0)
-      const totalItems = lastPage.data!.list.total
-
-      // 已加载数量 >= 总数，就没有下一页
-      if (loadedItems >= totalItems) return undefined
-
-      // 下一页就是当前已加载页数 + 1
-      return allPages.length + 1
-    },
-    initialPageParam: 1,
+    queryFn: () => searchGet(params),
+    placeholderData: keepPreviousData,
+    // 切换页码时保留旧数据
   })
-  const searchList = data?.pages.flatMap((page) => page.data!.list.list) || []
-  console.log(searchList)
+
   return {
-    searchList,
-    fetchNextPage,
-    searchUser: data?.pages[0]?.data?.user,
+    searchList: data?.data?.list.list || [],
+    searchUser: data?.data?.user,
+    total: data?.data?.list.total || 0,
   }
 }

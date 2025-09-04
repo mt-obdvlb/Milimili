@@ -9,7 +9,9 @@ declare global {
     public runline: IComment[]
     public position: number
     public factory: ICommentFactory
-    private _listeners: { [name: string]: Array<Function> }
+    private _listeners: {
+      [name: string]: Array<() => void>
+    }
     private _csa: { [name: string]: CommentSpaceAllocator }
 
     constructor(stage: HTMLDivElement)
@@ -49,9 +51,9 @@ declare global {
 
     finish(cmt: IComment): void
 
-    addEventListener(name: string, listener: (data?: any) => void): void
+    addEventListener(name: string, listener: (data?: unknown) => void): void
 
-    dispatchEvent(name: string, data?: any): void
+    dispatchEvent(name: string, data?: unknown): void
 
     addAllocator(name: string, allocator: CommentSpaceAllocator): void
   }
