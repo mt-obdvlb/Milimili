@@ -1,7 +1,7 @@
 import HeaderBarWrapper from '@/components/layout/header/header-bar/HeaderBarWrapper'
 import HeaderBanner from '@/components/layout/header/header-banner/HeaderBanner'
-import HotTabs from '@/features/hot/components/HotTabs'
 import HotToTopBtn from '@/features/hot/components/HotToTopBtn'
+import HotTabs from '@/features/hot/components/HotTabs'
 
 const Hot = () => {
   return (
