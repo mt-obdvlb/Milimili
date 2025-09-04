@@ -32,9 +32,26 @@ export const SearchLogService = {
     }))
   },
   get: async () => {
-    const res = await SearchLogModel.aggregate([{ $sample: { size: 10 } }])
-    return res.map((item) => ({
-      keyword: item.keyword,
-    }))
+    return SearchLogModel.aggregate<{
+      keyword: string
+    }>([
+      // 先按 keyword 去重
+      {
+        $group: {
+          _id: '$keyword',
+        },
+      },
+      // 随机取 10 条
+      {
+        $sample: { size: 10 },
+      },
+      // 改名字段
+      {
+        $project: {
+          _id: 0,
+          keyword: '$_id',
+        },
+      },
+    ]).exec()
   },
 }
