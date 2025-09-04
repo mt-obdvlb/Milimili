@@ -51,9 +51,9 @@ declare global {
 
     finish(cmt: IComment): void
 
-    addEventListener(name: string, listener: (data?: unknown) => void): void
+    addEventListener(name: string, listener: (data?: never) => void): void
 
-    dispatchEvent(name: string, data?: unknown): void
+    dispatchEvent(name: string, data?: never): void
 
     addAllocator(name: string, allocator: CommentSpaceAllocator): void
   }
