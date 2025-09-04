@@ -5,6 +5,8 @@ import { SearchPublishedAt, SearchSort, SearchTime } from '@mtobdvlb/shared-type
 import { Button } from '@/components'
 import { cn } from '@/lib'
 import SearchConditionRow from '@/features/search/components/SearchConditionRow'
+import SearchDatePickerWrapper from '@/features/search/components/SearchDatePickerWrapper'
+import { DateRange } from 'react-day-picker'
 
 type SearchFilterProps = {
   setSort: Dispatch<SetStateAction<SearchSort>>
@@ -13,6 +15,8 @@ type SearchFilterProps = {
   sort: SearchSort
   publishedAt: SearchPublishedAt
   time: SearchTime
+  range?: DateRange
+  setRange: Dispatch<SetStateAction<DateRange | undefined>>
 }
 
 const sortList = [
@@ -45,8 +49,11 @@ const SearchFilter = ({
   setTime,
   time,
   publishedAt,
+  range,
+  setRange,
 }: SearchFilterProps) => {
   const [open, setOpen] = useState(false)
+  const [resetKey, setResetKey] = useState(0)
 
   const ref = useRef<HTMLDivElement>(null)
 
@@ -104,10 +111,15 @@ const SearchFilter = ({
       <div ref={ref} className={cn('overflow-hidden transition-[height] duration-200')}>
         <SearchConditionRow<SearchPublishedAt>
           value={publishedAt}
-          set={setPublishedAt}
+          set={(val) => {
+            setPublishedAt(val)
+            setResetKey(resetKey + 1)
+          }}
           list={publishedAtList}
           mt
-        ></SearchConditionRow>
+        >
+          <SearchDatePickerWrapper range={range} setRange={setRange} resetKey={resetKey} />
+        </SearchConditionRow>
         <SearchConditionRow<SearchTime>
           value={time}
           set={setTime}

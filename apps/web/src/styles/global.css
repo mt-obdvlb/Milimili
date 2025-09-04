@@ -232,6 +232,57 @@
 
 
 @theme inline {
+  
+  /* Spacing */
+  --spacing-gutter: 16px;
+  --spacing-gutter-sm: 12px;
+  --spacing-gutter-md: 28px;
+  --spacing-gutter-lg: 68px;
+  --spacing-xs: 5px;
+  --spacing-xsx: 4px;
+  --spacing-xxs: 6px;
+  --spacing-sm: 10px;
+  --spacing-smx: 8px;
+  --spacing-xsm: 12px;
+  --spacing-md: 15px;
+  --spacing-mdx: 14px;
+  --spacing-xmd: 16px;
+  --spacing-lg: 20px;
+  --spacing-lgx: 18px;
+  --spacing-xlg: 22px;
+  --spacing-xl: 25px;
+  --spacing-xlx: 24px;
+  --spacing-xxl: 26px;
+  
+  /* Font sizes */
+  --text-1: 24px;
+  --text-2: 18px;
+  --text-3: 16px;
+  --text-4: 14px;
+  --text-5: 13px;
+  --text-6: 12px;
+  
+  /* Line heights */
+  --leading-xs: 1;
+  --leading-sm: 1.25;
+  --leading-md: 1.5;
+  --leading-lg: 1.75;
+  --leading-xl: 2;
+  
+  /* Heights */
+  --spacing-h-xs: 16px;
+  --spacing-h-sm: 24px;
+  --spacing-h-md: 32px;
+  --spacing-h-lg: 40px;
+  --spacing-h-xl: 48px;
+  
+  /* Border radius */
+  --radius: 6px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  
   --color-brand_pink: var(--brand_pink);
   --color-brand_pink_thin: var(--brand_pink_thin);
   --color-brand_blue: var(--brand_blue);

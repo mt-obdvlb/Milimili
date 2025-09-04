@@ -10,6 +10,7 @@ import commentRoute from '@/routes/comment.route'
 import favoriteRoute from '@/routes/favorite.route'
 import searchLogRoute from '@/routes/search-log.route'
 import searchRoute from '@/routes/search.route'
+import followRoute from '@/routes/follow.route'
 
 const router = Router()
 
@@ -24,5 +25,6 @@ router.use('/favorites', favoriteRoute)
 router.use('/notifications', notificationRoute)
 router.use('/search-logs', searchLogRoute)
 router.use('/searches', searchRoute)
+router.use('/follows', followRoute)
 
 export default router
