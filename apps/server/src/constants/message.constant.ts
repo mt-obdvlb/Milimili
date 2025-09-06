@@ -11,4 +11,5 @@ export const MESSAGE = {
   INVALID_CODE: '验证码错误',
   VIDEO_NOT_FOUND: '视频不存在',
   FAVORITE_FOLDER_NOT_FOUND: '收藏夹不存在',
+  FAVORITE_EXIST: '已收藏',
 }

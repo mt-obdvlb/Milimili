@@ -1,10 +1,12 @@
 import request from '@/lib/request'
-import { PageResult, Result, VideoListItem } from '@mtobdvlb/shared-types'
+import { PageResult, Result, VideoGetWaterLaterList, VideoListItem } from '@mtobdvlb/shared-types'
+import { VideoGetWatchLaterRequest } from '@/types'
 
 export const baseURL = '/videos'
 
 export const API = {
   list: '/list',
+  watchLater: '/watch-later',
 } as const
 
 export const videoList = (page: number, pageSize: number) =>
@@ -13,4 +15,9 @@ export const videoList = (page: number, pageSize: number) =>
       page,
       pageSize,
     },
+  })
+
+export const videoGetWatchLater = (params: VideoGetWatchLaterRequest) =>
+  request.get<Result<VideoGetWaterLaterList>>(`${baseURL}${API.watchLater}`, {
+    params,
   })

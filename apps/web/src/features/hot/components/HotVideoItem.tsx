@@ -28,7 +28,7 @@ const HotVideoItem = ({ video }: { video: VideoListItem }) => {
         </Link>
         <div
           className={cn(
-            "group/later absolute right-2 bottom-2 z-20 hidden size-7 cursor-pointer bg-[url('/images/watch_later.png')] bg-contain peer-hover:block hover:block"
+            "group/later absolute right-2 bottom-2 z-20 hidden size-7 cursor-pointer bg-[url('/images/watch-later.png')] bg-contain peer-hover:block hover:block"
           )}
         >
           <span
