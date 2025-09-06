@@ -4,7 +4,7 @@ import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 import { SearchPublishedAt, SearchSort, SearchTime } from '@mtobdvlb/shared-types'
 import { Button } from '@/components'
 import { cn } from '@/lib'
-import SearchConditionRow from '@/features/search/components/SearchConditionRow'
+import Filter from '@/components/layout/filter/Filter'
 import SearchDatePickerWrapper from '@/features/search/components/SearchDatePickerWrapper'
 import { DateRange } from 'react-day-picker'
 
@@ -42,7 +42,7 @@ const publishedAtList = [
   { label: '最近半年', value: 'halfYear' },
 ] as const
 
-const SearchFilter = ({
+const SearchFilterWrapper = ({
   sort,
   setSort,
   setPublishedAt,
@@ -82,7 +82,7 @@ const SearchFilter = ({
   return (
     <div className={'mx-auto mt-[20px] w-full max-w-[2200px] px-16'}>
       <div className={'flex items-center justify-between'}>
-        <SearchConditionRow<SearchSort> value={sort} set={setSort} list={sortList} />
+        <Filter<SearchSort> value={sort} set={setSort} list={sortList} />
         <Button
           className={
             'text-text1 bg-bg1_float border-line_regular hover:bg-graph_bg_thick inline-flex h-[34px] min-w-25 cursor-pointer items-center justify-around rounded-[8px] border px-2.5 text-sm leading-[1] whitespace-nowrap duration-200 select-none'
@@ -109,7 +109,7 @@ const SearchFilter = ({
         </Button>
       </div>
       <div ref={ref} className={cn('overflow-hidden transition-[height] duration-200')}>
-        <SearchConditionRow<SearchPublishedAt>
+        <Filter<SearchPublishedAt>
           value={publishedAt}
           set={(val) => {
             setPublishedAt(val)
@@ -119,13 +119,8 @@ const SearchFilter = ({
           mt
         >
           <SearchDatePickerWrapper range={range} setRange={setRange} resetKey={resetKey} />
-        </SearchConditionRow>
-        <SearchConditionRow<SearchTime>
-          value={time}
-          set={setTime}
-          list={timeList}
-          mt
-        ></SearchConditionRow>
+        </Filter>
+        <Filter<SearchTime> value={time} set={setTime} list={timeList} mt></Filter>
         <div className='flex flex-wrap items-center justify-start'>
           <div className={'text-text4 relative mt-[10px] ml-[10px] flex h-8 items-center text-sm'}>
             分区筛选维护升级中，敬请期待
@@ -136,4 +131,4 @@ const SearchFilter = ({
   )
 }
 
-export default SearchFilter
+export default SearchFilterWrapper

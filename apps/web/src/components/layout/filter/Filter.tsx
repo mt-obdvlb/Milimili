@@ -15,7 +15,7 @@ interface SearchConditionRowProps<T> {
   mt?: boolean
 }
 
-const SearchConditionRow = <T extends string | number>({
+const Filter = <T extends string | number>({
   value,
   set,
   list,
@@ -42,4 +42,4 @@ const SearchConditionRow = <T extends string | number>({
   )
 }
 
-export default SearchConditionRow
+export default Filter

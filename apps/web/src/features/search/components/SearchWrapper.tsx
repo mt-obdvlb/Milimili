@@ -2,7 +2,7 @@
 
 import { Separator, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components'
 import SearchSearchBar from '@/features/search/components/SearchSearchBar'
-import SearchFilter from '@/features/search/components/SearchFilter'
+import SearchFilterWrapper from '@/features/search/components/SearchFilterWrapper'
 import SearchAllList from '@/features/search/components/SearchAllList'
 import SearchUserList from '@/features/search/components/SearchUserList'
 import { cn } from '@/lib'
@@ -91,7 +91,7 @@ const SearchWrapper = ({ kw, searchLogTop10List }: Props) => {
 
         {/* 用户 Tab 不显示筛选器 */}
         <div className={cn(type === 'user' && 'hidden')}>
-          <SearchFilter
+          <SearchFilterWrapper
             range={range}
             setRange={setRange}
             sort={sort}
