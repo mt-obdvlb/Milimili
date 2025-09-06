@@ -8,6 +8,8 @@ import {
   VideoCreateDTO,
   VideoGetDanmakusDTO,
   VideoGetDanmakusList,
+  VideoGetWatchLaterDTO,
+  VideoGetWaterLaterList,
   VideoListDTO,
   VideoListItem,
 } from '@mtobdvlb/shared-types'
@@ -94,5 +96,23 @@ export const videoAddDanmaku: RequestHandler<ParamsDictionary, Result, VideoAddD
   await VideoService.addDanmaku(req.body)
   return res.status(200).json({
     code: 0,
+  })
+}
+
+export const videoGetWatchLater: RequestHandler<
+  ParamsDictionary,
+  Result<VideoGetWaterLaterList>,
+  VideoGetWatchLaterDTO
+> = async (req, res) => {
+  const userId = req.user?.id
+  if (!userId)
+    return res.status(401).json({
+      code: 401,
+      message: MESSAGE.AUTH_ERROR,
+    })
+  const data = await VideoService.getWatchLater(req.body, userId)
+  return res.status(200).json({
+    code: 0,
+    data,
   })
 }

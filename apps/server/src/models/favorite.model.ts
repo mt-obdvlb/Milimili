@@ -5,6 +5,8 @@ type FavoriteDB = {
   videoId: Types.ObjectId
   folderId: Types.ObjectId
   _id: Types.ObjectId
+  createdAt: Date
+  updatedAt: Date
 }
 export type IFavorite = FavoriteDB & Document
 

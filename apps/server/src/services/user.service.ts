@@ -31,7 +31,7 @@ export const UserService = {
       })
       await FavoriteFolderModel.create({
         userId: user!._id,
-        type: 'watch_later',
+        type: 'watch-later',
         name: '稍后再看',
       })
     }

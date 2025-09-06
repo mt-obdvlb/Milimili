@@ -19,6 +19,8 @@ type VideoDB = VideoBase & {
   userId: Types.ObjectId
   categoryId: Types.ObjectId
   _id: Types.ObjectId
+  createdAt: Date
+  updatedAt: Date
 }
 
 export type IVideo = VideoDB & Document

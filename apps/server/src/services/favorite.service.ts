@@ -141,11 +141,15 @@ export const FavoriteService = {
     )
   },
   add: async ({ userId, videoId, folderId }: FavoriteAddDTO) => {
-    console.log(userId, videoId, folderId)
     const video = await VideoModel.findById(videoId)
     const folder = await FavoriteFolderModel.findById(folderId)
     if (!video) throw new HttpError(400, MESSAGE.VIDEO_NOT_FOUND)
     if (!folder) throw new HttpError(400, MESSAGE.FAVORITE_FOLDER_NOT_FOUND)
+    const favorite = await FavoriteModel.findOne({
+      videoId,
+      folderId,
+    })
+    if (favorite) throw new HttpError(400, MESSAGE.FAVORITE_EXIST)
     await FavoriteModel.create({
       userId,
       videoId,

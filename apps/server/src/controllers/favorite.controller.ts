@@ -78,7 +78,6 @@ export const favoriteAdd: RequestHandler<ParamsDictionary, Result, FavoriteAddDT
       message: MESSAGE.AUTH_ERROR,
     })
   req.body.userId = req.user.id
-  console.log(req.body)
   await FavoriteService.add(req.body)
   return res.status(200).json({
     code: 0,

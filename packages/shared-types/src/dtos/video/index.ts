@@ -1,4 +1,5 @@
 export * from './add-danmaku.dto'
 export * from './create.dto'
 export * from './get-danmakus.dto'
+export * from './get-water-later.dto'
 export * from './list.dto'
