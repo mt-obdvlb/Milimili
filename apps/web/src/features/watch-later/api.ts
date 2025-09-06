@@ -7,5 +7,5 @@ export const useWatchLaterList = (params: VideoGetWatchLaterRequest) => {
     queryKey: ['video', 'watchLater', params],
     queryFn: () => videoGetWatchLater(params),
   })
-  return { videoWatchLaterList: videoWatchLaterList?.data ?? [] }
+  return { videoWatchLaterList: videoWatchLaterList?.data }
 }

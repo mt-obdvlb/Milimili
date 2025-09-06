@@ -6,7 +6,7 @@ export type VideoGetWatchLaterTime = 'all' | '10' | '10to30' | '30to60' | '60'
 export type VideoGetWatchLaterAddAt = 'all' | 'today' | 'yesterday' | 'week' | 'customer'
 
 export const videoGetWatchLaterDTO = z.object({
-  kw: z.string().min(1).max(20).optional(),
+  kw: z.string().optional(),
   sort: z.enum(['latest', 'first']).default('latest') as z.ZodType<VideoGetWatchLaterSort>,
   type: z.enum(['all', 'not_watched']).default('all') as z.ZodType<VideoGetWatchLaterType>,
   time: z

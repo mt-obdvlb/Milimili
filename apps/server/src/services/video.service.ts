@@ -133,7 +133,7 @@ export const VideoService = {
 
     const folder = await FavoriteFolderModel.findOne({
       userId: new Types.ObjectId(userId),
-      type: 'watch-later',
+      type: 'watch_later',
     }).lean<IFavoriteFolder | null>()
     console.log(userId, body, folder)
     if (!folder) return []
