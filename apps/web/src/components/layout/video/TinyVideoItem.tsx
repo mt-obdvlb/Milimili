@@ -12,10 +12,12 @@ const TinyVideoItem = ({
   video,
   margin = false,
   hiddenUser,
+  hiddenTime,
 }: {
   video: VideoListItem
   margin?: boolean
   hiddenUser?: boolean
+  hiddenTime?: boolean
 }) => {
   const [time, setTime] = useState(0)
   const [hover, setHover] = useState(false)
@@ -55,7 +57,13 @@ const TinyVideoItem = ({
             >
               <div className={'relative size-full scale-[1.01] text-xs'}>
                 <div className={'relative size-full shadow-none'}>
-                  <TinyVideoPlayer hover={hover} time={time} setTime={setTime} video={video} />
+                  <TinyVideoPlayer
+                    hiddenTime={hiddenTime}
+                    hover={hover}
+                    time={time}
+                    setTime={setTime}
+                    video={video}
+                  />
                 </div>
               </div>
             </div>

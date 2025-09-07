@@ -9,7 +9,7 @@ import { cn } from '@/lib'
 
 export type DatePickerSelectMode = 'normal' | 'start' | 'end'
 
-const SearchDatePickerWrapper = ({
+const DatePickerWrapper = ({
   resetKey,
   range,
   setRange,
@@ -132,4 +132,4 @@ const SearchDatePickerWrapper = ({
   )
 }
 
-export default SearchDatePickerWrapper
+export default DatePickerWrapper

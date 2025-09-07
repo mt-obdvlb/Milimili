@@ -5,7 +5,7 @@ import { SearchPublishedAt, SearchSort, SearchTime } from '@mtobdvlb/shared-type
 import { Button } from '@/components'
 import { cn } from '@/lib'
 import Filter from '@/components/layout/filter/Filter'
-import SearchDatePickerWrapper from '@/features/search/components/SearchDatePickerWrapper'
+import DatePickerWrapper from '@/components/layout/date-picker/DatePickerWrapper'
 import { DateRange } from 'react-day-picker'
 
 type SearchFilterProps = {
@@ -29,7 +29,7 @@ const sortList = [
 
 const timeList = [
   { label: '全部时间', value: 'all' },
-  { label: '10分钟以上', value: '10' },
+  { label: '10分钟以下', value: '10' },
   { label: '10-30分钟', value: '10to30' },
   { label: '30-60分钟', value: '30to60' },
   { label: '60分钟以上', value: '60' },
@@ -118,7 +118,7 @@ const SearchFilterWrapper = ({
           list={publishedAtList}
           mt
         >
-          <SearchDatePickerWrapper range={range} setRange={setRange} resetKey={resetKey} />
+          <DatePickerWrapper range={range} setRange={setRange} resetKey={resetKey} />
         </Filter>
         <Filter<SearchTime> value={time} set={setTime} list={timeList} mt></Filter>
         <div className='flex flex-wrap items-center justify-start'>

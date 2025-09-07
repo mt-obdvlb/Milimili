@@ -12,12 +12,19 @@ interface MainVideoPlayerProps {
   hover: boolean
   setTime: (time: number) => void
   time: number
+  hiddenTime?: boolean
 }
 
 // 颜色字符串 '#ffffff' 转数字 0xffffff
 const hexToNumber = (hex: string) => Number(`0x${hex.replace(/^#/, '')}`)
 
-const TinyVideoPlayer = ({ video, hover, setTime, time: currentTime }: MainVideoPlayerProps) => {
+const TinyVideoPlayer = ({
+  hiddenTime,
+  video,
+  hover,
+  setTime,
+  time: currentTime,
+}: MainVideoPlayerProps) => {
   const player = tv({
     slots: {
       base: 'flex size-full flex-col flex-nowrap abp',
@@ -181,13 +188,15 @@ const TinyVideoPlayer = ({ video, hover, setTime, time: currentTime }: MainVideo
         <div className={cn(dm(), 'cnt')} ref={topContainerRef}></div>
         <div className={cn(dm(), 'cnt')} ref={bottomContainerRef}></div>
       </div>
-      <div className={time()}>
-        <div className='pointer-events-none absolute right-[8px] bottom-[10px] z-2 flex items-center justify-center text-[13px] text-white text-shadow-[0_0_3px_rgba(0,0,0,0.6)]'>
-          <div>{formatTime(Math.floor(currentTime))}</div>
-          <div>/</div>
-          <div>{formatTime(video.time)}</div>
+      {!hiddenTime && (
+        <div className={time()}>
+          <div className='pointer-events-none absolute right-[8px] bottom-[10px] z-2 flex items-center justify-center text-[13px] text-white text-shadow-[0_0_3px_rgba(0,0,0,0.6)]'>
+            <div>{formatTime(Math.floor(currentTime))}</div>
+            <div>/</div>
+            <div>{formatTime(video.time)}</div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

@@ -13,6 +13,7 @@ interface SearchConditionRowProps<T> {
   list: readonly SearchConditionItem<T>[]
   children?: React.ReactNode
   mt?: boolean
+  className?: string
 }
 
 const Filter = <T extends string | number>({
@@ -21,6 +22,7 @@ const Filter = <T extends string | number>({
   list,
   children,
   mt,
+  className,
 }: SearchConditionRowProps<T>) => {
   return (
     <div className='flex flex-wrap items-center justify-start'>
@@ -31,7 +33,8 @@ const Filter = <T extends string | number>({
           className={cn(
             'text-text2 hover:text-brand_blue bg-bg1 mr-2.5 inline-flex h-8 min-w-[100px] cursor-pointer items-center justify-center rounded-[8px] border-none px-[15px] text-sm leading-[1] whitespace-nowrap transition-all duration-200 select-none',
             value === item.value && 'text-brand_blue bg-brand_blue_thin',
-            mt && 'mt-2.5'
+            mt && 'mt-2.5',
+            className
           )}
         >
           {item.label}

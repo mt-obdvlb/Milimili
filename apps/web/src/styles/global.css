@@ -124,6 +124,10 @@
     color: inherit;
   }
   
+  i {
+    @apply not-italic;
+  }
+  
   .abp {
     position: relative;
   }
@@ -378,6 +382,7 @@
   
   --color-shadow_rgb: var(--shadow_rgb);
   
+  --color-brand_pink_hover: #FF8CB0;
   
   --animate-eat-haha-up: eat-haha-up 0.8s;
   --animate-eat-haha-down: eat-haha-down 0.8s;

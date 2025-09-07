@@ -1,6 +1,6 @@
 export * from './SearchAllList'
 export * from '../../../components/layout/filter/Filter'
-export * from './SearchDatePickerWrapper'
+export * from '../../../components/layout/date-picker/DatePickerWrapper'
 export * from './SearchEmpty'
 export * from './SearchFilterWrapper'
 export * from './SearchFollowBtn'
