@@ -1,10 +1,14 @@
 import { RequestHandler } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import {
+  FavoriteAddBatchDTO,
   FavoriteAddDTO,
+  FavoriteDeleteBatchDTO,
+  FavoriteFolderAddDTO,
   FavoriteFolderList,
   FavoriteListDTO,
   FavoriteListItem,
+  FavoriteMoveBatchDTO,
   FavoriteRecentList,
   PageResult,
   Result,
@@ -79,6 +83,75 @@ export const favoriteAdd: RequestHandler<ParamsDictionary, Result, FavoriteAddDT
     })
   req.body.userId = req.user.id
   await FavoriteService.add(req.body)
+  return res.status(200).json({
+    code: 0,
+  })
+}
+
+export const favoriteDeleteBatch: RequestHandler<
+  ParamsDictionary,
+  Result,
+  FavoriteDeleteBatchDTO
+> = async (req, res) => {
+  await FavoriteService.deleteBatch(req.body)
+  return res.status(200).json({
+    code: 0,
+  })
+}
+
+export const favoriteCleanWatchLater: RequestHandler<ParamsDictionary, Result> = async (
+  req,
+  res
+) => {
+  if (!req.user?.id)
+    return res.status(401).json({
+      code: 401,
+      message: MESSAGE.AUTH_ERROR,
+    })
+  await FavoriteService.cleanWatchLater(req.user.id)
+  return res.status(200).json({
+    code: 0,
+  })
+}
+
+export const favoriteAddBatch: RequestHandler<
+  ParamsDictionary,
+  Result,
+  FavoriteAddBatchDTO
+> = async (req, res) => {
+  if (!req.user?.id)
+    return res.status(401).json({
+      code: 401,
+      message: MESSAGE.AUTH_ERROR,
+    })
+  await FavoriteService.addBatch(req.body, req.user?.id)
+  return res.status(200).json({
+    code: 0,
+  })
+}
+
+export const favoriteMoveBatch: RequestHandler<
+  ParamsDictionary,
+  Result,
+  FavoriteMoveBatchDTO
+> = async (req, res) => {
+  await FavoriteService.moveBatch(req.body)
+  return res.status(200).json({
+    code: 0,
+  })
+}
+
+export const favoriteFolderAdd: RequestHandler<
+  ParamsDictionary,
+  Result,
+  FavoriteFolderAddDTO
+> = async (req, res) => {
+  if (!req.user?.id)
+    return res.status(401).json({
+      code: 1,
+      message: MESSAGE.AUTH_ERROR,
+    })
+  await FavoriteService.folderAdd(req.body, req.user.id)
   return res.status(200).json({
     code: 0,
   })

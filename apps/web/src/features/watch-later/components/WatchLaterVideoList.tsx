@@ -1,14 +1,26 @@
+'use client'
+
 import { VideoGetWaterLaterList } from '@mtobdvlb/shared-types'
 import TinyVideoItem from '@/components/layout/video/TinyVideoItem'
 import { cn } from '@/lib'
 import WatchLaterVideoDetailItem from '@/features/watch-later/components/WatchLaterVideoDetailItem'
+import WatchLaterDeleteBtn from '@/features/watch-later/components/WatchLaterDeleteBtn'
+import WatchLaterCheckBox from '@/features/watch-later/components/WatchLaterCheckBox'
+import { Dispatch, SetStateAction } from 'react'
+import { WatchLaterIds } from '@/features/watch-later/components/WatchLaterWrapper'
 
 const WatchLaterVideoList = ({
   videoWatchLaterList,
   isDetail,
+  setIds,
+  isSelect,
+  ids,
 }: {
   videoWatchLaterList?: VideoGetWaterLaterList
   isDetail: boolean
+  setIds: Dispatch<SetStateAction<WatchLaterIds>>
+  isSelect: boolean
+  ids: WatchLaterIds
 }) => {
   return (
     <section
@@ -18,13 +30,31 @@ const WatchLaterVideoList = ({
       )}
     >
       {videoWatchLaterList?.map((video) => {
-        {
-          return isDetail ? (
-            <WatchLaterVideoDetailItem video={video} key={video.id} />
-          ) : (
-            <TinyVideoItem hiddenTime video={video} key={video.id} />
-          )
-        }
+        return (
+          <div key={video.id} className={'relative size-full'}>
+            {isDetail ? (
+              <WatchLaterVideoDetailItem video={video} key={video.id} />
+            ) : (
+              <div className={'relative size-full'} key={video.id}>
+                <TinyVideoItem hiddenDanmu hiddenTime video={video} key={video.id} />
+                <WatchLaterDeleteBtn
+                  favoriteId={video.favoriteId}
+                  className={'right-0 bottom-0 text-[18px]'}
+                />
+              </div>
+            )}
+            {isSelect && (
+              <WatchLaterCheckBox
+                setIds={setIds}
+                id={{
+                  videoId: video.id,
+                  favoriteId: video.favoriteId,
+                }}
+                ids={ids}
+              />
+            )}
+          </div>
+        )
       })}
     </section>
   )

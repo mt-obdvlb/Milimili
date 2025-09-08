@@ -7,8 +7,8 @@ import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib'
 import { tv } from 'tailwind-variants'
 import { useState } from 'react'
-import LoginModelCode from '@/components/layout/login-model/LoginModelCode'
-import LoginModelPassword from '@/components/layout/login-model/LoginModelPassword'
+import LoginModelCode from '@/components/layout/models/login-model/LoginModelCode'
+import LoginModelPassword from '@/components/layout/models/login-model/LoginModelPassword'
 
 const form = tv({
   slots: {

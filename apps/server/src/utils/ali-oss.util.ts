@@ -9,10 +9,11 @@ const ossClient = new Oss({
 })
 
 export const getUploadURL = async (fileName: string) => {
-  const objectKey = `videos/${Date.now()}-${fileName}`
+  const objectKey = `${Date.now()}-${fileName}`
   const url = ossClient.signatureUrl(objectKey, {
     expires: 300,
     method: 'PUT',
+    'Content-Type': 'application/octet-stream',
   })
   return {
     url,

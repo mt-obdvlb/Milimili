@@ -3,7 +3,7 @@
 import { Separator } from '@/components/ui/separator'
 import { cn, toast } from '@/lib'
 import { Button } from '@/components/ui/button'
-import { LoginModelFormStyles } from '@/components/layout/login-model/LoginModel'
+import { LoginModelFormStyles } from '@/components/layout/models/login-model/LoginModel'
 import { Dispatch, SetStateAction } from 'react'
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'

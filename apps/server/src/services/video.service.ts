@@ -163,7 +163,7 @@ export const VideoService = {
 
     // 3) 查询 Favorite（不分页），并按 sort 排序（按加入时间）
     const favorites = await FavoriteModel.find(favoriteFilter)
-      .select('videoId createdAt')
+      .select('videoId createdAt _id')
       .lean<IFavorite[]>()
 
     if (!favorites || favorites.length === 0) return []
@@ -178,7 +178,13 @@ export const VideoService = {
     // 保留 favorites 顺序并去重 videoId（防止重复收藏造成重复）
     const seen = new Set<string>()
     const orderedVideoIdStrings: string[] = []
-    const favoriteMap = new Map<string, Date>() // videoId -> favoriteCreatedAt
+    const favoriteMap = new Map<
+      string,
+      {
+        favoriteId: string
+        createdAt: Date
+      }
+    >() // videoId -> { favoriteId, createdAt }
     for (const f of favorites) {
       const vidStr = f.videoId.toString()
       if (!seen.has(vidStr)) {
@@ -186,7 +192,11 @@ export const VideoService = {
         orderedVideoIdStrings.push(vidStr)
       }
       // 若存在多个 favorite（极少）以第一次出现的 createdAt 为准（已按 sort 排好序）
-      if (!favoriteMap.has(vidStr)) favoriteMap.set(vidStr, f.createdAt)
+      if (!favoriteMap.has(vidStr))
+        favoriteMap.set(vidStr, {
+          favoriteId: f._id.toString(),
+          createdAt: f.createdAt,
+        })
     }
 
     if (orderedVideoIdStrings.length === 0) return []
@@ -255,8 +265,8 @@ export const VideoService = {
       const idStr = v._id.toString()
       const stat = statsMap.get(idStr)
       const history = historyMap.get(idStr)
-      const watched = history ? history.duration >= v.time : false
-
+      const watched = history ? history.duration >= v.time * 0.98 : false
+      const fav = favoriteMap.get(idStr)
       return {
         data: {
           id: idStr,
@@ -269,6 +279,7 @@ export const VideoService = {
           publishedAt: v.createdAt.toISOString(),
           userId: v.userId?._id.toString() ?? '',
           url: v.url,
+          favoriteId: fav?.favoriteId ?? '',
         },
         watched,
       }

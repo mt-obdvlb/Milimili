@@ -17,7 +17,11 @@ export type IFavoriteFolder = FavoriteFolderDB & Document
 
 const favoriteFolderSchema = new Schema<IFavoriteFolder>(
   {
-    name: { type: String, required: true, trim: true },
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     description: { type: String, default: '', trim: true },
     type: {
       type: String,

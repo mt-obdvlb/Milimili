@@ -1,11 +1,22 @@
 import { FavoriteFolderList, FavoriteRecentList, Result } from '@mtobdvlb/shared-types'
 import request from '@/lib/request'
+import {
+  FavoriteAddBatchRequest,
+  FavoriteDeleteBatchRequest,
+  FavoriteFolderAddRequest,
+  FavoriteMoveBatchRequest,
+} from '@/types'
 
 const baseURL = '/favorites'
 
 const API = {
   recent: '/recent',
   folderList: '/folder',
+  deleteBatch: '/',
+  addBatch: '/batch',
+  moveBatch: 'move-batch',
+  cleanWatchLater: '/clean-watch-later',
+  folderAdd: '/folder',
 } as const
 
 export const favoriteGetRecent = () =>
@@ -13,3 +24,18 @@ export const favoriteGetRecent = () =>
 
 export const favoriteGetFolderList = () =>
   request.get<Result<FavoriteFolderList>>(`${baseURL}${API.folderList}`)
+
+export const favoriteDeleteBatch = (body: FavoriteDeleteBatchRequest) =>
+  request.delete<Result>(`${baseURL}${API.deleteBatch}`, { data: body })
+
+export const favoriteAddBatch = (body: FavoriteAddBatchRequest) =>
+  request.post<Result>(`${baseURL}${API.addBatch}`, body)
+
+export const favoriteMoveBatch = (body: FavoriteMoveBatchRequest) =>
+  request.post<Result>(`${baseURL}${API.moveBatch}`, body)
+
+export const favoriteCleanWatchLater = () =>
+  request.post<Result>(`${baseURL}${API.cleanWatchLater}`)
+
+export const favoriteAddFolder = (body: FavoriteFolderAddRequest) =>
+  request.post<Result>(`${baseURL}${API.folderAdd}`, body)

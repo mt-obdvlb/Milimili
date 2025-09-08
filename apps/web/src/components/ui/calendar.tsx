@@ -13,7 +13,7 @@ import {
 import { zhCN } from 'react-day-picker/locale'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { DatePickerSelectMode } from '@/features'
+import { DatePickerSelectMode } from '@/components'
 
 function Calendar({
   className,

@@ -1,3 +1,4 @@
+export * from './fileTo'
 export * from './format'
 export * from './getRandomIndex'
 export * from './isServer'

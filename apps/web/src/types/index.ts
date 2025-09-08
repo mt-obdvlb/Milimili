@@ -1,6 +1,7 @@
 export * from './auth'
 export * from './axios'
 export * from './category'
+export * from './common'
 export * from './danmaku'
 export * from './favorite'
 export * from './follow'

@@ -7,7 +7,7 @@ export default defineConfig({
   format: ['esm', 'cjs'],
   dts: true,
   sourcemap: true,
-  watch: process.env.NODE_ENV === 'development',
+  watch: ['src'],
   esbuildPlugins: [
     TsconfigPathsPlugin({
       tsconfig: path.resolve(__dirname, 'tsconfig.json'),

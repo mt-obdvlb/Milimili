@@ -3,7 +3,7 @@
 import { Separator } from '@/components/ui/separator'
 import { cn, toast } from '@/lib'
 import { Button } from '@/components/ui/button'
-import { LoginModelFormStyles } from '@/components/layout/login-model/LoginModel'
+import { LoginModelFormStyles } from '@/components/layout/models/login-model/LoginModel'
 import { z } from 'zod'
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'

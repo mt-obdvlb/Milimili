@@ -1,3 +1,4 @@
+export * from './cropImage'
 export * from './request'
 export * from './socket'
 export * from './toast'
