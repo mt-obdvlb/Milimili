@@ -6,6 +6,7 @@ import { cn } from '@/lib'
 import TinyVideoPlayer from '@/components/layout/video/TinyVideoPlayer'
 import { formatPlayCount, formatTime } from '@/utils'
 import { useState } from 'react'
+import WatchLaterDeleteBtn from '@/features/watch-later/components/WatchLaterDeleteBtn'
 
 const WatchLaterVideoDetailItem = ({ video }: { video: VideoGetWaterLaterItem }) => {
   const [time, setTime] = useState(0)
@@ -69,7 +70,9 @@ const WatchLaterVideoDetailItem = ({ video }: { video: VideoGetWaterLaterItem })
                 }
               >
                 <div className={'flex min-w-0 flex-1 items-center justify-start'}></div>
-                <span>{formatTime(video.time)}</span>
+                <span className={'rounded-[4px] bg-black/30 px-1 py-[1px] text-white'}>
+                  {formatTime(video.time)}
+                </span>
               </div>
             </div>
           </div>
@@ -119,17 +122,7 @@ const WatchLaterVideoDetailItem = ({ video }: { video: VideoGetWaterLaterItem })
             </div>
           </div>
         </div>
-        <div
-          className={
-            'text-text3 hover:text-brand_blue absolute inset-y-0 right-0 cursor-pointer text-lg'
-          }
-        >
-          <i
-            className={
-              'sic-BDC-trash_delete_line inline-block align-baseline text-[22px] leading-[1] font-normal'
-            }
-          ></i>
-        </div>
+        <WatchLaterDeleteBtn favoriteId={video.favoriteId} className={'inset-y-0 right-0'} />
       </div>
     </article>
   )

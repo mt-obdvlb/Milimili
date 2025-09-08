@@ -1,5 +1,6 @@
 export * from './auth/index'
 export * from './category/index'
+export * from './common/index'
 export * from './favorite/index'
 export * from './feed/index'
 export * from './follow/index'

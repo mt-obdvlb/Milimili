@@ -1,5 +1,6 @@
 export * from './auth'
 export * from './category'
+export * from './common'
 export * from './danmaku'
 export * from './favorite'
 export * from './feed'

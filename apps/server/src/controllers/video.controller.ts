@@ -1,5 +1,4 @@
 import { RequestHandler } from 'express'
-import { getUploadURL } from '@/utils/ali-oss.util'
 import { MESSAGE } from '@/constants'
 import {
   PageResult,
@@ -15,17 +14,6 @@ import {
 } from '@mtobdvlb/shared-types'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { VideoService } from '@/services/video.service'
-
-export const videoUploadURL: RequestHandler = async (req, res) => {
-  const { fileName } = req.query
-  if (!fileName || typeof fileName !== 'string')
-    return res.status(400).json({
-      message: MESSAGE.INVALID_PARAMS,
-      code: 1,
-    })
-  const data = await getUploadURL(fileName)
-  return res.status(200).json({ data, code: 0 })
-}
 
 export const videoList: RequestHandler<
   ParamsDictionary,

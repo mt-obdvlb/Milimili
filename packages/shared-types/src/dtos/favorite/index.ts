@@ -1,2 +1,6 @@
+export * from './add-batch.dto'
 export * from './add.dto'
+export * from './delete-batch.dto'
+export * from './folder-add.dto'
 export * from './list.dto'
+export * from './move-batch.dto'

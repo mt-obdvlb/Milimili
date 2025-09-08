@@ -3,11 +3,23 @@ import { authMiddleware, validatorMiddleware } from '@/middlewares'
 import { asyncHandler } from '@/utils'
 import {
   favoriteAdd,
+  favoriteAddBatch,
+  favoriteCleanWatchLater,
+  favoriteDeleteBatch,
+  favoriteFolderAdd,
   favoriteFolderList,
   favoriteList,
+  favoriteMoveBatch,
   favoriteRecent,
 } from '@/controllers/favorite.controller'
-import { favoriteAddDTO, favoriteListDTO } from '@mtobdvlb/shared-types'
+import {
+  favoriteAddBatchDTO,
+  favoriteAddDTO,
+  favoriteDeleteBatchDTO,
+  favoriteFolderAddDTO,
+  favoriteListDTO,
+  favoriteMoveBatchDTO,
+} from '@mtobdvlb/shared-types'
 
 const router = Router()
 
@@ -24,6 +36,31 @@ router.post(
   authMiddleware,
   validatorMiddleware({ body: favoriteAddDTO }),
   asyncHandler(favoriteAdd)
+)
+router.post(
+  '/batch',
+  authMiddleware,
+  validatorMiddleware({ body: favoriteAddBatchDTO }),
+  asyncHandler(favoriteAddBatch)
+)
+router.delete(
+  '/',
+  authMiddleware,
+  validatorMiddleware({ body: favoriteDeleteBatchDTO }),
+  asyncHandler(favoriteDeleteBatch)
+)
+router.post('/clean-watch-later', authMiddleware, asyncHandler(favoriteCleanWatchLater))
+router.post(
+  '/move-batch',
+  authMiddleware,
+  validatorMiddleware({ body: favoriteMoveBatchDTO }),
+  asyncHandler(favoriteMoveBatch)
+)
+router.post(
+  '/folder',
+  authMiddleware,
+  validatorMiddleware({ body: favoriteFolderAddDTO }),
+  asyncHandler(favoriteFolderAdd)
 )
 
 export default router

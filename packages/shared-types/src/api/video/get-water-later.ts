@@ -9,6 +9,7 @@ export type VideoGetWaterLaterItem = {
   publishedAt: string
   userId: string
   url: string
+  favoriteId: string
 }
 
 export type VideoGetWaterLaterList = VideoGetWaterLaterItem[]

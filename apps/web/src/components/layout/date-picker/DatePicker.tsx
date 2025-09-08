@@ -2,10 +2,9 @@
 
 import React, { Dispatch, SetStateAction, useState } from 'react'
 import 'react-day-picker/style.css'
-import { Calendar } from '@/components'
+import { Calendar, DatePickerSelectMode } from '@/components'
 import DatePickerRoot from '@/components/layout/date-picker/DatePickerRoot'
 import { useDatePicker } from '@/components/layout/date-picker/DatePickerProvider'
-import { DatePickerSelectMode } from '@/features'
 import { DateRange } from 'react-day-picker'
 
 const DatePicker = ({

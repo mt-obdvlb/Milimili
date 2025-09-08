@@ -6,7 +6,7 @@ import '@/styles/font.css'
 import 'comment-core-library/dist/css/style.css'
 import Provider from '@/components/provider/Provider'
 import Initializer from '@/components/initializer/Initializer'
-import LoginModel from '@/components/layout/login-model/LoginModel'
+import LoginModel from '@/components/layout/models/login-model/LoginModel'
 import Footer from '@/components/layout/footer/Footer'
 
 export default ({ children }: { children: React.ReactNode }) => {

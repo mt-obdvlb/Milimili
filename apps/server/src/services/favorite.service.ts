@@ -1,11 +1,15 @@
-import { FavoriteFolderModel, FavoriteModel, VideoModel } from '@/models'
+import { FavoriteFolderModel, FavoriteModel, HistoryModel, VideoModel } from '@/models'
 import { Types } from 'mongoose'
 import {
+  FavoriteAddBatchDTO,
   FavoriteAddDTO,
+  FavoriteDeleteBatchDTO,
+  FavoriteFolderAddDTO,
   FavoriteFolderList,
   FavoriteList,
   FavoriteListDTO,
   FavoriteListItem,
+  FavoriteMoveBatchDTO,
   FavoriteRecentItem,
 } from '@mtobdvlb/shared-types'
 import { HttpError } from '@/utils'
@@ -154,6 +158,104 @@ export const FavoriteService = {
       userId,
       videoId,
       folderId,
+    })
+  },
+  deleteBatch: async ({ ids }: FavoriteDeleteBatchDTO) => {
+    if (!ids.length) return
+    await FavoriteModel.deleteMany({
+      _id: { $in: ids.map((id) => new Types.ObjectId(id)) },
+    })
+  },
+  cleanWatchLater: async (userId: string) => {
+    const folder = await FavoriteFolderModel.findOne({
+      userId: new Types.ObjectId(userId),
+      type: 'watch_later',
+    }).lean()
+
+    if (!folder) throw new HttpError(400, MESSAGE.FAVORITE_FOLDER_NOT_FOUND)
+
+    // 找到 watch_later 文件夹里的所有收藏
+    const favorites = await FavoriteModel.find({ folderId: folder._id }).lean()
+
+    if (!favorites.length) return
+
+    // 找到对应的 history 记录
+    const histories = await HistoryModel.find({
+      userId: new Types.ObjectId(userId),
+      videoId: { $in: favorites.map((f) => f.videoId) },
+    }).lean()
+
+    // 预处理：视频观看时长映射
+    const historyMap = new Map<string, number>()
+    histories.forEach((h) => {
+      historyMap.set(h.videoId.toString(), h.duration ?? 0)
+    })
+
+    // 查视频时长，判断哪些已看完
+    const videos = await VideoModel.find({
+      _id: { $in: favorites.map((f) => f.videoId) },
+    })
+      .select('_id duration')
+      .lean()
+
+    const finishedVideoIds = videos
+      .filter((video) => {
+        const watched = historyMap.get(video._id.toString()) ?? 0
+        return watched >= (video.time ?? 0) * 0.98 && video.time > 0
+      })
+      .map((video) => video._id)
+
+    if (!finishedVideoIds.length) return
+
+    // 删除 watch_later 收藏夹里的已看完视频
+    await FavoriteModel.deleteMany({
+      folderId: folder._id,
+      videoId: { $in: finishedVideoIds },
+    })
+  },
+  addBatch: async ({ videoIds, folderId }: FavoriteAddBatchDTO, userId: string) => {
+    const folder = await FavoriteFolderModel.findById(folderId)
+    if (!folder) throw new HttpError(400, MESSAGE.FAVORITE_FOLDER_NOT_FOUND)
+
+    const existingFavorites = await FavoriteModel.find({
+      folderId,
+      videoId: { $in: videoIds.map((id) => new Types.ObjectId(id)) },
+    }).lean()
+
+    const existingVideoIds = new Set(existingFavorites.map((fav) => fav.videoId.toString()))
+
+    const toInsert = videoIds
+      .filter((vid) => !existingVideoIds.has(vid))
+      .map((vid) => ({
+        userId: new Types.ObjectId(userId),
+        folderId: new Types.ObjectId(folderId),
+        videoId: new Types.ObjectId(vid),
+      }))
+
+    if (toInsert.length) {
+      await FavoriteModel.insertMany(toInsert)
+    }
+  },
+  moveBatch: async ({ ids, targetFolderId }: FavoriteMoveBatchDTO) => {
+    const targetFolder = await FavoriteFolderModel.findById(targetFolderId)
+    if (!targetFolder) throw new HttpError(400, MESSAGE.FAVORITE_FOLDER_NOT_FOUND)
+
+    await FavoriteModel.updateMany(
+      { _id: { $in: ids.map((id) => new Types.ObjectId(id)) } },
+      { $set: { folderId: new Types.ObjectId(targetFolderId) } }
+    )
+  },
+  folderAdd: async ({ thumbnail, name, description }: FavoriteFolderAddDTO, userId: string) => {
+    const folder = await FavoriteFolderModel.findOne({
+      userId,
+      name,
+    })
+    if (folder) throw new HttpError(400, MESSAGE.FOLDER_EXIST)
+    await FavoriteFolderModel.create({
+      userId: new Types.ObjectId(userId),
+      thumbnail: thumbnail ? thumbnail : undefined,
+      name,
+      description,
     })
   },
 }
