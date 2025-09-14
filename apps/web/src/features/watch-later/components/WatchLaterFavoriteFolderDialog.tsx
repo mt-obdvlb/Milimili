@@ -6,6 +6,7 @@ import { useFavoriteGetFolderList, WatchLaterIds } from '@/features'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { cn } from '@/lib'
 import FavoriteAddModel from '@/components/layout/models/favorite-add-model/FavoriteAddModel'
+import WatchLaterFilterBtn from '@/features/watch-later/components/WatchLaterFilterBtn'
 
 const WatchLaterFavoriteFolderDialog = ({
   handleConfirm,
@@ -24,11 +25,16 @@ const WatchLaterFavoriteFolderDialog = ({
 
   return (
     <CommonDialog
-      label={`${title}到`}
+      trigger={
+        <WatchLaterFilterBtn
+          label={`${title}到`}
+          disabled={!ids.length}
+          svg={svg}
+          isExpend={true}
+        />
+      }
       title={`将${ids.length}个视频${title}至`}
       handleConfirm={() => handleConfirm(folderId)}
-      disabled={!ids.length}
-      svg={svg}
     >
       <div className={'text-text1 mt-2 mb-6 pt-5 text-left text-sm'}>
         <div className={'h-80 overflow-y-auto'}>
