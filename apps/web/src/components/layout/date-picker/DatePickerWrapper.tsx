@@ -13,10 +13,12 @@ const DatePickerWrapper = ({
   resetKey,
   range,
   setRange,
+  className,
 }: {
   resetKey: number
   range?: DateRange
   setRange: Dispatch<SetStateAction<DateRange | undefined>>
+  className?: string
 }) => {
   const [open, setOpen] = useState(false)
   const [selectMode, setSelectMode] = useState<DatePickerSelectMode>('normal')
@@ -59,7 +61,7 @@ const DatePickerWrapper = ({
           setOpen(open)
         }}
       >
-        <div className={'mr-sm mt-sm'}>
+        <div className={cn('mr-sm mt-sm', className)}>
           <div className={'relative flex w-full items-center select-none'}>
             <PopoverTrigger asChild>
               <div

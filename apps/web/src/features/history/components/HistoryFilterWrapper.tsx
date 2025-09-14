@@ -5,57 +5,45 @@ import { Button, Input, Separator } from '@/components'
 import { cn, toast } from '@/lib'
 import Filter from '@/components/layout/filter/Filter'
 import { DateRange } from 'react-day-picker'
-import {
-  VideoGetWatchLaterAddAt,
-  VideoGetWatchLaterTime,
-  VideoGetWatchLaterType,
-  VideoGetWaterLaterList,
-} from '@mtobdvlb/shared-types'
+import { HistoryGetList, HistoryGetTime, HistoryGetWatchAt } from '@mtobdvlb/shared-types'
 import DatePickerWrapper from '@/components/layout/date-picker/DatePickerWrapper'
-import { useWatchLaterCleanUp } from '@/features/watch-later/api'
-import WatchLaterAllCheck from '@/features/watch-later/components/WatchLaterAllCheck'
-import { WatchLaterIds } from '@/features/watch-later/components/WatchLaterWrapper'
 import CommonDialog from '@/components/layout/models/common/CommonDialog'
-import WatchLaterSelectFilterBtnWrapper from '@/features/watch-later/components/WatchLaterSelectFilterBtnWrapper'
+import HistoryAllCheck from '@/features/history/components/HistoryAllCheck'
+import HistorySelectFilterBtnWrapper from '@/features/history/components/HistorySelectFilterBtnWrapper'
 import { useInView } from 'react-intersection-observer'
-import WatchLaterFilterBtn from '@/features/watch-later/components/WatchLaterFilterBtn'
+import { useHistoryCleanUp } from '@/features'
+import HistoryTabs from '@/features/history/components/HistoryTabs'
+import HistoryFilterBtn from '@/features/history/components/HistoryFilterBtn'
 
 type WatchLaterFilterProps = {
-  setTime: Dispatch<SetStateAction<VideoGetWatchLaterTime>>
-  setAddAt: Dispatch<SetStateAction<VideoGetWatchLaterAddAt>>
-  addAt: VideoGetWatchLaterAddAt
-  time: VideoGetWatchLaterTime
+  setTime: Dispatch<SetStateAction<HistoryGetTime>>
+  setWatchAt: Dispatch<SetStateAction<HistoryGetWatchAt>>
+  watchAt: HistoryGetWatchAt
+  time: HistoryGetTime
   range?: DateRange
   setRange: Dispatch<SetStateAction<DateRange | undefined>>
-  type: VideoGetWatchLaterType
-  setType: Dispatch<SetStateAction<VideoGetWatchLaterType>>
   setKw: Dispatch<SetStateAction<string>>
   isDetail: boolean
   isSelect: boolean
   setIsSelect: Dispatch<SetStateAction<boolean>>
-  videoWatchLaterList?: VideoGetWaterLaterList
-  setIds: Dispatch<SetStateAction<WatchLaterIds>>
-  ids: WatchLaterIds
+  historyList?: HistoryGetList
+  setIds: Dispatch<SetStateAction<string[]>>
+  ids: string[]
 }
 
 const timeList = [
-  { label: '全部时间', value: 'all' },
+  { label: '全部时长', value: 'all' },
   { label: '10分钟以下', value: '10' },
   { label: '10-30分钟', value: '10to30' },
   { label: '30-60分钟', value: '30to60' },
   { label: '60分钟以上', value: '60' },
 ] as const
 
-const addAtList = [
-  { label: '全部添加', value: 'all' },
+const watchAtList = [
+  { label: '全部时间', value: 'all' },
   { label: '今天', value: 'today' },
   { label: '昨天', value: 'yesterday' },
   { label: '近一周', value: 'week' },
-] as const
-
-const typeList = [
-  { label: '全部进度', value: 'all' },
-  { label: '未看完', value: 'not_watched' },
 ] as const
 
 const WatchLaterFilterWrapper = ({
@@ -63,16 +51,14 @@ const WatchLaterFilterWrapper = ({
   time,
   range,
   setRange,
-  addAt,
-  setAddAt,
-  setType,
-  type,
+  watchAt,
+  setWatchAt,
   setKw,
   isDetail,
   setIsSelect,
   isSelect,
   setIds,
-  videoWatchLaterList,
+  historyList,
   ids,
 }: WatchLaterFilterProps) => {
   const [open, setOpen] = useState(false)
@@ -88,7 +74,7 @@ const WatchLaterFilterWrapper = ({
     [isDetail, isFocus, currenInput]
   )
 
-  const { cleanUp } = useWatchLaterCleanUp()
+  const { cleanUp } = useHistoryCleanUp()
 
   useEffect(() => {
     if (!ref.current) return
@@ -116,46 +102,34 @@ const WatchLaterFilterWrapper = ({
   const handleConfirm = async () => {
     const { code } = await cleanUp()
     if (code) return
-    toast('已清除视频')
+    toast('已清空历史记录')
   }
 
-  const { ref: sentialRef, inView } = useInView({
-    threshold: 1,
-  })
+  const { ref: sentialRef, inView } = useInView({ threshold: 1 })
 
   return (
     <>
       <div className={'h-0'} ref={sentialRef}></div>
-      <div
-        className={cn(
-          'bg-bg1 sticky top-0 mx-auto w-full max-w-[calc(1080px+2*100px)] px-25',
-          isDetail && 'max-w-[calc(890px+2*100px)]',
-          !inView && 'z-1000'
-        )}
-      >
-        <div className={'mt-[10px] py-[20px]'}>
-          <div className={'flex items-center'}>
+      <div className={cn('bg-bg1 sticky top-0 w-full', !inView && 'z-1000')}>
+        <div
+          className={cn(
+            'mx-auto w-[1152px] py-[14px] pl-[72px]',
+            isDetail && 'w-[calc(72px+40px+790px+50px*2)] pr-[50px] pl-[162px]'
+          )}
+        >
+          <div className={'flex min-h-[46px] items-center'}>
             <div className={'flex w-full items-center gap-2'}>
               {isSelect ? (
                 <>
-                  <WatchLaterAllCheck
-                    ids={ids}
-                    setIds={setIds}
-                    videoWatchLaterList={videoWatchLaterList}
-                  />
+                  <HistoryAllCheck ids={ids} setIds={setIds} historyList={historyList} />
                   <span className={'text-text2 text-sm leading-[1.5]'}>
-                    {videoWatchLaterList?.length === ids.length
+                    {historyList?.length === ids.length
                       ? '已选择全部'
-                      : `已选择${ids.length}个视频`}
+                      : `已选择${ids.length}条历史记录`}
                   </span>
                 </>
               ) : (
-                <Filter<VideoGetWatchLaterType>
-                  className={'h-[34px] text-[15px]'}
-                  value={type}
-                  set={setType}
-                  list={typeList}
-                />
+                <HistoryTabs />
               )}
               {isSelect ? (
                 <>
@@ -163,17 +137,10 @@ const WatchLaterFilterWrapper = ({
                     orientation={'vertical'}
                     className={'bg-line_regular mx-3 h-[18px] w-[0.5px]'}
                   ></Separator>
-                  <WatchLaterSelectFilterBtnWrapper ids={ids} />
+                  <HistorySelectFilterBtnWrapper ids={ids} />
                 </>
               ) : (
                 <div className={'relative mr-4 pl-6'}>
-                  <Separator
-                    orientation={'vertical'}
-                    className={
-                      'bg-line_regular absolute top-1/2 left-0 h-[18px] w-[0.5px] -translate-y-1/2'
-                    }
-                  ></Separator>
-
                   <Button
                     className={
                       'text-text1 bg-bg1_float border-line_regular hover:bg-graph_bg_thick inline-flex h-[34px] min-w-25 cursor-pointer items-center justify-around rounded-[8px] border px-2.5 text-sm leading-[1] whitespace-nowrap duration-200 select-none'
@@ -222,7 +189,7 @@ const WatchLaterFilterWrapper = ({
                 <>
                   <label
                     className={cn(
-                      'bg-graph_bg_regular text-text1 border-graph_bg_regular flex h-[34px] w-[160px] items-center justify-end rounded-[8px] border p-[2px] pr-0 transition-all duration-300',
+                      'bg-graph_bg_regular text-text1 border-graph_bg_regular flex h-[34px] w-[200px] items-center justify-end rounded-[8px] border p-[2px] pr-0 transition-all duration-300',
                       isFocus && 'bg-transparent',
                       !isExpend && 'w-[34px] border-none bg-transparent p-0'
                     )}
@@ -235,13 +202,13 @@ const WatchLaterFilterWrapper = ({
                       >
                         <Input
                           className={cn(
-                            'text-text1 size-full rounded-[8px] pr-[30px] pl-[10px] text-sm transition-colors duration-300',
+                            'text-text1 placeholder:text-text3 size-full rounded-[8px] pr-[30px] pl-[10px] text-sm transition-colors duration-300 placeholder:text-sm',
                             isFocus && 'bg-[#F1F2F3]'
                           )}
                           ref={inputRef}
                           value={currenInput}
                           onChange={(e) => setCurrenInput(e.target.value)}
-                          placeholder={'搜索稍后再看'}
+                          placeholder={'搜索标题/up主昵称'}
                           onFocus={() => setIsFocus(true)}
                           onBlur={() => setIsFocus(false)}
                         />
@@ -285,9 +252,8 @@ const WatchLaterFilterWrapper = ({
                   </label>
                   <CommonDialog
                     trigger={
-                      <WatchLaterFilterBtn
-                        isExpend={isExpend}
-                        label={'清除已看完'}
+                      <HistoryFilterBtn
+                        label={'清空历史'}
                         svg={
                           <svg
                             xmlns='http://www.w3.org/2000/svg'
@@ -316,8 +282,9 @@ const WatchLaterFilterWrapper = ({
                       />
                     }
                     handleConfirm={handleConfirm}
-                    title={'一键清除已看完视频'}
-                    desc={'视频清除后将不出现在稍后再看中'}
+                    title={'确认要清空所有历史记录？'}
+                    desc={'记录清空后将不可恢复'}
+                    mainStyles={'blue'}
                   />
                   {[
                     {
@@ -362,22 +329,19 @@ const WatchLaterFilterWrapper = ({
                   ].map((item) => (
                     <Button
                       className={cn(
-                        'text-text1 hover:bg-graph_bg_thick bg-bg1_float border-line_regular text-4 flex h-[34px] max-w-30 min-w-25 cursor-pointer items-center justify-center rounded-md border px-3 leading-[1] whitespace-nowrap transition-all delay-100 duration-300 select-none',
-                        !isExpend && 'w-[34px] max-w-[34px] min-w-[34px] p-0'
+                        'text-text1 hover:bg-graph_bg_thick bg-bg1_float border-line_regular text-4 flex h-[34px] max-w-30 min-w-25 cursor-pointer items-center justify-center rounded-md border px-3 leading-[1] whitespace-nowrap transition-all delay-100 duration-300 select-none'
                       )}
                       key={item.label}
                       onClick={item.onClick}
                     >
                       {item.svg}
-                      {isExpend && (
-                        <span
-                          className={
-                            'ml-1 max-w-25 overflow-hidden transition-all delay-[inherit] duration-300'
-                          }
-                        >
-                          {item.label}
-                        </span>
-                      )}
+                      <span
+                        className={
+                          'ml-1 max-w-25 overflow-hidden transition-all delay-[inherit] duration-300'
+                        }
+                      >
+                        {item.label}
+                      </span>
                     </Button>
                   ))}
                 </>
@@ -385,26 +349,40 @@ const WatchLaterFilterWrapper = ({
             </div>
           </div>
 
-          <div ref={ref} className={cn('overflow-hidden transition-[height] duration-200')}>
-            <Filter<VideoGetWatchLaterAddAt>
-              value={addAt}
-              set={(val) => {
-                setAddAt(val)
-                setResetKey(resetKey + 1)
-              }}
-              list={addAtList}
-              mt
-              className={'h-[34px] text-[15px]'}
-            >
-              <DatePickerWrapper range={range} setRange={setRange} resetKey={resetKey} />
-            </Filter>
-            <Filter<VideoGetWatchLaterTime>
-              className={'h-[34px] text-[15px]'}
+          <div
+            ref={ref}
+            className={cn('overflow-hidden pt-[12px] transition-[height] duration-200')}
+          >
+            <Filter<HistoryGetTime>
+              className={cn(
+                '!m-0 mt-0 mr-0 flex h-[34px] min-w-[84px] shrink-0 cursor-pointer items-center justify-center rounded-[6px] !p-0 px-0 text-sm transition-all duration-300'
+              )}
               value={time}
               set={setTime}
               list={timeList}
               mt
+              contanierClassName={cn('gap-3')}
             ></Filter>
+            <Filter<HistoryGetWatchAt>
+              value={watchAt}
+              set={(val) => {
+                setWatchAt(val)
+                setResetKey(resetKey + 1)
+              }}
+              list={watchAtList}
+              mt
+              className={cn(
+                '!m-0 mt-0 mr-0 flex h-[34px] min-w-[84px] shrink-0 cursor-pointer items-center justify-center rounded-[6px] !p-0 px-0 text-sm transition-all duration-300'
+              )}
+              contanierClassName={cn('mt-[12px] gap-3')}
+            >
+              <DatePickerWrapper
+                className={'!mt-0'}
+                range={range}
+                setRange={setRange}
+                resetKey={resetKey}
+              />
+            </Filter>
           </div>
         </div>
       </div>

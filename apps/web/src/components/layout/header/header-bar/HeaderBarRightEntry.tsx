@@ -381,6 +381,7 @@ const HeaderBarRightEntry = ({
         )}
       </HeaderBarHoverCardWithBounce>
       <HeaderBarHoverCardWithBounce
+        href={'/history'}
         title={'历史'}
         Svg={
           <svg

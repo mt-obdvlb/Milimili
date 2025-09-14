@@ -88,7 +88,7 @@ export const FavoriteService = {
                 video: {
                   id: '$video._id',
                   title: { $ifNull: ['$video.title', '[已删除]'] },
-                  time: { $ifNull: ['$video.duration', 0] },
+                  time: { $ifNull: ['$video.time', 0] },
                   thumbnail: { $ifNull: ['$video.thumbnail', ''] },
                 },
                 user: {

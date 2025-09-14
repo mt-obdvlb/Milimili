@@ -7,7 +7,7 @@ import {
   WatchLaterIds,
 } from '@/features'
 import WatchLaterSelectFilterBtn from '@/features/watch-later/components/WatchLaterSelectFilterBtn'
-import WatchLaterDialog from '@/features/watch-later/components/WatchLaterDialog'
+import CommonDialog from '@/components/layout/models/common/CommonDialog'
 import { toast } from '@/lib'
 import WatchLaterFavoriteFolderDialog from '@/features/watch-later/components/WatchLaterFavoriteFolderDialog'
 
@@ -92,7 +92,7 @@ const WatchLaterSelectFilterBtnWrapper = ({ ids }: { ids: WatchLaterIds }) => {
         />
       </WatchLaterSelectFilterBtn>
       <WatchLaterSelectFilterBtn isSelect={!!ids.length}>
-        <WatchLaterDialog
+        <CommonDialog
           handleConfirm={async () => {
             const { code } = await favoriteDelete({ ids: ids.map((id) => id.favoriteId) })
             if (code) return

@@ -1,8 +1,20 @@
 import { Router } from 'express'
 import { authMiddleware, validatorMiddleware } from '@/middlewares'
-import { historyAdd, historyList, historyRecent } from '@/controllers/history.controller'
+import {
+  historyAdd,
+  historyClearUp,
+  historyDeleteBatch,
+  historyGet,
+  historyList,
+  historyRecent,
+} from '@/controllers/history.controller'
 import { asyncHandler } from '@/utils'
-import { historyAddDTO, historyListDTO } from '@mtobdvlb/shared-types'
+import {
+  historyAddDTO,
+  historyDeleteBatchDTO,
+  historyGetDTO,
+  historyListDTO,
+} from '@mtobdvlb/shared-types'
 
 const router = Router()
 
@@ -18,6 +30,19 @@ router.post(
   authMiddleware,
   validatorMiddleware({ body: historyAddDTO }),
   asyncHandler(historyAdd)
+)
+router.delete(
+  '/',
+  authMiddleware,
+  validatorMiddleware({ body: historyDeleteBatchDTO }),
+  asyncHandler(historyDeleteBatch)
+)
+router.delete('/clear', authMiddleware, asyncHandler(historyClearUp))
+router.get(
+  '/list',
+  authMiddleware,
+  validatorMiddleware({ query: historyGetDTO }),
+  asyncHandler(historyGet)
 )
 
 export default router
