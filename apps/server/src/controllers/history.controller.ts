@@ -1,6 +1,15 @@
 import { RequestHandler } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { HistoryAddDTO, HistoryList, HistoryListDTO, Result } from '@mtobdvlb/shared-types'
+import {
+  HistoryAddDTO,
+  HistoryDeleteBatchDTO,
+  HistoryGetDTO,
+  HistoryGetItem,
+  HistoryList,
+  HistoryListDTO,
+  PageResult,
+  Result,
+} from '@mtobdvlb/shared-types'
 import { MESSAGE } from '@/constants'
 import { HistoryService } from '@/services/history.service'
 
@@ -63,5 +72,61 @@ export const historyAdd: RequestHandler<ParamsDictionary, Result, HistoryAddDTO>
   await HistoryService.add(req.body)
   return res.status(200).json({
     code: 0,
+  })
+}
+
+export const historyDeleteBatch: RequestHandler<
+  ParamsDictionary,
+  Result,
+  HistoryDeleteBatchDTO
+> = async (req, res) => {
+  if (!req.user?.id) {
+    return res.status(401).json({
+      code: 401,
+      message: MESSAGE.AUTH_ERROR,
+    })
+  }
+  await HistoryService.deleteBatch({
+    userId: req.user.id,
+    ids: req.body.ids,
+  })
+  return res.status(200).json({
+    code: 0,
+  })
+}
+
+export const historyClearUp: RequestHandler<ParamsDictionary, Result> = async (req, res) => {
+  if (!req.user?.id) {
+    return res.status(401).json({
+      code: 401,
+      message: MESSAGE.AUTH_ERROR,
+    })
+  }
+  await HistoryService.clear({
+    userId: req.user.id,
+  })
+  return res.status(200).json({
+    code: 0,
+  })
+}
+
+export const historyGet: RequestHandler<
+  ParamsDictionary,
+  Result<PageResult<HistoryGetItem>>,
+  HistoryGetDTO
+> = async (req, res) => {
+  const userId = req.user?.id
+  if (!userId)
+    return res.status(401).json({
+      code: 401,
+      message: MESSAGE.AUTH_ERROR,
+    })
+  const { list, total } = await HistoryService.get(userId, req.body)
+  return res.status(200).json({
+    code: 0,
+    data: {
+      total,
+      list,
+    },
   })
 }

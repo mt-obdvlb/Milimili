@@ -5,40 +5,34 @@ import {
   DialogClose,
   DialogContent,
   DialogFooter,
+  DialogFooterBtnMainStyles,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from '@/components'
 import { ReactNode, useState } from 'react'
-import WatchLaterFilterBtn from '@/features/watch-later/components/WatchLaterFilterBtn'
 import DialogFooterBtnWrapper from '@/components/layout/models/common/DialogFooterBtnWrapper'
 
-const WatchLaterDialog = ({
+const CommonDialog = ({
   handleConfirm,
-  isExpend = true,
   title,
-  svg,
   desc,
-  label,
-  disabled,
   children,
+  mainStyles,
+  trigger,
 }: {
   handleConfirm: (folderId: string | void) => Promise<void>
-  isExpend?: boolean
   title: string
-  svg: ReactNode
   desc?: string
-  label: string
-  disabled?: boolean
   children?: ReactNode
+  mainStyles?: DialogFooterBtnMainStyles
+  trigger: ReactNode
 }) => {
   const [dialogOpen, setDialogOpen] = useState(false)
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogTrigger asChild>
-        <WatchLaterFilterBtn label={label} svg={svg} isExpend={isExpend} disabled={disabled} />
-      </DialogTrigger>
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent
         showCloseButton={false}
         className={
@@ -76,11 +70,15 @@ const WatchLaterDialog = ({
           </div>
         )}
         <DialogFooter className={'bg-bg1 mt-6 flex h-8 justify-center gap-3'}>
-          <DialogFooterBtnWrapper handleConfirm={handleConfirm} setDialogOpen={setDialogOpen} />
+          <DialogFooterBtnWrapper
+            colors={mainStyles}
+            handleConfirm={handleConfirm}
+            setDialogOpen={setDialogOpen}
+          />
         </DialogFooter>
       </DialogContent>
     </Dialog>
   )
 }
 
-export default WatchLaterDialog
+export default CommonDialog

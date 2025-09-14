@@ -1,7 +1,7 @@
 'use client'
 
 import { ReactNode, useState } from 'react'
-import WatchLaterDialog from '@/features/watch-later/components/WatchLaterDialog'
+import CommonDialog from '@/components/layout/models/common/CommonDialog'
 import { useFavoriteGetFolderList, WatchLaterIds } from '@/features'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { cn } from '@/lib'
@@ -23,7 +23,7 @@ const WatchLaterFavoriteFolderDialog = ({
   const [folderId, setFolderId] = useState<string | undefined>(undefined)
 
   return (
-    <WatchLaterDialog
+    <CommonDialog
       label={`${title}到`}
       title={`将${ids.length}个视频${title}至`}
       handleConfirm={() => handleConfirm(folderId)}
@@ -115,7 +115,7 @@ const WatchLaterFavoriteFolderDialog = ({
           </div>
         </div>
       </div>
-    </WatchLaterDialog>
+    </CommonDialog>
   )
 }
 

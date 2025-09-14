@@ -14,6 +14,7 @@ interface SearchConditionRowProps<T> {
   children?: React.ReactNode
   mt?: boolean
   className?: string
+  contanierClassName?: string
 }
 
 const Filter = <T extends string | number>({
@@ -23,9 +24,10 @@ const Filter = <T extends string | number>({
   children,
   mt,
   className,
+  contanierClassName,
 }: SearchConditionRowProps<T>) => {
   return (
-    <div className='flex flex-wrap items-center justify-start'>
+    <div className={cn('flex flex-wrap items-center justify-start', contanierClassName)}>
       {list.map((item) => (
         <Button
           key={item.value}

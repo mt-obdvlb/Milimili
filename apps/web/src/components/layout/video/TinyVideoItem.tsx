@@ -7,6 +7,7 @@ import { formatPlayCount, formatTime } from '@/utils'
 import { useState } from 'react'
 import TinyVideoPlayer from '@/components/layout/video/TinyVideoPlayer'
 import { VideoListItem } from '@mtobdvlb/shared-types'
+import { Button } from '@/components'
 
 const TinyVideoItem = ({
   video,
@@ -14,12 +15,34 @@ const TinyVideoItem = ({
   hiddenUser,
   hiddenTime,
   hiddenDanmu,
+  hiddenPublishAt,
+  hiddenView,
+  disabled,
+  showProgress,
+  showWatchAt,
+  showDeleteBtn,
+  deleteFn,
+  showFavorite,
+  hiddenTitle,
 }: {
-  video: VideoListItem
+  video: VideoListItem & {
+    duration?: number
+    watchAt?: string
+    isFavorite?: boolean
+  }
   margin?: boolean
   hiddenUser?: boolean
   hiddenTime?: boolean
   hiddenDanmu?: boolean
+  hiddenView?: boolean
+  hiddenPublishAt?: boolean
+  disabled?: boolean
+  showProgress?: boolean
+  showWatchAt?: boolean
+  showDeleteBtn?: boolean
+  deleteFn?: () => Promise<void>
+  showFavorite?: boolean
+  hiddenTitle?: boolean
 }) => {
   const [time, setTime] = useState(0)
   const [hover, setHover] = useState(false)
@@ -51,6 +74,35 @@ const TinyVideoItem = ({
                 className={'block size-full overflow-clip'}
               />
             </picture>
+            {showProgress && (
+              <div
+                className={
+                  'absolute inset-x-0 bottom-0 z-50 h-[3px] w-full rounded-l-[4px] rounded-b-[4px] bg-[rgba(0,0,0,0.5)]'
+                }
+              >
+                <div
+                  style={{
+                    width: `${((video?.duration ?? video.time) / video.time) * 100 < 1 ? 1 : ((video?.duration ?? video.time) / video.time) * 100}%`,
+                  }}
+                  className={cn('absolute bottom-0 h-[3px] rounded-none bg-[#fb7199]')}
+                ></div>
+              </div>
+            )}
+            {showFavorite && video.isFavorite && (
+              <div
+                className={
+                  'absolute top-2 right-2 z-2 flex transition-all duration-200 select-none'
+                }
+              >
+                <div
+                  className={
+                    'rounded-[4px] bg-[rgba(0,0,0,0.5)] px-1 py-[1px] text-[13px] leading-[18px] text-white'
+                  }
+                >
+                  <span>已收藏</span>
+                </div>
+              </div>
+            )}
             <div
               className={cn(
                 'pointer-events-none absolute top-0 left-0 z-1 size-full overflow-hidden opacity-0 transition-opacity duration-200 ease-linear select-none',
@@ -59,13 +111,15 @@ const TinyVideoItem = ({
             >
               <div className={'relative size-full scale-[1.01] text-xs'}>
                 <div className={'relative size-full shadow-none'}>
-                  <TinyVideoPlayer
-                    hiddenTime={hiddenTime}
-                    hover={hover}
-                    time={time}
-                    setTime={setTime}
-                    video={video}
-                  />
+                  {!disabled && (
+                    <TinyVideoPlayer
+                      hiddenTime={hiddenTime}
+                      hover={hover}
+                      time={time}
+                      setTime={setTime}
+                      video={video}
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -73,7 +127,7 @@ const TinyVideoItem = ({
           <div
             className={cn(
               'pointer-events-none absolute inset-0 z-2 transition-all duration-200 ease-linear',
-              hover && 'hidden opacity-0'
+              hover && !disabled && 'hidden opacity-0'
             )}
           >
             <div
@@ -82,26 +136,28 @@ const TinyVideoItem = ({
               }
             >
               <div className={'flex min-w-0 flex-1 items-center justify-start'}>
-                <span className={'mr-[12px] flex items-center justify-start'}>
-                  <svg
-                    xmlns='http://www.w3.org/2000/svg'
-                    viewBox='0 0 24 24'
-                    width='24'
-                    height='24'
-                    fill='#ffffff'
-                    className='bili-video-card__stats--icon'
-                  >
-                    <path
-                      d='M12 4.99805C9.48178 4.99805 7.283 5.12616 5.73089 5.25202C4.65221 5.33949 3.81611 6.16352 3.72 7.23254C3.60607 8.4998 3.5 10.171 3.5 11.998C3.5 13.8251 3.60607 15.4963 3.72 16.76355C3.81611 17.83255 4.65221 18.6566 5.73089 18.7441C7.283 18.8699 9.48178 18.998 12 18.998C14.5185 18.998 16.7174 18.8699 18.2696 18.74405C19.3481 18.65655 20.184 17.8328 20.2801 16.76405C20.394 15.4973 20.5 13.82645 20.5 11.998C20.5 10.16965 20.394 8.49877 20.2801 7.23205C20.184 6.1633 19.3481 5.33952 18.2696 5.25205C16.7174 5.12618 14.5185 4.99805 12 4.99805zM5.60965 3.75693C7.19232 3.62859 9.43258 3.49805 12 3.49805C14.5677 3.49805 16.8081 3.62861 18.3908 3.75696C20.1881 3.90272 21.6118 5.29278 21.7741 7.09773C21.8909 8.3969 22 10.11405 22 11.998C22 13.88205 21.8909 15.5992 21.7741 16.8984C21.6118 18.7033 20.1881 20.09335 18.3908 20.23915C16.8081 20.3675 14.5677 20.498 12 20.498C9.43258 20.498 7.19232 20.3675 5.60965 20.2392C3.81206 20.0934 2.38831 18.70295 2.22603 16.8979C2.10918 15.5982 2 13.8808 2 11.998C2 10.1153 2.10918 8.39787 2.22603 7.09823C2.38831 5.29312 3.81206 3.90269 5.60965 3.75693z'
-                      fill='currentColor'
-                    ></path>
-                    <path
-                      d='M14.7138 10.96875C15.50765 11.4271 15.50765 12.573 14.71375 13.0313L11.5362 14.8659C10.74235 15.3242 9.75 14.7513 9.75001 13.8346L9.75001 10.1655C9.75001 9.24881 10.74235 8.67587 11.5362 9.13422L14.7138 10.96875z'
-                      fill='currentColor'
-                    ></path>
-                  </svg>
-                  <span className={'break-keep'}>{formatPlayCount(video.views)}</span>
-                </span>
+                {!hiddenView && (
+                  <span className={'mr-[12px] flex items-center justify-start'}>
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      viewBox='0 0 24 24'
+                      width='24'
+                      height='24'
+                      fill='#ffffff'
+                      className='bili-video-card__stats--icon'
+                    >
+                      <path
+                        d='M12 4.99805C9.48178 4.99805 7.283 5.12616 5.73089 5.25202C4.65221 5.33949 3.81611 6.16352 3.72 7.23254C3.60607 8.4998 3.5 10.171 3.5 11.998C3.5 13.8251 3.60607 15.4963 3.72 16.76355C3.81611 17.83255 4.65221 18.6566 5.73089 18.7441C7.283 18.8699 9.48178 18.998 12 18.998C14.5185 18.998 16.7174 18.8699 18.2696 18.74405C19.3481 18.65655 20.184 17.8328 20.2801 16.76405C20.394 15.4973 20.5 13.82645 20.5 11.998C20.5 10.16965 20.394 8.49877 20.2801 7.23205C20.184 6.1633 19.3481 5.33952 18.2696 5.25205C16.7174 5.12618 14.5185 4.99805 12 4.99805zM5.60965 3.75693C7.19232 3.62859 9.43258 3.49805 12 3.49805C14.5677 3.49805 16.8081 3.62861 18.3908 3.75696C20.1881 3.90272 21.6118 5.29278 21.7741 7.09773C21.8909 8.3969 22 10.11405 22 11.998C22 13.88205 21.8909 15.5992 21.7741 16.8984C21.6118 18.7033 20.1881 20.09335 18.3908 20.23915C16.8081 20.3675 14.5677 20.498 12 20.498C9.43258 20.498 7.19232 20.3675 5.60965 20.2392C3.81206 20.0934 2.38831 18.70295 2.22603 16.8979C2.10918 15.5982 2 13.8808 2 11.998C2 10.1153 2.10918 8.39787 2.22603 7.09823C2.38831 5.29312 3.81206 3.90269 5.60965 3.75693z'
+                        fill='currentColor'
+                      ></path>
+                      <path
+                        d='M14.7138 10.96875C15.50765 11.4271 15.50765 12.573 14.71375 13.0313L11.5362 14.8659C10.74235 15.3242 9.75 14.7513 9.75001 13.8346L9.75001 10.1655C9.75001 9.24881 10.74235 8.67587 11.5362 9.13422L14.7138 10.96875z'
+                        fill='currentColor'
+                      ></path>
+                    </svg>
+                    <span className={'break-keep'}>{formatPlayCount(video.views)}</span>
+                  </span>
+                )}
                 {!hiddenDanmu && (
                   <span className={'mr-[12px] flex items-center justify-start'}>
                     <svg
@@ -137,7 +193,11 @@ const TinyVideoItem = ({
                   </span>
                 )}
               </div>
-              <span>{formatTime(video.time)}</span>
+              <span>
+                {showProgress && video.duration
+                  ? formatTime(video.duration) + '/' + formatTime(video.time)
+                  : formatTime(video.time)}
+              </span>
             </div>
           </div>
         </div>
@@ -152,20 +212,32 @@ const TinyVideoItem = ({
             'text-text1 h-[calc(2 * 22px)] items-start overflow-hidden pr-[30px] text-[15px] leading-[22px] break-words overflow-ellipsis'
           }
         >
-          <Link
-            className={
-              'hover:text-brand_blue font-medium transition-colors duration-200 ease-linear'
-            }
-            href={`/video/${video.id}`}
-            target={'_blank'}
-          >
-            {video.title}
-          </Link>
+          {!hiddenTitle && (
+            <Link
+              className={
+                'hover:text-brand_blue font-medium transition-colors duration-200 ease-linear'
+              }
+              href={`/video/${video.id}`}
+              target={'_blank'}
+            >
+              {video.title}
+            </Link>
+          )}
+          {showDeleteBtn && (
+            <Button
+              className={
+                'text-text2 hover:text-brand_blue pointer-events-auto absolute top-0 right-0 cursor-pointer text-[22px] opacity-100 transition-colors duration-200'
+              }
+              onClick={deleteFn}
+            >
+              <i className={'sic-BDC-trash_delete_line'}></i>
+            </Button>
+          )}
         </h3>
-        <div className={'text-text3 mt-[4px] flex items-center justify-start text-[13px]'}>
+        <div className={'text-text3 mt-[4px] flex items-center justify-between text-[13px]'}>
           {!hiddenUser ? (
             <Link
-              href={`/spcae/${video.userId}`}
+              href={`/space/${video.userId}`}
               target={'_blank'}
               className={
                 'hover:text-brand_blue inline-flex items-center justify-start transition-colors duration-200 ease-linear'
@@ -199,16 +271,28 @@ const TinyVideoItem = ({
               >
                 {video.username}
               </span>
-              <span className={'ml-[4px] leading-[17px]'}>
-                {'· ' + dayjs(video.publishedAt).format('M-D')}
-              </span>
+              {!hiddenPublishAt && (
+                <span className={'ml-[4px] leading-[17px]'}>
+                  {'· ' + dayjs(video.publishedAt).format('M-D')}
+                </span>
+              )}
             </Link>
           ) : (
-            <span className={'inline-flex items-center justify-start'}>
-              <span className={'ml-[4px] leading-[17px]'}>
-                {dayjs(video.publishedAt).format('M-D')}
-              </span>
-            </span>
+            <>
+              {!hiddenPublishAt && (
+                <span className={'inline-flex items-center justify-start'}>
+                  <span className={'ml-[4px] leading-[17px]'}>
+                    {dayjs(video.publishedAt).format('M-D')}
+                  </span>
+                </span>
+              )}
+            </>
+          )}
+          {showWatchAt && (
+            <div className={'ml-2 flex h-full shrink-0 items-center'}>
+              <i className={'sic-BDC-computer_line mr-0.5 text-lg'}></i>
+              <span>{dayjs(video?.watchAt).format('MM-DD HH:mm')}</span>
+            </div>
           )}
         </div>
       </div>

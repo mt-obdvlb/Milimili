@@ -43,6 +43,7 @@ const HeaderBarHoverCardWithBounce = ({
     <HoverCard openDelay={150} closeDelay={150}>
       <HoverCardTrigger asChild>
         <Link
+          target={'_blank'}
           href={href ?? ''}
           onClick={building ? toastBuilding : () => {}}
           onMouseEnter={handleMouseEnter}
