@@ -11,7 +11,6 @@
   "keywords": [],
   "author": "",
   "dependencies": {
-    "@types/nodemailer": "^6.4.17",
     "ali-oss": "^6.23.0",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",
@@ -40,6 +39,7 @@
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^22.15.30",
+    "@types/nodemailer": "^6.4.17",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
     "barrelsby": "^2.8.1",

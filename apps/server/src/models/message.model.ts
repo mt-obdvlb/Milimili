@@ -1,22 +1,22 @@
 import { Document, model, Schema, Types } from 'mongoose'
-import { NotificationSourceType, NotificationType } from '@mtobdvlb/shared-types'
+import { MessageSourceType, MessageType } from '@mtobdvlb/shared-types'
 
-type NotificationBase = {
-  type: NotificationType
-  sourceType?: NotificationSourceType
+type MessageBase = {
+  type: MessageType
+  sourceType?: MessageSourceType
   content?: string
   isRead: boolean
 }
 
-type NotificationDB = NotificationBase & {
+type MessageDB = MessageBase & {
   userId: Types.ObjectId
   fromUserId?: Types.ObjectId
   sourceId?: Types.ObjectId
   _id: Types.ObjectId
 }
-export type INotification = NotificationDB & Document
+export type IMessage = MessageDB & Document
 
-const notificationSchema = new Schema<INotification>(
+const messageSchema = new Schema<IMessage>(
   {
     userId: {
       type: Schema.Types.ObjectId,
@@ -35,7 +35,7 @@ const notificationSchema = new Schema<INotification>(
     type: {
       type: String,
       required: true,
-      enum: ['reply', 'mention', 'like', 'system', 'private_message'],
+      enum: ['reply', 'at', 'like', 'system', 'whisper'],
     },
     sourceType: {
       type: String,
@@ -52,4 +52,4 @@ const notificationSchema = new Schema<INotification>(
   { versionKey: false, timestamps: true }
 )
 
-export const NotificationModel = model<INotification>('Notification', notificationSchema)
+export const MessageModel = model<IMessage>('Message', messageSchema)
