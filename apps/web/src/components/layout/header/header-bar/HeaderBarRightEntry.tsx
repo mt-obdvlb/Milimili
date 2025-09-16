@@ -55,6 +55,7 @@ const HeaderBarRightEntry = ({
       )}
 
       <HeaderBarHoverCardWithBounce
+        href={''}
         hidden
         building
         title={'大会员'}
@@ -84,6 +85,7 @@ const HeaderBarRightEntry = ({
         }
       ></HeaderBarHoverCardWithBounce>
       <HeaderBarHoverCardWithBounce
+        href={'/message'}
         title={'消息'}
         badge={!!nonZeroNotifications.length}
         Svg={
@@ -115,13 +117,13 @@ const HeaderBarRightEntry = ({
                   number: notificationStatistics?.find((item) => item.type === 'reply')?.count ?? 0,
                 },
                 {
-                  url: 'mention',
+                  url: 'at',
                   name: '@我的',
                   number:
                     notificationStatistics?.find((item) => item.type === 'mention')?.count ?? 0,
                 },
                 {
-                  url: 'like',
+                  url: 'love',
                   name: '收到的赞',
                   number: notificationStatistics?.find((item) => item.type === 'like')?.count ?? 0,
                 },
@@ -132,7 +134,7 @@ const HeaderBarRightEntry = ({
                     notificationStatistics?.find((item) => item.type === 'system')?.count ?? 0,
                 },
                 {
-                  url: 'private_message',
+                  url: 'whisper',
                   name: '我的消息',
                   number:
                     notificationStatistics?.find((item) => item.type === 'private_message')
@@ -144,6 +146,7 @@ const HeaderBarRightEntry = ({
                   className={
                     'text-text2 hover:bg-graph_bg_thick relative flex cursor-pointer items-center py-2.5 pl-[27px] text-left text-sm transition-colors duration-300'
                   }
+                  target={'_blank'}
                   href={`/message/${item.url}`}
                 >
                   {item.name}
@@ -166,6 +169,7 @@ const HeaderBarRightEntry = ({
         )}
       </HeaderBarHoverCardWithBounce>
       <HeaderBarHoverCardWithBounce
+        href={'/feed'}
         title={'动态'}
         Svg={
           <svg
@@ -224,7 +228,7 @@ const HeaderBarRightEntry = ({
               <>
                 <div>
                   <div className={'flex items-center justify-between p-5 pb-2.5'}>
-                    <Link href={'/feed'} className={'text-[16px] leading-[22px] font-semibold'}>
+                    <Link href={'/feed'} className={'text-[16px] font-semibold leading-[22px]'}>
                       动态
                     </Link>
                   </div>
@@ -235,7 +239,7 @@ const HeaderBarRightEntry = ({
                       }
                     >
                       <div
-                        className={'border-t-line_regular absolute top-2 left-0 w-full border-t'}
+                        className={'border-t-line_regular absolute left-0 top-2 w-full border-t'}
                       ></div>
 
                       <div className={'bg-bg1 z-1 px-2.5'}>历史动态</div>
@@ -269,7 +273,7 @@ const HeaderBarRightEntry = ({
                 </div>
               </>
             ) : (
-              <div className={'text-text3 flex h-100 w-full items-center justify-center'}>
+              <div className={'text-text3 h-100 flex w-full items-center justify-center'}>
                 还没有什么动态呢~
               </div>
             )}
@@ -279,6 +283,7 @@ const HeaderBarRightEntry = ({
         )}
       </HeaderBarHoverCardWithBounce>
       <HeaderBarHoverCardWithBounce
+        href={'/space/favorite'}
         align={'end'}
         alignOffset={-150}
         title={'收藏'}
@@ -329,13 +334,13 @@ const HeaderBarRightEntry = ({
                 >
                   <span
                     className={
-                      'w-[85px] overflow-hidden font-medium text-ellipsis whitespace-nowrap'
+                      'w-[85px] overflow-hidden text-ellipsis whitespace-nowrap font-medium'
                     }
                   >
                     {item.folderName}
                   </span>
                   <span
-                    className={'text-text3 text-xs leading-5 in-data-[state=active]:text-white'}
+                    className={'text-text3 in-data-[state=active]:text-white text-xs leading-5'}
                   >
                     {item.list.length}
                   </span>
@@ -361,7 +366,12 @@ const HeaderBarRightEntry = ({
                       }
                     >
                       <Link
-                        href={'/favorite'}
+                        href={
+                          item.folderName === '稍后再看'
+                            ? '/watch-later'
+                            : `/space/favorite/${item.folderId}`
+                        }
+                        target={'_blank'}
                         className={'text-text1 h-[45px] flex-1 text-center text-sm leading-[45px]'}
                       >
                         查看全部
@@ -369,7 +379,7 @@ const HeaderBarRightEntry = ({
                     </div>
                   </>
                 ) : (
-                  <div className={'text-text3 flex h-100 items-center justify-center text-sm'}>
+                  <div className={'text-text3 h-100 flex items-center justify-center text-sm'}>
                     该收藏夹还没有视频哦~
                   </div>
                 )}
@@ -430,11 +440,11 @@ const HeaderBarRightEntry = ({
               </TabsTrigger>
             </TabsList>
             <TabsContent
-              className={'m-0 h-120 overflow-y-auto overscroll-none p-0 text-left'}
+              className={'h-120 m-0 overflow-y-auto overscroll-none p-0 text-left'}
               value={'video'}
             >
               {!hasRecentList && (
-                <div className={'text-text3 flex h-100 items-center justify-center text-sm'}>
+                <div className={'text-text3 h-100 flex items-center justify-center text-sm'}>
                   好像最近没有看过视频呢~
                 </div>
               )}
@@ -459,7 +469,7 @@ const HeaderBarRightEntry = ({
               ].map((item) => (
                 <div key={item.name}>
                   {!!item.list.length && (
-                    <p className={'text-text1 mt-3 mb-[5px] px-5 text-sm leading-4 font-medium'}>
+                    <p className={'text-text1 mb-[5px] mt-3 px-5 text-sm font-medium leading-4'}>
                       {item.name}
                     </p>
                   )}
@@ -485,6 +495,7 @@ const HeaderBarRightEntry = ({
       </HeaderBarHoverCardWithBounce>
 
       <HeaderBarHoverCardWithBounce
+        href={'/platform'}
         hidden
         title={'创作中心'}
         Svg={
