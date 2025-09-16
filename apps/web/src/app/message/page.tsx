@@ -1,5 +1,7 @@
+import { redirect } from 'next/navigation'
+
 const Message = () => {
-  return <>Message</>
+  redirect('/message/whisper')
 }
 
 export default Message
