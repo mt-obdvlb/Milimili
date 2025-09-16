@@ -34,7 +34,7 @@ export const SocketInitializer = () => {
   useEffect(() => {
     if (!socket) return
     socket.on('new_notification', async () => {
-      await queryClient.invalidateQueries({ queryKey: ['notification', 'statistics'] })
+      await queryClient.invalidateQueries({ queryKey: ['message', 'statistics'] })
     })
     socket.on('new_history', async () => {
       await queryClient.invalidateQueries({ queryKey: ['history', 'recent'] })

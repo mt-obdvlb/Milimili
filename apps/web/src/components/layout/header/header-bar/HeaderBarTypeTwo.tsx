@@ -10,7 +10,7 @@ import {
   useFavoriteGetRecent,
   useFeedGetRecent,
   useHistoryGetRecent,
-  useNotificationStatistics,
+  useMessageStatistics,
 } from '@/features'
 
 const HeaderBarTypeTwo = ({
@@ -24,7 +24,7 @@ const HeaderBarTypeTwo = ({
 }) => {
   const type = 'second'
   const { favoriteRecentList } = useFavoriteGetRecent()
-  const { notificationStatistics } = useNotificationStatistics()
+  const { messageStatistics } = useMessageStatistics()
   const { historyRecentList } = useHistoryGetRecent()
   const { feedRecentList } = useFeedGetRecent()
 
@@ -33,7 +33,7 @@ const HeaderBarTypeTwo = ({
       className={cn(
         'flex h-[64px] w-full items-center px-[24px]',
 
-        'bg-bg1_float animate-none shadow-[inset_0_-1px_0_var(--line_regular)]',
+        'bg-bg1_float animate-none shadow-[0_2px_4px_#00000014]',
         hidden && 'justify-between'
       )}
     >
@@ -42,7 +42,7 @@ const HeaderBarTypeTwo = ({
       <HeaderBarRightEntry
         favoriteRecentList={favoriteRecentList}
         feedRecentList={feedRecentList}
-        notificationStatistics={notificationStatistics}
+        notificationStatistics={messageStatistics}
         historyRecentList={historyRecentList}
         userHomeInfo={userHomeInfo}
         type={type}

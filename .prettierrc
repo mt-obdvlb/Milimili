@@ -9,8 +9,5 @@
   "bracketSpacing": true,
   "quoteProps": "as-needed",
   "jsxSingleQuote": true,
-  "htmlWhitespaceSensitivity": "ignore",
-  "plugins": [
-    "prettier-plugin-tailwindcss"
-  ]
+  "htmlWhitespaceSensitivity": "ignore"
 }

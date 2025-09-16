@@ -11,7 +11,7 @@ import {
   useFavoriteGetRecent,
   useFeedGetRecent,
   useHistoryGetRecent,
-  useNotificationStatistics,
+  useMessageStatistics,
 } from '@/features'
 
 const HeaderBar = ({
@@ -29,7 +29,7 @@ const HeaderBar = ({
   const [type, setType] = useState<'first' | 'second'>('first')
 
   const { favoriteRecentList } = useFavoriteGetRecent()
-  const { notificationStatistics } = useNotificationStatistics()
+  const { messageStatistics } = useMessageStatistics()
   const { historyRecentList } = useHistoryGetRecent()
   const { feedRecentList } = useFeedGetRecent()
 
@@ -58,7 +58,7 @@ const HeaderBar = ({
       <HeaderBarRightEntry
         favoriteRecentList={favoriteRecentList}
         feedRecentList={feedRecentList}
-        notificationStatistics={notificationStatistics}
+        notificationStatistics={messageStatistics}
         historyRecentList={historyRecentList}
         userHomeInfo={userHomeInfo}
         type={type}

@@ -10,7 +10,7 @@ import {
   FavoriteRecentList,
   FeedRecentList,
   HistoryList,
-  NotificationStatisticsList,
+  MessageStatisticsList,
   UserGetInfoHome,
 } from '@mtobdvlb/shared-types'
 import { Badge, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components'
@@ -33,7 +33,7 @@ const HeaderBarRightEntry = ({
   userHomeInfo?: UserGetInfoHome
   historyRecentList?: HistoryList
   favoriteRecentList?: FavoriteRecentList
-  notificationStatistics?: NotificationStatisticsList
+  notificationStatistics?: MessageStatisticsList
   feedRecentList?: FeedRecentList
 }) => {
   const color = type === 'first' ? 'text-white' : 'text-text1'
@@ -119,8 +119,7 @@ const HeaderBarRightEntry = ({
                 {
                   url: 'at',
                   name: '@我的',
-                  number:
-                    notificationStatistics?.find((item) => item.type === 'mention')?.count ?? 0,
+                  number: notificationStatistics?.find((item) => item.type === 'at')?.count ?? 0,
                 },
                 {
                   url: 'love',
@@ -137,8 +136,7 @@ const HeaderBarRightEntry = ({
                   url: 'whisper',
                   name: '我的消息',
                   number:
-                    notificationStatistics?.find((item) => item.type === 'private_message')
-                      ?.count ?? 0,
+                    notificationStatistics?.find((item) => item.type === 'whisper')?.count ?? 0,
                 },
               ].map((item) => (
                 <Link
