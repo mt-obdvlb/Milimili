@@ -1,3 +1,5 @@
+'use client'
+
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 import TinyVideoItem from '@/components/layout/video/TinyVideoItem'
 import { useHistoryDeleteBatch } from '@/features'

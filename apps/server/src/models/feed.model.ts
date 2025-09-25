@@ -10,6 +10,7 @@ type FeedBase = {
   commentsDisabled: boolean
   isOpen: boolean
   publishedAt: Date
+  title?: string
 }
 
 type FeedDB = FeedBase & {
@@ -25,6 +26,11 @@ const feedSchema = new Schema<IFeed>(
       type: String,
       required: true,
       trim: true,
+    },
+    title: {
+      type: String,
+      trim: true,
+      required: false,
     },
     mediaUrls: {
       type: [String],

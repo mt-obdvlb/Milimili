@@ -9,7 +9,7 @@ import { usePathname } from 'next/navigation'
 
 const headerChannelIcons = [
   {
-    link: '/',
+    link: '/feed',
     icon: (
       <svg
         width='22'
@@ -346,7 +346,7 @@ const HeaderChannel = ({
                 'text-text2 hover:text-brand_blue inline-flex h-[28px] items-center justify-end text-sm transition duration-300 ' +
                 cn({ 'tracking-[2px]': item.title.length < 4 })
               }
-              href={'/apps/web/public'}
+              href={''}
               key={item.title}
               onClick={toastBuilding}
             >
