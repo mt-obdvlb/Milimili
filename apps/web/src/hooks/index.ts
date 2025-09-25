@@ -1,6 +1,6 @@
 export * from './useInfiniteScroll'
+export * from './useModel'
 export * from './useQueryClient'
 export * from './useRotation'
 export * from './useSendCode'
 export * from './useShow'
-export * from './useVideoCheck'
