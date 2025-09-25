@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
 import HeaderBarTypeTwoWrapper from '@/components/layout/header/header-bar/HeaderBarTypeTwoWrapper'
-import MessageLayoutWrapper from '@/features/message/components/MessageLayoutWrapper'
+import MessageLayoutWrapper from '@/features/message/components/layout/MessageLayoutWrapper'
 
 const MessageLayout = ({ children }: { children: ReactNode }) => {
   return (

@@ -12,6 +12,7 @@ type MessageDB = MessageBase & {
   userId: Types.ObjectId
   fromUserId?: Types.ObjectId
   sourceId?: Types.ObjectId
+  createdAt: Date
   _id: Types.ObjectId
 }
 export type IMessage = MessageDB & Document

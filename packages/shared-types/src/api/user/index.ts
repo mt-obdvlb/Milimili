@@ -1,2 +1,3 @@
+export * from './get-by-name'
 export * from './get-info-home'
 export * from './get-info'

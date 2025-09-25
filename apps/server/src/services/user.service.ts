@@ -87,4 +87,14 @@ export const UserService = {
     const hashed = await hashPassword(body.password)
     await UserModel.updateOne({ email: body.email }, { password: hashed })
   },
+  getByName: async (name: string) => {
+    const user = await UserModel.findOne({ name })
+    if (!user) throw new HttpError(400, MESSAGE.USER_NOT_FOUND)
+    return {
+      id: user._id.toString(),
+      name: user.name,
+      avatar: user.avatar,
+      email: user.email,
+    }
+  },
 }

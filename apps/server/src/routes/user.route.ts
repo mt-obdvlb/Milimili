@@ -2,6 +2,7 @@ import { Router } from 'express'
 import {
   userFindPassword,
   userGetByEmail,
+  userGetByName,
   userGetInfo,
   userGetInfoHome,
   userLogin,
@@ -9,7 +10,12 @@ import {
 } from '@/controllers/user.controller'
 import { authMiddleware, validatorMiddleware } from '@/middlewares'
 import { asyncHandler } from '@/utils'
-import { userFindPasswordDTO, userGetByEmailDTO, userLoginDTO } from '@mtobdvlb/shared-types'
+import {
+  userFindPasswordDTO,
+  userGetByEmailDTO,
+  userGetByNameDTO,
+  userLoginDTO,
+} from '@mtobdvlb/shared-types'
 
 const router = Router()
 
@@ -27,5 +33,6 @@ router.put(
   validatorMiddleware({ body: userFindPasswordDTO }),
   asyncHandler(userFindPassword)
 )
+router.get('/name', validatorMiddleware({ query: userGetByNameDTO }), asyncHandler(userGetByName))
 
 export default router
