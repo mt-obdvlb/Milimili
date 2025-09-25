@@ -199,7 +199,12 @@ const LoginModelPassword = ({
           />
         </div>
         <div className={btnWrap()}>
-          <Button onClick={() => setTabsValue('code')} variant={'outline'} className={btnOther()}>
+          <Button
+            type={'button'}
+            onClick={() => setTabsValue('code')}
+            variant={'outline'}
+            className={btnOther()}
+          >
             注册
           </Button>
           <Button

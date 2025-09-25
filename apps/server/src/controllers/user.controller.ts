@@ -5,6 +5,8 @@ import {
   Result,
   UserFindPasswordDTO,
   UserGetByEmailDTO,
+  UserGetByName,
+  UserGetByNameDTO,
   UserGetInfo,
   UserGetInfoHome,
   UserLoginDTO,
@@ -112,6 +114,19 @@ export const userFindPassword: RequestHandler<
 > = async (req, res) => {
   await UserService.findPassword(req.body)
   return res.status(200).json({
+    code: 0,
+  })
+}
+
+export const userGetByName: RequestHandler<
+  ParamsDictionary,
+  Result<UserGetByName>,
+  UserGetByNameDTO
+> = async (req, res) => {
+  const { name } = req.query
+  const data = await UserService.getByName(name as string)
+  return res.status(200).json({
+    data,
     code: 0,
   })
 }

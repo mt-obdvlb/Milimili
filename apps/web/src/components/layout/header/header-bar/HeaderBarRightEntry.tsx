@@ -20,6 +20,7 @@ import HeaderBarRightEntryFavoriteVideoItem from '@/components/layout/header/hea
 import HeaderBarRightEntryFeedVideoItem from '@/components/layout/header/header-bar/item/HeaderBarRightEntryFeedVideoItem'
 import HeaderBarRightEntryAvatarNoLogin from '@/components/layout/header/header-bar/HeaderBarRightEntryAvatarNoLogin'
 import HeaderBarRightEntryNoLoginItem from '@/components/layout/header/header-bar/item/HeaderBarRightEntryNoLoginItem'
+import WithAuth from '@/components/hoc/WithAuth'
 
 const HeaderBarRightEntry = ({
   type,
@@ -84,501 +85,520 @@ const HeaderBarRightEntry = ({
           </svg>
         }
       ></HeaderBarHoverCardWithBounce>
-      <HeaderBarHoverCardWithBounce
-        href={'/message'}
-        title={'消息'}
-        badge={!!nonZeroNotifications.length}
-        Svg={
-          <svg
-            width='20'
-            height='20'
-            viewBox='0 0 20 20'
-            fill='none'
-            xmlns='http://www.w3.org/2000/svg'
-          >
-            <path
-              d='M15.435 17.7717H4.567C2.60143 17.7717 1 16.1723 1 14.2047V5.76702C1 3.80144 2.59942 2.20001 4.567 2.20001H15.433C17.3986 2.20001 19 3.79943 19 5.76702V14.2047C19.002 16.1703 17.4006 17.7717 15.435 17.7717ZM4.567 4.00062C3.59327 4.00062 2.8006 4.79328 2.8006 5.76702V14.2047C2.8006 15.1784 3.59327 15.9711 4.567 15.9711H15.433C16.4067 15.9711 17.1994 15.1784 17.1994 14.2047V5.76702C17.1994 4.79328 16.4067 4.00062 15.433 4.00062H4.567Z'
-              fill='currentColor'
-            ></path>
-            <path
-              d='M9.99943 11.2C9.51188 11.2 9.02238 11.0667 8.59748 10.8019L8.5407 10.7635L4.3329 7.65675C3.95304 7.37731 3.88842 6.86226 4.18996 6.50976C4.48954 6.15544 5.0417 6.09699 5.4196 6.37643L9.59412 9.45943C9.84279 9.60189 10.1561 9.60189 10.4067 9.45943L14.5812 6.37643C14.9591 6.09699 15.5113 6.15544 15.8109 6.50976C16.1104 6.86409 16.0478 7.37731 15.6679 7.65675L11.4014 10.8019C10.9765 11.0667 10.487 11.2 9.99943 11.2Z'
-              fill='currentColor'
-            ></path>
-          </svg>
-        }
-      >
-        {userHomeInfo ? (
-          <div className={'w-[142px] overflow-hidden'}>
-            <div className={'flex flex-col py-3'}>
-              {[
-                {
-                  url: 'reply',
-                  name: '回复我的',
-                  number: notificationStatistics?.find((item) => item.type === 'reply')?.count ?? 0,
-                },
-                {
-                  url: 'at',
-                  name: '@我的',
-                  number: notificationStatistics?.find((item) => item.type === 'at')?.count ?? 0,
-                },
-                {
-                  url: 'love',
-                  name: '收到的赞',
-                  number: notificationStatistics?.find((item) => item.type === 'like')?.count ?? 0,
-                },
-                {
-                  url: 'system',
-                  name: '系统消息',
-                  number:
-                    notificationStatistics?.find((item) => item.type === 'system')?.count ?? 0,
-                },
-                {
-                  url: 'whisper',
-                  name: '我的消息',
-                  number:
-                    notificationStatistics?.find((item) => item.type === 'whisper')?.count ?? 0,
-                },
-              ].map((item) => (
-                <Link
-                  key={item.url}
-                  className={
-                    'text-text2 hover:bg-graph_bg_thick relative flex cursor-pointer items-center py-2.5 pl-[27px] text-left text-sm transition-colors duration-300'
-                  }
-                  target={'_blank'}
-                  href={`/message/${item.url}`}
-                >
-                  {item.name}
-                  {!!item.number && (
-                    <Badge
-                      variant={'destructive'}
-                      className={cn(
-                        'absolute right-[17px] m-0 rounded-[8px] bg-[#fa5a57] p-0 px-[5px] text-xs leading-4 text-white'
-                      )}
-                    >
-                      {item.number > 99 ? '99+' : item.number}
-                    </Badge>
-                  )}
-                </Link>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <HeaderBarRightEntryNoLoginItem title={'消息记录'} />
-        )}
-      </HeaderBarHoverCardWithBounce>
-      <HeaderBarHoverCardWithBounce
-        href={'/feed'}
-        title={'动态'}
-        Svg={
-          <svg
-            width='20'
-            height='21'
-            viewBox='0 0 20 21'
-            fill='none'
-            xmlns='http://www.w3.org/2000/svg'
-          >
-            <g clipPath='url(#clip0)'>
-              <path
-                d='M10 10.743C7.69883 10.743 5.83333 8.87747 5.83333 6.5763C5.83333 4.27512 7.69883 2.40964 10 2.40964V10.743Z'
-                stroke='currentColor'
-                strokeWidth='1.6'
-                strokeLinejoin='round'
-              ></path>
-              <path
-                d='M10 10.743C10 13.0441 8.1345 14.9096 5.83333 14.9096C3.53217 14.9096 1.66667 13.0441 1.66667 10.743H10Z'
-                stroke='currentColor'
-                strokeWidth='1.6'
-                strokeLinejoin='round'
-              ></path>
-              <path
-                d='M10 10.743C10 8.44182 11.8655 6.57632 14.1667 6.57632C16.4679 6.57632 18.3333 8.44182 18.3333 10.743H10Z'
-                stroke='currentColor'
-                strokeWidth='1.6'
-                strokeLinejoin='round'
-              ></path>
-              <path
-                d='M9.99999 10.743C12.3012 10.743 14.1667 12.6085 14.1667 14.9096C14.1667 17.2108 12.3012 19.0763 9.99999 19.0763V10.743Z'
-                stroke='currentColor'
-                strokeWidth='1.6'
-                strokeLinejoin='round'
-              ></path>
-            </g>
-            <defs>
-              <clipPath id='clip0'>
-                <rect
-                  width='20'
-                  height='20'
-                  fill='currentColor'
-                  transform='matrix(-1 0 0 1 20 0.742981)'
-                ></rect>
-              </clipPath>
-            </defs>
-          </svg>
-        }
-      >
-        {userHomeInfo ? (
-          <div
-            className={
-              'max-h-[540px] min-h-[172px] w-[370px] overflow-y-auto overscroll-none text-left'
-            }
-          >
-            {feedRecentList?.length ? (
-              <>
-                <div>
-                  <div className={'flex items-center justify-between p-5 pb-2.5'}>
-                    <Link href={'/feed'} className={'text-[16px] font-semibold leading-[22px]'}>
-                      动态
-                    </Link>
-                  </div>
-                  <div>
-                    <div
-                      className={
-                        'text-text3 relative my-1.5 flex items-center justify-center px-5 text-xs'
-                      }
-                    >
-                      <div
-                        className={'border-t-line_regular absolute left-0 top-2 w-full border-t'}
-                      ></div>
-
-                      <div className={'bg-bg1 z-1 px-2.5'}>历史动态</div>
-                    </div>
-                    {feedRecentList?.map((item) => (
-                      <HeaderBarRightEntryFeedVideoItem key={item.id} feed={item} />
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <Link
-                    href={'/feeds'}
-                    className={
-                      'bg-bg2 text-text2 mx-5 my-4 flex h-9 w-[330px] cursor-pointer items-center justify-center rounded-[4px] text-sm leading-9 transition-colors duration-300'
-                    }
-                  >
-                    查看全部动态
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      viewBox='0 0 12 12'
-                      width='12'
-                      height='12'
-                      className={'size-3 overflow-hidden'}
-                    >
-                      <path
-                        d='M3.9179099999999973 1.167885C3.527364999999997 1.5584099999999994 3.527364999999997 2.1915700000000005 3.9179099999999973 2.582115L7.600900000000004 6.2651C7.454399999999996 6.11875 7.454399999999996 5.88125 7.600900000000004 5.7349L3.9179099999999973 9.417949999999996C3.527364999999997 9.808399999999995 3.527364999999997 10.441600000000005 3.9179099999999973 10.832050000000004C4.308409999999999 11.2226 4.941574999999998 11.2226 5.332094999999999 10.832050000000004L9.015099999999997 7.1491C9.64975 6.514450000000001 9.64975 5.485549999999999 9.015099999999997 4.8509L5.332094999999999 1.167885C4.941574999999998 0.7773649999999999 4.308409999999999 0.7773649999999999 3.9179099999999973 1.167885z'
-                        fill='currentColor'
-                      ></path>
-                    </svg>
-                  </Link>
-                </div>
-              </>
-            ) : (
-              <div className={'text-text3 h-100 flex w-full items-center justify-center'}>
-                还没有什么动态呢~
-              </div>
-            )}
-          </div>
-        ) : (
-          <HeaderBarRightEntryNoLoginItem title={'关注动态'} />
-        )}
-      </HeaderBarHoverCardWithBounce>
-      <HeaderBarHoverCardWithBounce
-        href={'/space/favorite'}
-        align={'end'}
-        alignOffset={-150}
-        title={'收藏'}
-        Svg={
-          <svg
-            width='20'
-            height='21'
-            viewBox='0 0 20 21'
-            fill='none'
-            xmlns='http://www.w3.org/2000/svg'
-          >
-            <path
-              fillRule='evenodd'
-              clipRule='evenodd'
-              d='M11.0505 3.16759L12.7915 6.69573C12.954 7.02647 13.2702 7.25612 13.6349 7.30949L17.5294 7.87474C18.448 8.00817 18.8159 9.13785 18.1504 9.78639L15.3331 12.5334C15.0686 12.7905 14.9481 13.1609 15.0104 13.5256L15.6759 17.4031C15.8328 18.3184 14.8721 19.0171 14.0497 18.5845L10.5661 16.7537C10.2402 16.5823 9.85042 16.5823 9.52373 16.7537L6.04087 18.5845C5.21848 19.0171 4.2578 18.3184 4.41468 17.4031L5.07939 13.5256C5.14166 13.1609 5.02198 12.7905 4.75755 12.5334L1.9394 9.78639C1.27469 9.13785 1.64182 8.00817 2.56126 7.87474L6.4549 7.30949C6.82041 7.25612 7.13578 7.02647 7.29832 6.69573L9.04015 3.16759C9.45095 2.33468 10.6389 2.33468 11.0505 3.16759Z'
-              stroke='currentColor'
-              strokeWidth='1.6'
-              strokeLinecap='round'
-              strokeLinejoin='round'
-            ></path>
-            <path
-              d='M11.603 11.8739C11.413 12.5556 10.7871 13.0554 10.0447 13.0554C9.29592 13.0554 8.66679 12.5467 8.48242 11.8569'
-              stroke='currentColor'
-              strokeWidth='1.6'
-              strokeLinecap='round'
-              strokeLinejoin='round'
-            ></path>
-          </svg>
-        }
-      >
-        {userHomeInfo ? (
-          <Tabs
-            defaultValue={favoriteRecentList?.at(0)?.folderId}
-            className={'flex w-[520px] flex-row text-left'}
-          >
-            <TabsList
-              className={
-                'border-r-line_regular flex h-[540px] w-[150px] shrink-0 flex-col overflow-y-auto overscroll-none border-r px-0 py-3'
-              }
-            >
-              {favoriteRecentList?.map((item) => (
-                <TabsTrigger
-                  className={
-                    'text-text1 data-[state=active]:bg-brand_blue flex h-[46px] cursor-pointer items-center justify-between px-4 text-sm leading-[22px] transition-colors duration-300 data-[state=active]:text-white'
-                  }
-                  value={item.folderId}
-                  key={item.folderId}
-                >
-                  <span
-                    className={
-                      'w-[85px] overflow-hidden text-ellipsis whitespace-nowrap font-medium'
-                    }
-                  >
-                    {item.folderName}
-                  </span>
-                  <span
-                    className={'text-text3 in-data-[state=active]:text-white text-xs leading-5'}
-                  >
-                    {item.list.length}
-                  </span>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-            {favoriteRecentList?.map((item) => (
-              <TabsContent
-                key={item.folderId}
-                value={item.folderId}
-                className={'relative h-[540px] flex-1 overflow-hidden rounded-[8px]'}
-              >
-                {item.list.length ? (
-                  <>
-                    <div className={'h-[493px] overflow-y-auto overscroll-none py-3'}>
-                      {item.list.map((item) => (
-                        <HeaderBarRightEntryFavoriteVideoItem key={item.id} favorite={item} />
-                      ))}
-                    </div>
-                    <div
-                      className={
-                        'border-bg3 absolute bottom-0 flex w-full items-center justify-around border'
-                      }
-                    >
-                      <Link
-                        href={
-                          item.folderName === '稍后再看'
-                            ? '/watch-later'
-                            : `/space/favorite/${item.folderId}`
-                        }
-                        target={'_blank'}
-                        className={'text-text1 h-[45px] flex-1 text-center text-sm leading-[45px]'}
-                      >
-                        查看全部
-                      </Link>
-                    </div>
-                  </>
-                ) : (
-                  <div className={'text-text3 h-100 flex items-center justify-center text-sm'}>
-                    该收藏夹还没有视频哦~
-                  </div>
-                )}
-              </TabsContent>
-            ))}
-          </Tabs>
-        ) : (
-          <HeaderBarRightEntryNoLoginItem title={'我的收藏'} />
-        )}
-      </HeaderBarHoverCardWithBounce>
-      <HeaderBarHoverCardWithBounce
-        href={'/history'}
-        title={'历史'}
-        Svg={
-          <svg
-            width='20'
-            height='21'
-            viewBox='0 0 20 21'
-            fill='none'
-            xmlns='http://www.w3.org/2000/svg'
-          >
-            <path
-              fillRule='evenodd'
-              clipRule='evenodd'
-              d='M10 1.74286C5.02955 1.74286 1 5.7724 1 10.7429C1 15.7133 5.02955 19.7429 10 19.7429C14.9705 19.7429 19 15.7133 19 10.7429C19 5.7724 14.9705 1.74286 10 1.74286ZM10.0006 3.379C14.0612 3.379 17.3642 6.68282 17.3642 10.7426C17.3642 14.8033 14.0612 18.1063 10.0006 18.1063C5.93996 18.1063 2.63696 14.8033 2.63696 10.7426C2.63696 6.68282 5.93996 3.379 10.0006 3.379Z'
-              fill='currentColor'
-            ></path>
-            <path
-              d='M9.99985 6.6521V10.743'
-              stroke='currentColor'
-              strokeWidth='1.7'
-              strokeLinecap='round'
-            ></path>
-            <path
-              d='M12.4545 10.7427H10'
-              stroke='currentColor'
-              strokeWidth='1.7'
-              strokeLinecap='round'
-            ></path>
-          </svg>
-        }
-      >
-        {userHomeInfo ? (
-          <Tabs defaultValue={'video'} className={'h-[540px] w-[370px] bg-transparent'}>
-            <TabsList
-              defaultValue={'video'}
-              className={
-                'border-b-line_regular m-0 flex h-auto w-full items-center justify-between rounded-none border-b border-none bg-transparent p-0'
-              }
-            >
-              <TabsTrigger
-                className={
-                  'data-[state=active]:border-b-brand_blue data-[state=active]:text-brand_blue m-0 block w-full flex-1 cursor-pointer rounded-none border-0 border-b-[3px] bg-transparent p-0 py-[15px] text-center text-sm data-[state=active]:border-b-[3px] data-[state=active]:bg-transparent'
-                }
-                value={'video'}
-              >
-                视频
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent
-              className={'h-120 m-0 overflow-y-auto overscroll-none p-0 text-left'}
-              value={'video'}
-            >
-              {!hasRecentList && (
-                <div className={'text-text3 h-100 flex items-center justify-center text-sm'}>
-                  好像最近没有看过视频呢~
-                </div>
-              )}
-
-              {[
-                {
-                  name: '今天',
-                  list: historyRecentList?.todayList ?? [],
-                },
-                {
-                  name: '昨天',
-                  list: historyRecentList?.yesterdayList ?? [],
-                },
-                {
-                  name: '最近7天',
-                  list: historyRecentList?.lastWeekList ?? [],
-                },
-                {
-                  name: '更早',
-                  list: historyRecentList?.olderList ?? [],
-                },
-              ].map((item) => (
-                <div key={item.name}>
-                  {!!item.list.length && (
-                    <p className={'text-text1 mb-[5px] mt-3 px-5 text-sm font-medium leading-4'}>
-                      {item.name}
-                    </p>
-                  )}
-                  {item.list.map((history) => (
-                    <HeaderBarRightEntryHistoryVideoItem history={history} key={history.video.id} />
-                  ))}
-                </div>
-              ))}
-              <Link
-                target={'_blank'}
-                href={'/history'}
-                className={
-                  'bg-bg2 text-text2 hover:text-text1 mx-auto my-4 block h-9 w-[330px] cursor-pointer rounded-[8px] text-center text-sm leading-9 transition-colors duration-300'
-                }
-              >
-                查看全部
-              </Link>
-            </TabsContent>
-          </Tabs>
-        ) : (
-          <HeaderBarRightEntryNoLoginItem title={'历史记录'} />
-        )}
-      </HeaderBarHoverCardWithBounce>
-
-      <HeaderBarHoverCardWithBounce
-        href={'/platform'}
-        hidden
-        title={'创作中心'}
-        Svg={
-          <svg
-            width='20'
-            height='21'
-            viewBox='0 0 20 21'
-            fill='none'
-            xmlns='http://www.w3.org/2000/svg'
-          >
-            <mask
-              id='mask0'
-              mask-type='alpha'
-              maskUnits='userSpaceOnUse'
-              x='2'
-              y='1'
-              width='16'
-              height='20'
-            >
-              <path
-                fillRule='evenodd'
-                clipRule='evenodd'
-                d='M2.5 1.74286H17.5V20.0762H2.5V1.74286Z'
-                fill='currentColor'
-              ></path>
-            </mask>
-            <g mask='url(#mask0)'>
-              <path
-                fillRule='evenodd'
-                clipRule='evenodd'
-                d='M9.99999 1.74286C9.92916 1.74286 9.85916 1.74369 9.78833 1.74536C5.85416 1.85453 2.58416 5.14869 2.50166 9.08286C2.44999 11.5404 3.58666 13.7304 5.36999 15.1337C5.52166 15.2529 5.63166 15.4162 5.67333 15.6045L6.30416 18.447C6.51583 19.3987 7.36083 20.0762 8.33583 20.0762H11.6617C12.6383 20.0762 13.4842 19.3987 13.6958 18.4445L14.3275 15.602C14.3692 15.4154 14.4775 15.2537 14.6275 15.1354C16.3733 13.7629 17.5 11.637 17.5 9.24286C17.5 5.10036 14.1425 1.74286 9.99999 1.74286ZM10.0003 3.40939C13.2161 3.40939 15.8336 6.02606 15.8336 9.24273C15.8336 11.0386 15.0186 12.7086 13.5978 13.8252C13.1428 14.1827 12.8244 14.6852 12.7011 15.2402L12.0686 18.0827C12.0269 18.2752 11.8586 18.4094 11.6619 18.4094H8.33609C8.14109 18.4094 7.97359 18.2761 7.93192 18.0852L7.30025 15.2427C7.17609 14.6869 6.85775 14.1827 6.40109 13.8236C4.94359 12.6769 4.12942 10.9619 4.16859 9.11773C4.23192 6.05523 6.77442 3.49606 9.83442 3.41189C9.88942 3.41023 9.94525 3.40939 10.0003 3.40939Z'
-                fill='currentColor'
-              ></path>
-              <path
-                d='M10 6.81299L8.81253 9.18726H11.1875L9.99952 11.561'
-                stroke='currentColor'
-                strokeWidth='1.6'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-              ></path>
-            </g>
-            <path d='M6.66656 15.9095H13.3332' stroke='currentColor' strokeWidth='1.7'></path>
-          </svg>
-        }
-      ></HeaderBarHoverCardWithBounce>
-      <HoverCard openDelay={150} closeDelay={150}>
-        <HoverCardTrigger onClick={() => openNewTab('/')} asChild>
-          <div
-            className={
-              'ml-[10px] flex h-[34px] w-[90px] min-w-[50px] cursor-pointer items-center justify-center rounded-[8px] bg-[#fb7299] text-white transition-colors duration-300 hover:bg-[#fc8bab]'
-            }
-          >
+      <WithAuth>
+        <HeaderBarHoverCardWithBounce
+          href={'/message'}
+          title={'消息'}
+          badge={!!nonZeroNotifications.length}
+          Svg={
             <svg
-              width='18'
-              height='18'
-              viewBox='0 0 18 18'
+              width='20'
+              height='20'
+              viewBox='0 0 20 20'
               fill='none'
               xmlns='http://www.w3.org/2000/svg'
-              className='mr-[5px]'
             >
               <path
-                d='M12.0824 10H14.1412C15.0508 10 15.7882 10.7374 15.7882 11.6471V12.8824C15.7882 13.792 15.0508 14.5294 14.1412 14.5294H3.84707C2.93743 14.5294 2.20001 13.792 2.20001 12.8824V11.6471C2.20001 10.7374 2.93743 10 3.84707 10H5.90589'
+                d='M15.435 17.7717H4.567C2.60143 17.7717 1 16.1723 1 14.2047V5.76702C1 3.80144 2.59942 2.20001 4.567 2.20001H15.433C17.3986 2.20001 19 3.79943 19 5.76702V14.2047C19.002 16.1703 17.4006 17.7717 15.435 17.7717ZM4.567 4.00062C3.59327 4.00062 2.8006 4.79328 2.8006 5.76702V14.2047C2.8006 15.1784 3.59327 15.9711 4.567 15.9711H15.433C16.4067 15.9711 17.1994 15.1784 17.1994 14.2047V5.76702C17.1994 4.79328 16.4067 4.00062 15.433 4.00062H4.567Z'
+                fill='currentColor'
+              ></path>
+              <path
+                d='M9.99943 11.2C9.51188 11.2 9.02238 11.0667 8.59748 10.8019L8.5407 10.7635L4.3329 7.65675C3.95304 7.37731 3.88842 6.86226 4.18996 6.50976C4.48954 6.15544 5.0417 6.09699 5.4196 6.37643L9.59412 9.45943C9.84279 9.60189 10.1561 9.60189 10.4067 9.45943L14.5812 6.37643C14.9591 6.09699 15.5113 6.15544 15.8109 6.50976C16.1104 6.86409 16.0478 7.37731 15.6679 7.65675L11.4014 10.8019C10.9765 11.0667 10.487 11.2 9.99943 11.2Z'
+                fill='currentColor'
+              ></path>
+            </svg>
+          }
+        >
+          {userHomeInfo ? (
+            <div className={'w-[142px] overflow-hidden'}>
+              <div className={'flex flex-col py-3'}>
+                {[
+                  {
+                    url: 'reply',
+                    name: '回复我的',
+                    number:
+                      notificationStatistics?.find((item) => item.type === 'reply')?.count ?? 0,
+                  },
+                  {
+                    url: 'at',
+                    name: '@我的',
+                    number: notificationStatistics?.find((item) => item.type === 'at')?.count ?? 0,
+                  },
+                  {
+                    url: 'love',
+                    name: '收到的赞',
+                    number:
+                      notificationStatistics?.find((item) => item.type === 'like')?.count ?? 0,
+                  },
+                  {
+                    url: 'system',
+                    name: '系统消息',
+                    number:
+                      notificationStatistics?.find((item) => item.type === 'system')?.count ?? 0,
+                  },
+                  {
+                    url: 'whisper',
+                    name: '我的消息',
+                    number:
+                      notificationStatistics?.find((item) => item.type === 'whisper')?.count ?? 0,
+                  },
+                ].map((item) => (
+                  <Link
+                    key={item.url}
+                    className={
+                      'text-text2 hover:bg-graph_bg_thick relative flex cursor-pointer items-center py-2.5 pl-[27px] text-left text-sm transition-colors duration-300'
+                    }
+                    target={'_blank'}
+                    href={`/message/${item.url}`}
+                  >
+                    {item.name}
+                    {!!item.number && (
+                      <Badge
+                        variant={'destructive'}
+                        className={cn(
+                          'absolute right-[17px] m-0 rounded-[8px] bg-[#fa5a57] p-0 px-[5px] text-xs leading-4 text-white'
+                        )}
+                      >
+                        {item.number > 99 ? '99+' : item.number}
+                      </Badge>
+                    )}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <HeaderBarRightEntryNoLoginItem title={'消息记录'} />
+          )}
+        </HeaderBarHoverCardWithBounce>
+      </WithAuth>
+      <WithAuth>
+        <HeaderBarHoverCardWithBounce
+          href={'/feed'}
+          title={'动态'}
+          Svg={
+            <svg
+              width='20'
+              height='21'
+              viewBox='0 0 20 21'
+              fill='none'
+              xmlns='http://www.w3.org/2000/svg'
+            >
+              <g clipPath='url(#clip0)'>
+                <path
+                  d='M10 10.743C7.69883 10.743 5.83333 8.87747 5.83333 6.5763C5.83333 4.27512 7.69883 2.40964 10 2.40964V10.743Z'
+                  stroke='currentColor'
+                  strokeWidth='1.6'
+                  strokeLinejoin='round'
+                ></path>
+                <path
+                  d='M10 10.743C10 13.0441 8.1345 14.9096 5.83333 14.9096C3.53217 14.9096 1.66667 13.0441 1.66667 10.743H10Z'
+                  stroke='currentColor'
+                  strokeWidth='1.6'
+                  strokeLinejoin='round'
+                ></path>
+                <path
+                  d='M10 10.743C10 8.44182 11.8655 6.57632 14.1667 6.57632C16.4679 6.57632 18.3333 8.44182 18.3333 10.743H10Z'
+                  stroke='currentColor'
+                  strokeWidth='1.6'
+                  strokeLinejoin='round'
+                ></path>
+                <path
+                  d='M9.99999 10.743C12.3012 10.743 14.1667 12.6085 14.1667 14.9096C14.1667 17.2108 12.3012 19.0763 9.99999 19.0763V10.743Z'
+                  stroke='currentColor'
+                  strokeWidth='1.6'
+                  strokeLinejoin='round'
+                ></path>
+              </g>
+              <defs>
+                <clipPath id='clip0'>
+                  <rect
+                    width='20'
+                    height='20'
+                    fill='currentColor'
+                    transform='matrix(-1 0 0 1 20 0.742981)'
+                  ></rect>
+                </clipPath>
+              </defs>
+            </svg>
+          }
+        >
+          {userHomeInfo ? (
+            <div
+              className={
+                'max-h-[540px] min-h-[172px] w-[370px] overflow-y-auto overscroll-none text-left'
+              }
+            >
+              {feedRecentList?.length ? (
+                <>
+                  <div>
+                    <div className={'flex items-center justify-between p-5 pb-2.5'}>
+                      <Link href={'/feed'} className={'text-[16px] font-semibold leading-[22px]'}>
+                        动态
+                      </Link>
+                    </div>
+                    <div>
+                      <div
+                        className={
+                          'text-text3 relative my-1.5 flex items-center justify-center px-5 text-xs'
+                        }
+                      >
+                        <div
+                          className={'border-t-line_regular absolute left-0 top-2 w-full border-t'}
+                        ></div>
+
+                        <div className={'bg-bg1 z-1 px-2.5'}>历史动态</div>
+                      </div>
+                      {feedRecentList?.map((item) => (
+                        <HeaderBarRightEntryFeedVideoItem key={item.id} feed={item} />
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <Link
+                      href={'/feeds'}
+                      className={
+                        'bg-bg2 text-text2 mx-5 my-4 flex h-9 w-[330px] cursor-pointer items-center justify-center rounded-[4px] text-sm leading-9 transition-colors duration-300'
+                      }
+                    >
+                      查看全部动态
+                      <svg
+                        xmlns='http://www.w3.org/2000/svg'
+                        viewBox='0 0 12 12'
+                        width='12'
+                        height='12'
+                        className={'size-3 overflow-hidden'}
+                      >
+                        <path
+                          d='M3.9179099999999973 1.167885C3.527364999999997 1.5584099999999994 3.527364999999997 2.1915700000000005 3.9179099999999973 2.582115L7.600900000000004 6.2651C7.454399999999996 6.11875 7.454399999999996 5.88125 7.600900000000004 5.7349L3.9179099999999973 9.417949999999996C3.527364999999997 9.808399999999995 3.527364999999997 10.441600000000005 3.9179099999999973 10.832050000000004C4.308409999999999 11.2226 4.941574999999998 11.2226 5.332094999999999 10.832050000000004L9.015099999999997 7.1491C9.64975 6.514450000000001 9.64975 5.485549999999999 9.015099999999997 4.8509L5.332094999999999 1.167885C4.941574999999998 0.7773649999999999 4.308409999999999 0.7773649999999999 3.9179099999999973 1.167885z'
+                          fill='currentColor'
+                        ></path>
+                      </svg>
+                    </Link>
+                  </div>
+                </>
+              ) : (
+                <div className={'text-text3 h-100 flex w-full items-center justify-center'}>
+                  还没有什么动态呢~
+                </div>
+              )}
+            </div>
+          ) : (
+            <HeaderBarRightEntryNoLoginItem title={'关注动态'} />
+          )}
+        </HeaderBarHoverCardWithBounce>
+      </WithAuth>
+      <WithAuth>
+        <HeaderBarHoverCardWithBounce
+          href={'/space/favorite'}
+          align={'end'}
+          alignOffset={-150}
+          title={'收藏'}
+          Svg={
+            <svg
+              width='20'
+              height='21'
+              viewBox='0 0 20 21'
+              fill='none'
+              xmlns='http://www.w3.org/2000/svg'
+            >
+              <path
+                fillRule='evenodd'
+                clipRule='evenodd'
+                d='M11.0505 3.16759L12.7915 6.69573C12.954 7.02647 13.2702 7.25612 13.6349 7.30949L17.5294 7.87474C18.448 8.00817 18.8159 9.13785 18.1504 9.78639L15.3331 12.5334C15.0686 12.7905 14.9481 13.1609 15.0104 13.5256L15.6759 17.4031C15.8328 18.3184 14.8721 19.0171 14.0497 18.5845L10.5661 16.7537C10.2402 16.5823 9.85042 16.5823 9.52373 16.7537L6.04087 18.5845C5.21848 19.0171 4.2578 18.3184 4.41468 17.4031L5.07939 13.5256C5.14166 13.1609 5.02198 12.7905 4.75755 12.5334L1.9394 9.78639C1.27469 9.13785 1.64182 8.00817 2.56126 7.87474L6.4549 7.30949C6.82041 7.25612 7.13578 7.02647 7.29832 6.69573L9.04015 3.16759C9.45095 2.33468 10.6389 2.33468 11.0505 3.16759Z'
                 stroke='currentColor'
-                strokeWidth='1.7'
+                strokeWidth='1.6'
                 strokeLinecap='round'
                 strokeLinejoin='round'
               ></path>
               <path
-                d='M8.99413 11.2353L8.99413 3.82353'
+                d='M11.603 11.8739C11.413 12.5556 10.7871 13.0554 10.0447 13.0554C9.29592 13.0554 8.66679 12.5467 8.48242 11.8569'
                 stroke='currentColor'
-                strokeWidth='1.7'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-              ></path>
-              <path
-                d='M12.0823 6.29413L8.9941 3.20589L5.90587 6.29413'
-                stroke='currentColor'
-                strokeWidth='1.7'
+                strokeWidth='1.6'
                 strokeLinecap='round'
                 strokeLinejoin='round'
               ></path>
             </svg>
-            <span className={'text-[14px] font-black text-white'}>投稿</span>
-          </div>
-        </HoverCardTrigger>
+          }
+        >
+          {userHomeInfo ? (
+            <Tabs
+              defaultValue={favoriteRecentList?.at(0)?.folderId}
+              className={'flex w-[520px] flex-row text-left'}
+            >
+              <TabsList
+                className={
+                  'border-r-line_regular flex h-[540px] w-[150px] shrink-0 flex-col overflow-y-auto overscroll-none border-r px-0 py-3'
+                }
+              >
+                {favoriteRecentList?.map((item) => (
+                  <TabsTrigger
+                    className={
+                      'text-text1 data-[state=active]:bg-brand_blue flex h-[46px] cursor-pointer items-center justify-between px-4 text-sm leading-[22px] transition-colors duration-300 data-[state=active]:text-white'
+                    }
+                    value={item.folderId}
+                    key={item.folderId}
+                  >
+                    <span
+                      className={
+                        'w-[85px] overflow-hidden text-ellipsis whitespace-nowrap font-medium'
+                      }
+                    >
+                      {item.folderName}
+                    </span>
+                    <span
+                      className={'text-text3 in-data-[state=active]:text-white text-xs leading-5'}
+                    >
+                      {item.list.length}
+                    </span>
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+              {favoriteRecentList?.map((item) => (
+                <TabsContent
+                  key={item.folderId}
+                  value={item.folderId}
+                  className={'relative h-[540px] flex-1 overflow-hidden rounded-[8px]'}
+                >
+                  {item.list.length ? (
+                    <>
+                      <div className={'h-[493px] overflow-y-auto overscroll-none py-3'}>
+                        {item.list.map((item) => (
+                          <HeaderBarRightEntryFavoriteVideoItem key={item.id} favorite={item} />
+                        ))}
+                      </div>
+                      <div
+                        className={
+                          'border-bg3 absolute bottom-0 flex w-full items-center justify-around border'
+                        }
+                      >
+                        <Link
+                          href={
+                            item.folderName === '稍后再看'
+                              ? '/watch-later'
+                              : `/space/favorite/${item.folderId}`
+                          }
+                          target={'_blank'}
+                          className={
+                            'text-text1 h-[45px] flex-1 text-center text-sm leading-[45px]'
+                          }
+                        >
+                          查看全部
+                        </Link>
+                      </div>
+                    </>
+                  ) : (
+                    <div className={'text-text3 h-100 flex items-center justify-center text-sm'}>
+                      该收藏夹还没有视频哦~
+                    </div>
+                  )}
+                </TabsContent>
+              ))}
+            </Tabs>
+          ) : (
+            <HeaderBarRightEntryNoLoginItem title={'我的收藏'} />
+          )}
+        </HeaderBarHoverCardWithBounce>
+      </WithAuth>
+      <WithAuth>
+        <HeaderBarHoverCardWithBounce
+          href={'/history'}
+          title={'历史'}
+          Svg={
+            <svg
+              width='20'
+              height='21'
+              viewBox='0 0 20 21'
+              fill='none'
+              xmlns='http://www.w3.org/2000/svg'
+            >
+              <path
+                fillRule='evenodd'
+                clipRule='evenodd'
+                d='M10 1.74286C5.02955 1.74286 1 5.7724 1 10.7429C1 15.7133 5.02955 19.7429 10 19.7429C14.9705 19.7429 19 15.7133 19 10.7429C19 5.7724 14.9705 1.74286 10 1.74286ZM10.0006 3.379C14.0612 3.379 17.3642 6.68282 17.3642 10.7426C17.3642 14.8033 14.0612 18.1063 10.0006 18.1063C5.93996 18.1063 2.63696 14.8033 2.63696 10.7426C2.63696 6.68282 5.93996 3.379 10.0006 3.379Z'
+                fill='currentColor'
+              ></path>
+              <path
+                d='M9.99985 6.6521V10.743'
+                stroke='currentColor'
+                strokeWidth='1.7'
+                strokeLinecap='round'
+              ></path>
+              <path
+                d='M12.4545 10.7427H10'
+                stroke='currentColor'
+                strokeWidth='1.7'
+                strokeLinecap='round'
+              ></path>
+            </svg>
+          }
+        >
+          {userHomeInfo ? (
+            <Tabs defaultValue={'video'} className={'h-[540px] w-[370px] bg-transparent'}>
+              <TabsList
+                defaultValue={'video'}
+                className={
+                  'border-b-line_regular m-0 flex h-auto w-full items-center justify-between rounded-none border-b border-none bg-transparent p-0'
+                }
+              >
+                <TabsTrigger
+                  className={
+                    'data-[state=active]:border-b-brand_blue data-[state=active]:text-brand_blue m-0 block w-full flex-1 cursor-pointer rounded-none border-0 border-b-[3px] bg-transparent p-0 py-[15px] text-center text-sm data-[state=active]:border-b-[3px] data-[state=active]:bg-transparent'
+                  }
+                  value={'video'}
+                >
+                  视频
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent
+                className={'h-120 m-0 overflow-y-auto overscroll-none p-0 text-left'}
+                value={'video'}
+              >
+                {!hasRecentList && (
+                  <div className={'text-text3 h-100 flex items-center justify-center text-sm'}>
+                    好像最近没有看过视频呢~
+                  </div>
+                )}
+
+                {[
+                  {
+                    name: '今天',
+                    list: historyRecentList?.todayList ?? [],
+                  },
+                  {
+                    name: '昨天',
+                    list: historyRecentList?.yesterdayList ?? [],
+                  },
+                  {
+                    name: '最近7天',
+                    list: historyRecentList?.lastWeekList ?? [],
+                  },
+                  {
+                    name: '更早',
+                    list: historyRecentList?.olderList ?? [],
+                  },
+                ].map((item) => (
+                  <div key={item.name}>
+                    {!!item.list.length && (
+                      <p className={'text-text1 mb-[5px] mt-3 px-5 text-sm font-medium leading-4'}>
+                        {item.name}
+                      </p>
+                    )}
+                    {item.list.map((history) => (
+                      <HeaderBarRightEntryHistoryVideoItem
+                        history={history}
+                        key={history.video.id}
+                      />
+                    ))}
+                  </div>
+                ))}
+                <Link
+                  target={'_blank'}
+                  href={'/history'}
+                  className={
+                    'bg-bg2 text-text2 hover:text-text1 mx-auto my-4 block h-9 w-[330px] cursor-pointer rounded-[8px] text-center text-sm leading-9 transition-colors duration-300'
+                  }
+                >
+                  查看全部
+                </Link>
+              </TabsContent>
+            </Tabs>
+          ) : (
+            <HeaderBarRightEntryNoLoginItem title={'历史记录'} />
+          )}
+        </HeaderBarHoverCardWithBounce>
+      </WithAuth>
+
+      <WithAuth>
+        <HeaderBarHoverCardWithBounce
+          href={'/platform'}
+          hidden
+          title={'创作中心'}
+          Svg={
+            <svg
+              width='20'
+              height='21'
+              viewBox='0 0 20 21'
+              fill='none'
+              xmlns='http://www.w3.org/2000/svg'
+            >
+              <mask
+                id='mask0'
+                mask-type='alpha'
+                maskUnits='userSpaceOnUse'
+                x='2'
+                y='1'
+                width='16'
+                height='20'
+              >
+                <path
+                  fillRule='evenodd'
+                  clipRule='evenodd'
+                  d='M2.5 1.74286H17.5V20.0762H2.5V1.74286Z'
+                  fill='currentColor'
+                ></path>
+              </mask>
+              <g mask='url(#mask0)'>
+                <path
+                  fillRule='evenodd'
+                  clipRule='evenodd'
+                  d='M9.99999 1.74286C9.92916 1.74286 9.85916 1.74369 9.78833 1.74536C5.85416 1.85453 2.58416 5.14869 2.50166 9.08286C2.44999 11.5404 3.58666 13.7304 5.36999 15.1337C5.52166 15.2529 5.63166 15.4162 5.67333 15.6045L6.30416 18.447C6.51583 19.3987 7.36083 20.0762 8.33583 20.0762H11.6617C12.6383 20.0762 13.4842 19.3987 13.6958 18.4445L14.3275 15.602C14.3692 15.4154 14.4775 15.2537 14.6275 15.1354C16.3733 13.7629 17.5 11.637 17.5 9.24286C17.5 5.10036 14.1425 1.74286 9.99999 1.74286ZM10.0003 3.40939C13.2161 3.40939 15.8336 6.02606 15.8336 9.24273C15.8336 11.0386 15.0186 12.7086 13.5978 13.8252C13.1428 14.1827 12.8244 14.6852 12.7011 15.2402L12.0686 18.0827C12.0269 18.2752 11.8586 18.4094 11.6619 18.4094H8.33609C8.14109 18.4094 7.97359 18.2761 7.93192 18.0852L7.30025 15.2427C7.17609 14.6869 6.85775 14.1827 6.40109 13.8236C4.94359 12.6769 4.12942 10.9619 4.16859 9.11773C4.23192 6.05523 6.77442 3.49606 9.83442 3.41189C9.88942 3.41023 9.94525 3.40939 10.0003 3.40939Z'
+                  fill='currentColor'
+                ></path>
+                <path
+                  d='M10 6.81299L8.81253 9.18726H11.1875L9.99952 11.561'
+                  stroke='currentColor'
+                  strokeWidth='1.6'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                ></path>
+              </g>
+              <path d='M6.66656 15.9095H13.3332' stroke='currentColor' strokeWidth='1.7'></path>
+            </svg>
+          }
+        ></HeaderBarHoverCardWithBounce>
+      </WithAuth>
+      <HoverCard openDelay={150} closeDelay={150}>
+        <WithAuth>
+          <HoverCardTrigger asChild onClick={() => openNewTab('/')}>
+            <div
+              className={
+                'ml-[10px] flex h-[34px] w-[90px] min-w-[50px] cursor-pointer items-center justify-center rounded-[8px] bg-[#fb7299] text-white transition-colors duration-300 hover:bg-[#fc8bab]'
+              }
+            >
+              <svg
+                width='18'
+                height='18'
+                viewBox='0 0 18 18'
+                fill='none'
+                xmlns='http://www.w3.org/2000/svg'
+                className='mr-[5px]'
+              >
+                <path
+                  d='M12.0824 10H14.1412C15.0508 10 15.7882 10.7374 15.7882 11.6471V12.8824C15.7882 13.792 15.0508 14.5294 14.1412 14.5294H3.84707C2.93743 14.5294 2.20001 13.792 2.20001 12.8824V11.6471C2.20001 10.7374 2.93743 10 3.84707 10H5.90589'
+                  stroke='currentColor'
+                  strokeWidth='1.7'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                ></path>
+                <path
+                  d='M8.99413 11.2353L8.99413 3.82353'
+                  stroke='currentColor'
+                  strokeWidth='1.7'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                ></path>
+                <path
+                  d='M12.0823 6.29413L8.9941 3.20589L5.90587 6.29413'
+                  stroke='currentColor'
+                  strokeWidth='1.7'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                ></path>
+              </svg>
+              <span className={'text-[14px] font-black text-white'}>投稿</span>
+            </div>
+          </HoverCardTrigger>
+        </WithAuth>
         <HoverCardContent
           align={'end'}
           sideOffset={20}
@@ -652,16 +672,17 @@ const HeaderBarRightEntry = ({
               ),
             },
           ].map((item) => (
-            <Link
-              href={item.href}
-              key={item.title}
-              className={
-                'flex h-[63px] w-[62px] cursor-pointer flex-col items-center justify-center rounded-[8px] text-center leading-[63px] no-underline transition-colors duration-300 hover:bg-[#E3E5E7]'
-              }
-            >
-              {item.svg}
-              <span className={'text-text2 text-xs leading-[17px]'}>{item.title}</span>
-            </Link>
+            <WithAuth key={item.title}>
+              <Link
+                href={item.href}
+                className={
+                  'flex h-[63px] w-[62px] cursor-pointer flex-col items-center justify-center rounded-[8px] text-center leading-[63px] no-underline transition-colors duration-300 hover:bg-[#E3E5E7]'
+                }
+              >
+                {item.svg}
+                <span className={'text-text2 text-xs leading-[17px]'}>{item.title}</span>
+              </Link>
+            </WithAuth>
           ))}
         </HoverCardContent>
       </HoverCard>

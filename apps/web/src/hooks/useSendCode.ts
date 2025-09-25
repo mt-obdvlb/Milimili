@@ -1,3 +1,5 @@
+'use client'
+
 import { useCallback, useEffect, useState } from 'react'
 import { z } from 'zod'
 import { toast } from '@/lib'

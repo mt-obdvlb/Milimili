@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   getUser,
   getUserByEmail,
+  getUserByName,
   loginUser,
   logoutUser,
   userFindPassword,
@@ -53,4 +54,13 @@ export const useUserFindPassword = () => {
     mutationFn: userFindPassword,
   })
   return { findPassword }
+}
+
+export const useUserGetByName = (name: string) => {
+  const { data } = useQuery({
+    queryKey: ['user', name],
+    queryFn: () => getUserByName(name),
+    enabled: !!name,
+  })
+  return { data: data?.data }
 }

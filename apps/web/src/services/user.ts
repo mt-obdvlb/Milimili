@@ -1,6 +1,6 @@
 import request from '@/lib/request'
 import { UserFindPasswordRequest, UserLoginRequest } from '@/types/user'
-import { Result, UserGetInfo, UserGetInfoHome } from '@mtobdvlb/shared-types'
+import { Result, UserGetByName, UserGetInfo, UserGetInfoHome } from '@mtobdvlb/shared-types'
 
 const baseURL = '/users'
 
@@ -11,6 +11,7 @@ const API = {
   homeInfo: '/info/home',
   getByEmail: '/email',
   findPassword: '/find-password',
+  getByName: '/name',
 } as const
 
 export const loginUser = (data: UserLoginRequest) =>
@@ -28,3 +29,6 @@ export const getUserByEmail = (email: string) =>
 
 export const userFindPassword = (params: UserFindPasswordRequest) =>
   request.put<Result>(`${baseURL}${API.findPassword}`, params)
+
+export const getUserByName = (name: string) =>
+  request.get<Result<UserGetByName>>(`${baseURL}${API.getByName}?name=${name}`)
