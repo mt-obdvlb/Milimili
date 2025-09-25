@@ -2,7 +2,7 @@ import { FeedModel } from '@/models/feed.model'
 import { FollowModel } from '@/models/follow.model'
 import { Types } from 'mongoose'
 import { IUser, IVideo } from '@/models'
-import { FeedRecentList } from '@mtobdvlb/shared-types'
+import { FeedFollowingList, FeedRecentList } from '@mtobdvlb/shared-types'
 
 export const FeedService = {
   recent: async (userId: string): Promise<FeedRecentList> => {
@@ -40,5 +40,37 @@ export const FeedService = {
         avatar: (feed.userId as IUser).avatar,
       },
     }))
+  },
+  followingList: async (userId: string) => {
+    // 1. 找到关注的人
+    const followings = await FollowModel.find({ followerId: userId }).select('followingId')
+    const followingIds = followings.map((f) => f.followingId)
+
+    if (followingIds.length === 0) return []
+
+    // 2. 聚合找到最近发布动态的 20 个关注用户
+    return (await FeedModel.aggregate([
+      { $match: { userId: { $in: followingIds.map((id) => new Types.ObjectId(id)) } } },
+      { $sort: { createdAt: -1 } },
+      { $group: { _id: '$userId', latestFeed: { $first: '$$ROOT' } } },
+      { $sort: { 'latestFeed.createdAt': -1 } },
+      { $limit: 20 },
+      {
+        $lookup: {
+          from: 'users',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      { $unwind: '$user' },
+      {
+        $project: {
+          userId: { $toString: '$user._id' },
+          name: '$user.name',
+          avatar: '$user.avatar',
+        },
+      },
+    ])) as FeedFollowingList // 强制类型断言，确保返回类型
   },
 }

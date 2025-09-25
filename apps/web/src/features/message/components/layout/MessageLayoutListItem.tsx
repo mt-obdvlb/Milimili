@@ -1,3 +1,5 @@
+'use client'
+
 import { MessageType } from '@mtobdvlb/shared-types'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'

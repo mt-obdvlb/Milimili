@@ -1,4 +1,4 @@
-import { feedGetRecent } from '@/services/feed'
+import { feedGetFollowing, feedGetRecent } from '@/services/feed'
 import { useQuery } from '@tanstack/react-query'
 
 export const useFeedGetRecent = () => {
@@ -7,4 +7,14 @@ export const useFeedGetRecent = () => {
     queryFn: () => feedGetRecent(),
   })
   return { feedRecentList: feedRecentList?.data }
+}
+
+export const useFeedGetFollowingList = () => {
+  const { data: followingList } = useQuery({
+    queryKey: ['feed', 'following'],
+    queryFn: () => feedGetFollowing(),
+  })
+  return {
+    followingList: followingList?.data,
+  }
 }
