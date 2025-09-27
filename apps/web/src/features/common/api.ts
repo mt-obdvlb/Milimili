@@ -6,8 +6,6 @@ const OSS_BUCKET = 'mtobdvlb-web'
 const OSS_REGION = 'oss-cn-beijing'
 
 export type UploadResult = {
-  objectKey: string
-  url: string
   fileUrl: string // 上传后可访问的地址
 }
 
@@ -31,7 +29,7 @@ export const useUploadFile = () => {
       // 3️⃣ 拼接可访问 URL
       const fileUrl = `https://${OSS_BUCKET}.${OSS_REGION}.aliyuncs.com/${objectKey}`
 
-      return { objectKey, url, fileUrl }
+      return { fileUrl }
     },
   })
 

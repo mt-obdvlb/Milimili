@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import {
+  userAtList,
   userFindPassword,
   userGetByEmail,
   userGetByName,
@@ -11,6 +12,7 @@ import {
 import { authMiddleware, validatorMiddleware } from '@/middlewares'
 import { asyncHandler } from '@/utils'
 import {
+  userAtDTO,
   userFindPasswordDTO,
   userGetByEmailDTO,
   userGetByNameDTO,
@@ -34,5 +36,11 @@ router.put(
   asyncHandler(userFindPassword)
 )
 router.get('/name', validatorMiddleware({ query: userGetByNameDTO }), asyncHandler(userGetByName))
+router.get(
+  '/at',
+  authMiddleware,
+  validatorMiddleware({ query: userAtDTO }),
+  asyncHandler(userAtList)
+)
 
 export default router
