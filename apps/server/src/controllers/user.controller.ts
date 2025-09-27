@@ -2,7 +2,10 @@ import { RequestHandler } from 'express'
 import { UserService } from '@/services/user.service'
 import { MESSAGE } from '@/constants'
 import {
+  PageResult,
   Result,
+  UserAtDTO,
+  UserAtItem,
   UserFindPasswordDTO,
   UserGetByEmailDTO,
   UserGetByName,
@@ -127,6 +130,27 @@ export const userGetByName: RequestHandler<
   const data = await UserService.getByName(name as string)
   return res.status(200).json({
     data,
+    code: 0,
+  })
+}
+
+export const userAtList: RequestHandler<
+  ParamsDictionary,
+  Result<PageResult<UserAtItem>>,
+  UserAtDTO
+> = async (req, res) => {
+  const userId = req.user?.id
+  if (!userId)
+    return res.status(401).json({
+      message: MESSAGE.INVALID_TOKEN,
+      code: 1,
+    })
+  const { list, total } = await UserService.getAtList(userId, req.body)
+  return res.status(200).json({
+    data: {
+      list,
+      total,
+    },
     code: 0,
   })
 }

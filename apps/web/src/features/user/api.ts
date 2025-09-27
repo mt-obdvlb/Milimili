@@ -1,6 +1,7 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   getUser,
+  getUserAtList,
   getUserByEmail,
   getUserByName,
   loginUser,
@@ -63,4 +64,25 @@ export const useUserGetByName = (name: string) => {
     enabled: !!name,
   })
   return { data: data?.data }
+}
+
+export const useUserGetAtList = (keyword: string) => {
+  const { data, fetchNextPage } = useInfiniteQuery({
+    queryKey: ['user', 'at', keyword],
+    queryFn: ({ pageParam = 1 }) =>
+      getUserAtList({ keyword, page: pageParam as number, pageSize: 10 }),
+    getNextPageParam: (lastPage, allPages) => {
+      const loaded = allPages.reduce((sum, page) => sum + (page.data?.list.length ?? 0), 0)
+      if (loaded < (lastPage.data?.total ?? 0)) {
+        return allPages.length + 1
+      }
+      return undefined
+    },
+    initialPageParam: 1,
+  })
+
+  return {
+    fetchNextPage,
+    atList: data?.pages.flatMap((page) => page.data?.list ?? []) ?? [],
+  }
 }

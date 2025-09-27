@@ -2,7 +2,7 @@ import { FeedModel } from '@/models/feed.model'
 import { FollowModel } from '@/models/follow.model'
 import { Types } from 'mongoose'
 import { IUser, IVideo } from '@/models'
-import { FeedFollowingList, FeedRecentList } from '@mtobdvlb/shared-types'
+import { FeedCreateDTO, FeedFollowingList, FeedRecentList } from '@mtobdvlb/shared-types'
 
 export const FeedService = {
   recent: async (userId: string): Promise<FeedRecentList> => {
@@ -72,5 +72,14 @@ export const FeedService = {
         },
       },
     ])) as FeedFollowingList // 强制类型断言，确保返回类型
+  },
+  create: async (userId: string, { title, imageUrls, content }: FeedCreateDTO) => {
+    await FeedModel.create({
+      userId,
+      type: 'image-text',
+      content,
+      title,
+      mediaUrls: imageUrls,
+    })
   },
 }
