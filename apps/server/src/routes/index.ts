@@ -12,6 +12,7 @@ import searchRoute from '@/routes/search.route'
 import followRoute from '@/routes/follow.route'
 import commonRoute from '@/routes/common.route'
 import messageRoute from '@/routes/message.route'
+import likeRoute from '@/routes/like.route'
 
 const router = Router()
 
@@ -28,5 +29,6 @@ router.use('/search-logs', searchLogRoute)
 router.use('/searches', searchRoute)
 router.use('/follows', followRoute)
 router.use('/commons', commonRoute)
+router.use('/likes', likeRoute)
 
 export default router

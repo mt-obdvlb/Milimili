@@ -13,4 +13,5 @@ export const MESSAGE = {
   FAVORITE_FOLDER_NOT_FOUND: '收藏夹不存在',
   FAVORITE_EXIST: '已收藏',
   FOLDER_EXIST: '收藏夹已存在',
+  NOT_FOUND: '不存在',
 }
