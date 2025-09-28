@@ -1,8 +1,10 @@
 import {
   FeedCreateDTO,
   FeedFollowingList,
+  FeedGetById,
   FeedListItem,
   FeedRecentList,
+  FeedTranspontDTO,
   PageResult,
   Result,
 } from '@mtobdvlb/shared-types'
@@ -15,6 +17,9 @@ const API = {
   following: '/following',
   publish: '/',
   list: '/',
+  getById: '/',
+  delete: '/',
+  transpont: '/transpont',
 } as const
 
 export const feedGetRecent = () => request.get<Result<FeedRecentList>>(`${baseURL}${API.recent}`)
@@ -27,3 +32,11 @@ export const feedPublish = (data: FeedCreateDTO) =>
 
 export const feedList = (params: { page: number }) =>
   request.get<Result<PageResult<FeedListItem>>>(`${baseURL}${API.list}`, { params })
+
+export const feedGetById = (id: string) =>
+  request.get<Result<FeedGetById>>(`${baseURL}${API.getById}${id}`)
+
+export const feedDelete = (id: string) => request.delete<Result>(`${baseURL}${API.delete}${id}`)
+
+export const feedTranspont = (body: FeedTranspontDTO) =>
+  request.post<Result>(`${baseURL}${API.transpont}`, body)

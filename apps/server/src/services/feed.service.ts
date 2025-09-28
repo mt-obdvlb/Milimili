@@ -4,11 +4,16 @@ import { Types } from 'mongoose'
 import { CommentModel, IUser, IVideo, IVideoState, VideoStatsModel } from '@/models'
 import {
   FeedCreateDTO,
+  FeedDeleteDTO,
   FeedFollowingList,
+  FeedGetByIdDTO,
   FeedList,
   FeedListDTO,
   FeedRecentList,
+  FeedTranspontDTO,
+  FeedType,
 } from '@mtobdvlb/shared-types'
+import { MESSAGE } from '@/constants'
 
 export const FeedService = {
   recent: async (userId: string): Promise<FeedRecentList> => {
@@ -183,5 +188,87 @@ export const FeedService = {
     })
 
     return { list: feedList, total }
+  },
+  getById: async (userId: string, { id }: FeedGetByIdDTO) => {
+    // 1️⃣ 查询 feed 并 populate userId 和 videoId
+    const feed = await FeedModel.findById(id)
+      .populate<{
+        userId: { _id: Types.ObjectId; name: string; avatar: string }
+      }>('userId', 'name avatar')
+      .populate<{ videoId?: IVideo }>('videoId')
+      .lean<
+        IFeed & {
+          userId: { _id: Types.ObjectId; name: string; avatar: string }
+          videoId?: IVideo
+        }
+      >()
+
+    if (!feed) throw new Error(MESSAGE.FEED_NOT_FOUND)
+
+    // 2️⃣ 查询视频 stats
+    let video
+    if (feed.videoId) {
+      const videoStat = await VideoStatsModel.findOne({
+        videoId: feed.videoId._id,
+      }).lean<IVideoState>()
+      video = {
+        id: feed.videoId._id.toString(),
+        title: feed.videoId.title,
+        description: feed.videoId.description,
+        views: videoStat?.views || 0,
+        time: feed.videoId.time,
+        danmakus: videoStat?.danmakus || 0,
+        thumbnail: feed.videoId.thumbnail,
+        url: feed.videoId.url,
+      }
+    }
+
+    // 3️⃣ 查询最热门评论
+    // 4️⃣ 组装返回
+    return {
+      id: feed._id.toString(),
+      title: feed.title,
+      content: feed.content,
+      video,
+      user: {
+        id: feed.userId._id.toString(),
+        name: feed.userId.name,
+        avatar: feed.userId.avatar,
+      },
+      images: feed.mediaUrls?.length ? feed.mediaUrls : undefined,
+      likes: feed.likesCount,
+      comments: feed.commentsCount,
+      publishedAt: feed.publishedAt.toISOString(),
+      type: feed.type,
+      referenceId: feed.referenceId?.toString(),
+    }
+  },
+  delete: async (userId: string, { id }: FeedDeleteDTO) => {
+    const feed = await FeedModel.findOne({ _id: id, userId })
+    if (!feed) throw new Error(MESSAGE.NOT_PERMISSION)
+
+    await FeedModel.deleteOne({ _id: id })
+  },
+  transpont: async (userId: string, { feedId, content }: FeedTranspontDTO) => {
+    const originalFeed = await FeedModel.findById(feedId)
+
+    if (!originalFeed) throw new Error(MESSAGE.FEED_NOT_FOUND)
+
+    const referenceId =
+      originalFeed.type === 'reference' ? originalFeed.referenceId : originalFeed._id
+
+    await FeedModel.create({
+      content: content || originalFeed.content,
+      mediaUrls: originalFeed.mediaUrls,
+      likesCount: 0,
+      commentsCount: 0,
+      type: 'reference' as FeedType,
+      commentsDisabled: originalFeed.commentsDisabled,
+      isOpen: originalFeed.isOpen,
+      publishedAt: new Date(),
+      userId: new Types.ObjectId(userId),
+      videoId: originalFeed.videoId,
+      referenceId,
+    })
   },
 }

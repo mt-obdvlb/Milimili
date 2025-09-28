@@ -1,4 +1,12 @@
-import { feedGetFollowing, feedGetRecent, feedList, feedPublish } from '@/services/feed'
+import {
+  feedDelete,
+  feedGetById,
+  feedGetFollowing,
+  feedGetRecent,
+  feedList,
+  feedPublish,
+  feedTranspont,
+} from '@/services/feed'
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export const useFeedGetRecent = () => {
@@ -49,4 +57,36 @@ export const useFeedGetList = () => {
     fetchNextPage,
     hasNextPage,
   }
+}
+
+export const useFeedGetById = (id: string) => {
+  const { data } = useQuery({
+    queryKey: ['feed', 'get', id],
+    queryFn: () => feedGetById(id),
+  })
+  return {
+    feed: data?.data,
+  }
+}
+
+export const useFeedTranspont = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: transpont } = useMutation({
+    mutationFn: feedTranspont,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['feed', 'list'] })
+    },
+  })
+  return { transpont }
+}
+
+export const useFeedDelete = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: deleteFeed } = useMutation({
+    mutationFn: feedDelete,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['feed', 'list'] })
+    },
+  })
+  return { deleteFeed }
 }

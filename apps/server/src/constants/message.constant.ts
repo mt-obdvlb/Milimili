@@ -14,4 +14,6 @@ export const MESSAGE = {
   FAVORITE_EXIST: '已收藏',
   FOLDER_EXIST: '收藏夹已存在',
   NOT_FOUND: '不存在',
+  NOT_PERMISSION: '没有权限',
+  FEED_NOT_FOUND: '动态不存在',
 }
