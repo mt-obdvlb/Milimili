@@ -1,1 +1,1 @@
-export type CommentTargetType = 'video' | 'feed'
+export type CommentTargetType = 'video' | 'feed' | 'comment'
