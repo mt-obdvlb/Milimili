@@ -1,1 +1,1 @@
-export type FeedType = 'image-text' | 'video'
+export type FeedType = 'image-text' | 'video' | 'reference'

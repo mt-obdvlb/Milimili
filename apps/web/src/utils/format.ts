@@ -37,3 +37,25 @@ export const formatWatchAt = (watchAt: string): string => {
     return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 ${timeStr}`
   }
 }
+export const formatFeedDate = (dateStr: string): string => {
+  const date = new Date(dateStr)
+  if (isNaN(date.getTime())) return 'Invalid date'
+
+  const now = new Date()
+  const diffMs = now.getTime() - date.getTime()
+  const diffMinutes = Math.floor(diffMs / (1000 * 60))
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+
+  if (diffMinutes < 60) {
+    return `${diffMinutes}分钟前`
+  } else if (diffHours < 24) {
+    return `${diffHours}小时前`
+  } else if (diffDays <= 7) {
+    return `${diffDays}天前`
+  } else {
+    const month = (date.getMonth() + 1).toString().padStart(2, '0')
+    const day = date.getDate().toString().padStart(2, '0')
+    return `${month}-${day}`
+  }
+}

@@ -1,3 +1,4 @@
+'use client'
 import { computePosition, flip, shift } from '@floating-ui/dom'
 import { Editor, posToDOMRect, ReactRenderer } from '@tiptap/react'
 import { SuggestionOptions, SuggestionProps } from '@tiptap/suggestion'
