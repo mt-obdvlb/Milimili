@@ -19,7 +19,6 @@ export type FeedGetById = {
     id: string
     avatar: string
   }
-  comment?: string
   images?: string[]
   likes: number
   comments: number

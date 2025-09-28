@@ -7,10 +7,14 @@ import { RequestHandler } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import {
   FeedCreateDTO,
+  FeedDeleteDTO,
   FeedFollowingList,
+  FeedGetById,
+  FeedGetByIdDTO,
   FeedListDTO,
   FeedListItem,
   FeedRecentList,
+  FeedTranspontDTO,
   PageResult,
   Result,
 } from '@mtobdvlb/shared-types'
@@ -85,5 +89,55 @@ export const feedList: RequestHandler<
       total,
       list,
     },
+  })
+}
+
+export const feedDelete: RequestHandler<ParamsDictionary, Result, FeedDeleteDTO> = async (
+  req,
+  res
+) => {
+  const userId = req.user?.id
+  if (!userId)
+    return res.status(401).json({
+      code: 401,
+      message: MESSAGE.AUTH_ERROR,
+    })
+  await FeedService.delete(userId, req.body)
+  return res.status(200).json({
+    code: 0,
+  })
+}
+
+export const feedGetById: RequestHandler<
+  ParamsDictionary,
+  Result<FeedGetById>,
+  FeedGetByIdDTO
+> = async (req, res) => {
+  const userId = req.user?.id
+  if (!userId)
+    return res.status(401).json({
+      code: 401,
+      message: MESSAGE.AUTH_ERROR,
+    })
+  const data = await FeedService.getById(userId, req.body)
+  return res.status(200).json({
+    code: 0,
+    data,
+  })
+}
+
+export const feedTranspont: RequestHandler<ParamsDictionary, Result, FeedTranspontDTO> = async (
+  req,
+  res
+) => {
+  const userId = req.user?.id
+  if (!userId)
+    return res.status(401).json({
+      code: 401,
+      message: MESSAGE.AUTH_ERROR,
+    })
+  await FeedService.transpont(userId, req.body)
+  return res.status(200).json({
+    code: 0,
   })
 }
