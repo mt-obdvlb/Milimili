@@ -47,8 +47,10 @@ const FeedPublishWrapper = () => {
 
   const { uploadFile } = useUploadFile()
   const { publishFeed } = useFeedPublish()
+
   const onSubmit = async (data: FeedPublishForm) => {
     data.content = atTextRef.current?.getEditor()?.getText() ?? ''
+    console.log('submit', data)
     const { code } = await publishFeed(data)
     if (code) return
     form.reset()
@@ -208,11 +210,12 @@ const FeedPublishWrapper = () => {
             <div className={'items-center flex justify-center ml-5'}>
               <div className={'text-text3 text-sm relative select-none mr-[25px]'}>{textCount}</div>
               <Button
-                type={'submit'}
-                disabled={!atTextRef.current?.getTextCount()}
+                disabled={!textCount}
+                onClick={() => onSubmit(form.getValues())}
+                type={'button'}
                 className={cn(
                   'min-w-[70px] items-center bg-brand_blue rounded-[6px] text-text_white cursor-pointer flex text-sm h-8 select-none justify-center w-[70px]',
-                  !atTextRef.current?.getTextCount() && 'cursor-not-allowed opacity-50'
+                  !textCount && 'cursor-not-allowed opacity-50'
                 )}
               >
                 发布

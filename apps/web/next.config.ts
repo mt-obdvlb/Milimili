@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'mtobdvlb-web.oss-cn-beijing.aliyuncs.com',
-        pathname: '/milimili/**', // ** 表示匹配任意子路径
+        pathname: '/**', // ** 表示匹配任意子路径
       },
     ],
   },

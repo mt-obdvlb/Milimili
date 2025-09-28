@@ -4,8 +4,8 @@ import mongoose, { Document, Schema, Types } from 'mongoose'
 type FeedBase = {
   content: string
   mediaUrls?: string[]
-  likesCount?: number
-  commentsCount?: number
+  likesCount: number
+  commentsCount: number
   type: FeedType
   commentsDisabled: boolean
   isOpen: boolean
@@ -17,6 +17,7 @@ type FeedDB = FeedBase & {
   videoId: Types.ObjectId
   userId: Types.ObjectId
   _id: Types.ObjectId
+  referenceId?: Types.ObjectId
 }
 export type IFeed = FeedDB & Document
 
@@ -57,7 +58,7 @@ const feedSchema = new Schema<IFeed>(
     },
     type: {
       type: String,
-      enum: ['image-text', 'video'] satisfies FeedType[],
+      enum: ['image-text', 'video', 'reference'] satisfies FeedType[],
       required: true,
     },
     commentsDisabled: {
@@ -74,6 +75,11 @@ const feedSchema = new Schema<IFeed>(
       type: Date,
       default: Date.now,
       required: true,
+    },
+    referenceId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Feed',
+      required: false,
     },
   },
   {

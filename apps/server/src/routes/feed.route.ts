@@ -1,8 +1,8 @@
 import { Router } from 'express'
 import { authMiddleware, validatorMiddleware } from '@/middlewares'
 import { asyncHandler } from '@/utils'
-import { feedCreate, feedFollowingList, feedRecent } from '@/controllers'
-import { feedCreateDTO } from '@mtobdvlb/shared-types'
+import { feedCreate, feedFollowingList, feedList, feedRecent } from '@/controllers'
+import { feedCreateDTO, feedListDTO } from '@mtobdvlb/shared-types'
 
 const router = Router()
 
@@ -15,6 +15,14 @@ router.post(
     body: feedCreateDTO,
   }),
   asyncHandler(feedCreate)
+)
+router.get(
+  '/',
+  authMiddleware,
+  validatorMiddleware({
+    query: feedListDTO,
+  }),
+  asyncHandler(feedList)
 )
 
 export default router

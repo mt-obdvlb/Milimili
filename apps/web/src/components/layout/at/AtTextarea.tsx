@@ -66,6 +66,15 @@ const AtTextarea = ({
       attributes: {
         class: cn('focus:outline-none '),
       },
+      handlePaste: (view, event) => {
+        const text = event.clipboardData?.getData('text/plain')
+        if (text && editor) {
+          // 粘贴为纯文本，不生成新的 <p>
+          editor.chain().focus().insertContent(text).run()
+          return true // 阻止默认粘贴行为
+        }
+        return false
+      },
     },
   })
 
@@ -84,6 +93,14 @@ const AtTextarea = ({
     getEditor: () => editor,
     insertMention: () => {
       if (!editor) return
+      const { state } = editor
+      const { from } = state.selection
+      const textBefore = state.doc.textBetween(Math.max(0, from - 1), from, undefined, '\0')
+
+      // 如果光标不是在开头，且前一个字符不是空格，则先插入空格
+      if (from > 0 && textBefore !== ' ') {
+        editor.chain().focus().insertContent(' ').run()
+      }
       editor.chain().focus().insertContent('@').run()
     },
     reset: () => {
