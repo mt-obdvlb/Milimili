@@ -1,3 +1,5 @@
+import { CommentTargetType } from '@/api'
+
 export type CommentGetItem = {
   id: string
   content: string
@@ -6,9 +8,10 @@ export type CommentGetItem = {
     name: string
     avatar: string
   }
-  createdAt: Date
-  commentCount: number
-  likeCount: number
+  createdAt: string
+  comments?: number
+  likes: number
+  type: CommentTargetType
 }
 
 export type CommentGetList = CommentGetItem[]

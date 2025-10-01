@@ -1,0 +1,6 @@
+export * from './CommentItem'
+export * from './CommentItemFooter'
+export * from './CommentPagination'
+export * from './CommentPublish'
+export * from './CommentReplyItem'
+export * from './CommentWrapper'

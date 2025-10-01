@@ -1,4 +1,10 @@
-import { FavoriteFolderModel, FavoriteModel, HistoryModel, VideoModel } from '@/models'
+import {
+  FavoriteFolderModel,
+  FavoriteModel,
+  HistoryModel,
+  VideoModel,
+  VideoStatsModel,
+} from '@/models'
 import { Types } from 'mongoose'
 import {
   FavoriteAddBatchDTO,
@@ -159,6 +165,7 @@ export const FavoriteService = {
       videoId,
       folderId,
     })
+    await VideoStatsModel.updateOne({ videoId }, { $inc: { favoritesCount: 1 } })
   },
   deleteBatch: async ({ ids }: FavoriteDeleteBatchDTO) => {
     if (!ids.length) return
@@ -234,6 +241,10 @@ export const FavoriteService = {
 
     if (toInsert.length) {
       await FavoriteModel.insertMany(toInsert)
+      await VideoStatsModel.updateMany(
+        { _id: { $in: videoIds.map((id) => new Types.ObjectId(id)) } },
+        { $inc: { favoritesCount: 1 } }
+      )
     }
   },
   moveBatch: async ({ ids, targetFolderId }: FavoriteMoveBatchDTO) => {

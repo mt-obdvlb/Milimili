@@ -21,18 +21,20 @@ export type AtTextareaRef = {
 const AtTextarea = ({
   ref,
   onUpdate,
+  className,
+  pClassName,
 }: {
   ref?: Ref<AtTextareaRef> | null
   onUpdate?: (count: number, html: string) => void
+  className?: string
+  pClassName?: string
 }) => {
   const editor = useEditor({
     extensions: [
       Document.configure({}),
       Paragraph.configure({
         HTMLAttributes: {
-          class: cn(
-            'text-[15px] leading-6 min-h-6 break-words bg-bg1 text-text1 tracking-[1px] pr-[5px] outline-none relative block align-baseline whitespace-pre-wrap w-full break-all'
-          ),
+          class: cn(pClassName),
         },
       }),
       Text.configure({}),
@@ -64,7 +66,7 @@ const AtTextarea = ({
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: cn('focus:outline-none '),
+        class: cn('focus:outline-none overflow-auto break-words break-all', className),
       },
       handlePaste: (view, event) => {
         const text = event.clipboardData?.getData('text/plain')

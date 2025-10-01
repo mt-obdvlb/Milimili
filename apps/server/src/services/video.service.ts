@@ -8,7 +8,7 @@ import {
   IHistory,
   IUser,
   IVideo,
-  IVideoState,
+  IVideoStats,
   UserModel,
   VideoModel,
   VideoStatsModel,
@@ -127,6 +127,11 @@ export const VideoService = {
     const video = await VideoModel.findById(body.videoId)
     if (!video) throw new HttpError(404, MESSAGE.VIDEO_NOT_FOUND)
     await DanmakuModel.create(body)
+    await VideoStatsModel.updateOne(
+      { videoId: body.videoId },
+      { $inc: { danmakusCount: 1 } },
+      { upsert: true }
+    )
   },
   getWatchLater: async (body: VideoGetWatchLaterDTO, userId: string) => {
     const { kw, sort, type, time, addAt, from, to } = body
@@ -246,10 +251,10 @@ export const VideoService = {
     const videoIdsForMeta = videos.map((v) => v._id)
 
     // 6) 查询统计（VideoStats）
-    const stats = await VideoStatsModel.find({ videoId: { $in: videoIdsForMeta } })
-      .select('videoId views danmakus favorites likes')
-      .lean<IVideoState[]>()
-    const statsMap = new Map<string, IVideoState>(stats.map((s) => [s.videoId.toString(), s]))
+    const stats = await VideoStatsModel.find({ videoId: { $in: videoIdsForMeta } }).lean<
+      IVideoStats[]
+    >()
+    const statsMap = new Map<string, IVideoStats>(stats.map((s) => [s.videoId.toString(), s]))
 
     // 7) 查询用户历史（判断 watched）
     const histories = await HistoryModel.find({
@@ -273,8 +278,8 @@ export const VideoService = {
           title: v.title,
           thumbnail: v.thumbnail,
           time: v.time,
-          views: stat?.views ?? 0,
-          danmakus: stat?.danmakus ?? 0,
+          views: stat?.viewsCount ?? 0,
+          danmakus: stat?.danmakusCount ?? 0,
           username: v.userId?.name ?? '',
           publishedAt: v.createdAt.toISOString(),
           userId: v.userId?._id.toString() ?? '',

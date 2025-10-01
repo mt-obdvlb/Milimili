@@ -73,8 +73,8 @@ export const useFeedTranspont = () => {
   const queryClient = useQueryClient()
   const { mutateAsync: transpont } = useMutation({
     mutationFn: feedTranspont,
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['feed', 'list'] })
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['feed', 'list'] })
     },
   })
   return { transpont }
@@ -84,8 +84,8 @@ export const useFeedDelete = () => {
   const queryClient = useQueryClient()
   const { mutateAsync: deleteFeed } = useMutation({
     mutationFn: feedDelete,
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['feed', 'list'] })
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['feed', 'list'] })
     },
   })
   return { deleteFeed }

@@ -6,6 +6,7 @@ import { cn } from '@/lib'
 import { motion } from 'motion/react'
 import Lightbox from 'yet-another-react-lightbox'
 import { Button } from '@/components'
+import { useHorizontalScroll } from '@/features/feed/hooks/useHorizontalScroll'
 
 interface FeedImagesViewerProps {
   images: string[]
@@ -27,21 +28,45 @@ const FeedImagesViewer = ({ images }: FeedImagesViewerProps) => {
   }))
 
   // 获取选中缩略图位置
+  const handleIndexAfterMove = (newTranslate: number) => {
+    if (index === null || !containerRef.current) return
+    const container = containerRef.current
+    const item = container.children[index] as HTMLElement
+    const itemLeft = item.offsetLeft + newTranslate
+    const itemRight = itemLeft + 58 // itemWidth
+
+    if (itemLeft < 0) {
+      // 被左移出，可选择把 index 减小或者直接滚到最左显示
+      const firstVisibleIndex = Math.ceil(-newTranslate / 58)
+      setIndex(firstVisibleIndex)
+    } else if (itemRight > container.clientWidth) {
+      // 被右移出
+      const lastVisibleIndex = Math.floor((container.clientWidth - newTranslate) / 58) - 1
+      setIndex(lastVisibleIndex)
+    }
+  }
+
+  // 使用 hook
+  const { translateX, canScrollLeft, canScrollRight, moveLeft, moveRight } = useHorizontalScroll(
+    containerRef,
+    images.length,
+    58,
+    handleIndexAfterMove
+  )
+
   useLayoutEffect(() => {
     if (index === null || !containerRef.current) return
     const container = containerRef.current
     const item = container.children[index] as HTMLElement
     if (item) {
-      const rect = item.getBoundingClientRect()
-      const parentRect = container.getBoundingClientRect()
       setBorderStyle({
-        top: rect.top - parentRect.top,
-        left: rect.left - parentRect.left,
+        top: 0, // 如果垂直不动就保持0
+        left: item.offsetLeft + translateX, // 考虑translateX
         width: 58,
         height: 58,
       })
     }
-  }, [index, images])
+  }, [index, images, translateX])
 
   return (
     <>
@@ -233,7 +258,12 @@ const FeedImagesViewer = ({ images }: FeedImagesViewerProps) => {
           <div className={'w-full overflow-hidden'}>
             <div
               ref={containerRef}
-              className={'w-full flex  duration-180 transition-[cubic-bezier(.22,_.58,_.12,_.98)]'}
+              className={
+                'w-full flex transition-all duration-180 ease-[cubic-bezier(.22,_.58,_.12,_.98)]'
+              }
+              style={{
+                transform: `translateX(${translateX}px)`,
+              }}
             >
               {images.map((image, i) => (
                 <div
@@ -249,7 +279,7 @@ const FeedImagesViewer = ({ images }: FeedImagesViewerProps) => {
                     src={image}
                     alt={image}
                     className={cn(
-                      'size-full opacity-50 hover:opacity-100 rounded-[6px] transition-[opacity,_cubic-bezier(.22,_.58,_.12,_.98)] duration-180',
+                      'size-full opacity-50 hover:opacity-100 rounded-[6px] transition-opacity ease-[cubic-bezier(.22,_.58,_.12,_.98)] duration-180',
                       index === i && 'opacity-100'
                     )}
                   />
@@ -257,6 +287,24 @@ const FeedImagesViewer = ({ images }: FeedImagesViewerProps) => {
               ))}
             </div>
           </div>
+          {/*left-btn*/}
+          {canScrollLeft && (
+            <div
+              onClick={moveLeft}
+              className={
+                "absolute top-0 left-0 z-10 w-3 h-[54px] cursor-pointer transition-all duration-180  ease-[cubic-bezier(.22,_.58,_.12,_.98)] rounded-[4px] bg-[rgba(0,0,0,.4)] bg-center bg-no-repeat bg-[size:6px_10px] bg-[url('/images/feed-image-left.png')]  "
+              }
+            ></div>
+          )}
+          {/*right-btn*/}
+          {canScrollRight && (
+            <div
+              onClick={moveRight}
+              className={
+                "absolute top-0 right-0 z-10 w-3 h-[54px] cursor-pointer transition-all duration-180  ease-[cubic-bezier(.22,_.58,_.12,_.98)] rounded-[4px] bg-[rgba(0,0,0,.4)] bg-center bg-no-repeat bg-[size:6px_10px] bg-[url('/images/feed-image-right.png')]  "
+              }
+            ></div>
+          )}
         </div>
       </div>
 
@@ -265,7 +313,7 @@ const FeedImagesViewer = ({ images }: FeedImagesViewerProps) => {
           buttonPrev: () => (
             <Button
               className={cn(
-                'ml-4 opacity-100 hover:text-brand_pink transition-[opacity_333ms_cubic-bezier(0.4,_0,_0.22,1)]zZzzz z-10 flex items-center justify-center size-[42px] rounded-full bg-[rgba(0,0,0,.58)] cursor-pointer outline-none border-none text-white absolute left-0 top-1/2 -mt-[50px]'
+                'ml-4 opacity-100 hover:text-brand_pink transition-opacity duration-333 ease-[cubic-bezier(0.4,_0,_0.22,1)] z-10 flex items-center justify-center size-[42px] rounded-full bg-[rgba(0,0,0,.58)] cursor-pointer outline-none border-none text-white absolute left-0 top-1/2 -mt-[50px]'
               )}
               onClick={() =>
                 setIndex((index) => {
@@ -291,7 +339,7 @@ const FeedImagesViewer = ({ images }: FeedImagesViewerProps) => {
             <>
               <Button
                 className={cn(
-                  'mr-4 rotate-180 hover:text-brand_pink opacity-100 transition-[opacity_333ms_cubic-bezier(0.4,_0,_0.22,1)] z-10 flex items-center justify-center size-[42px] rounded-full bg-[rgba(0,0,0,.58)] cursor-pointer outline-none border-none text-white absolute right-0 top-1/2 -mt-[50px]'
+                  'mr-4 rotate-180 hover:text-brand_pink opacity-100 transition-opacity duration-333 ease-[cubic-bezier(0.4,_0,_0.22,1)] z-10 flex items-center justify-center size-[42px] rounded-full bg-[rgba(0,0,0,.58)] cursor-pointer outline-none border-none text-white absolute right-0 top-1/2 -mt-[50px]'
                 )}
                 onClick={() => {
                   setIndex((index) => {
@@ -344,7 +392,7 @@ const FeedImagesViewer = ({ images }: FeedImagesViewerProps) => {
           buttonClose: () => (
             <Button
               className={cn(
-                'mr-4 mt-4   hover:text-brand_pink opacity-100 transition-[opacity_333ms_cubic-bezier(0.4,_0,_0.22,1)]' +
+                'mr-4 mt-4   hover:text-brand_pink opacity-100 transition-opacity duration-333 ease-[cubic-bezier(0.4,_0,_0.22,1)]' +
                   ' z-10 flex items-center justify-center size-[42px] rounded-full bg-[rgba(0,0,0,.58)] cursor-pointer outline-none border-none ' +
                   'text-white absolute right-0 top-0 '
               )}

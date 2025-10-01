@@ -1,3 +1,4 @@
+export * from './useCanScroll'
 export * from './useInfiniteScroll'
 export * from './useModel'
 export * from './useQueryClient'

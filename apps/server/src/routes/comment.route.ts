@@ -1,8 +1,8 @@
 import { Router } from 'express'
-import { commentDTO, commentGetDTO } from '@mtobdvlb/shared-types'
+import { commentDeleteDTO, commentDTO, commentGetDTO } from '@mtobdvlb/shared-types'
 import { authMiddleware, validatorMiddleware } from '@/middlewares'
 import { asyncHandler } from '@/utils'
-import { comment, commentGet } from '@/controllers'
+import { comment, commentDelete, commentGet } from '@/controllers'
 
 const router = Router()
 
@@ -21,6 +21,15 @@ router.get(
     query: commentGetDTO,
   }),
   asyncHandler(commentGet)
+)
+
+router.delete(
+  '/:id',
+  authMiddleware,
+  validatorMiddleware({
+    params: commentDeleteDTO,
+  }),
+  asyncHandler(commentDelete)
 )
 
 export default router

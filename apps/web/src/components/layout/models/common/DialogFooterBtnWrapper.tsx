@@ -10,6 +10,7 @@ const dialogFooterBtnMainHoverStyles = tv({
     colors: {
       pink: cn('hover:bg-brand_pink_hover hover:border-brand_pink_hover'),
       blue: cn('hover:bg-brand_blue_hover hover:border-brand_blue_hover'),
+      red: cn(''),
     },
   },
 })
@@ -22,11 +23,12 @@ const dialogFooterBtnMainStyles = tv({
     colors: {
       pink: cn('bg-brand_pink border-brand_pink'),
       blue: cn('bg-brand_blue border-brand_blue'),
+      red: cn('bg-stress_red border-stress_red'),
     },
   },
 })
 
-export type DialogFooterBtnMainStyles = 'pink' | 'blue'
+export type DialogFooterBtnMainStyles = 'pink' | 'blue' | 'red'
 
 const DialogFooterBtnWrapper = ({
   setDialogOpen,
