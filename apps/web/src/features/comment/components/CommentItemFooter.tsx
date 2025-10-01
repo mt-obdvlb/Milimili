@@ -1,3 +1,4 @@
+'use client'
 import { formatFeedDate } from '@/utils'
 import { Button, HoverCard, HoverCardContent, HoverCardTrigger } from '@/components'
 import { cn, toast } from '@/lib'

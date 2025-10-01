@@ -2,13 +2,18 @@
 
 import { FeedListItem as FeedListItemType } from '@mtobdvlb/shared-types'
 import { tv } from 'tailwind-variants'
-import { cn } from '@/lib'
+import { cn, toast } from '@/lib'
 import Image from 'next/image'
-import { formatFeedDate } from '@/utils'
+import { formatFeedDate, openNewTab } from '@/utils'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components'
 import { useUserStore } from '@/stores'
 import FeedCollapsibleContent from '@/features/feed/components/FeedCollapsibleContent'
 import FeedImagesViewer from '@/features/feed/components/FeedImageViewer'
+import { useFeedDelete, useLike, useLikeGet, useUnFollow } from '@/features'
+import CommonDialog from '@/components/layout/models/common/CommonDialog'
+import { useState } from 'react'
+import CommentWrapper from '@/features/comment/components/CommentWrapper'
+import FeedTranspontContent from '@/features/feed/components/FeedTranspontContent'
 
 const FeedListItem = ({ feed }: { feed: FeedListItemType }) => {
   const feedStyles = tv({
@@ -17,20 +22,28 @@ const FeedListItem = ({ feed }: { feed: FeedListItemType }) => {
         'antialiased bg-bg1 rounded-[6px] font-normal tracking-normal min-w-[556px] relative'
       ),
       main: cn('pr-5 pl-22'),
-      avatar: cn('items-center flex h-[86.4px] justify-center left-0 absolute top-0 w-[86.4]'),
-      header: cn('h-[62px] pt-4'),
+      avatar: cn(
+        'items-center cursor-pointer flex h-[86.4px] justify-center left-0 absolute top-0 w-[86.4]'
+      ),
+      header: cn('h-[62px] pt-4 '),
       body: cn('mt-2'),
       footer: cn('flex h-[50px] justify-between pr-5'),
+      panel: cn('pb-0.5 w-full'),
     },
   })
-  const { root, main, avatar, header, body, footer } = feedStyles()
+  const { root, main, avatar, header, body, footer, panel } = feedStyles()
   const userStore = useUserStore((state) => state.user)
+  const { deleteFeed } = useFeedDelete()
+  const { isLike } = useLikeGet({ feedId: feed.id })
+  const { like, unlike } = useLike({ feedId: feed.id })
+  const { unfollow } = useUnFollow(feed.user.id)
+  const [panelOpen, setPanelOpen] = useState<'comment' | 'transpont' | null>(null)
 
   return (
     <div className={'mb-2'}>
       <div className={root()}>
         <div className={main()}>
-          <div className={avatar()}>
+          <div onClick={() => openNewTab(`/space/${feed.user.id}`)} className={avatar()}>
             <div className={'size-12 rounded-full relative overflow-hidden'}>
               <Image fill src={feed.user.avatar} alt={feed.user.name} />
             </div>
@@ -84,23 +97,46 @@ const FeedListItem = ({ feed }: { feed: FeedListItemType }) => {
                     }
                   >
                     {userStore?.id !== feed.user.id && (
-                      <div
-                        className={
-                          'text-text2 cursor-pointer hover:bg-graph_bg_regular flex flex-col text-[13px] justify-center tracking-normal leading-4.5 min-h-10 py-2 px-[27px] select-none whitespace-nowrap'
+                      <CommonDialog
+                        handleConfirm={async () => {
+                          const { code } = await unfollow({ followingId: feed.user.id })
+                          if (code) return
+                          toast('已取消关注')
+                        }}
+                        title={'取消关注'}
+                        desc={`真的要取消对 ${feed.user.name} 的关注吗？`}
+                        mainStyles={'blue'}
+                        trigger={
+                          <div
+                            className={
+                              'text-text2 cursor-pointer hover:bg-graph_bg_regular flex flex-col text-[13px] justify-center tracking-normal leading-4.5 min-h-10 py-2 px-[27px] select-none whitespace-nowrap'
+                            }
+                          >
+                            <div className={'flex items-center '}>取消关注</div>
+                          </div>
                         }
-                      >
-                        <div className={'flex items-center '}>取消关注</div>
-                      </div>
+                      ></CommonDialog>
                     )}
-
                     {userStore?.id === feed.user.id && (
-                      <div
-                        className={
-                          'text-text2 cursor-pointer hover:bg-graph_bg_regular flex flex-col text-[13px] justify-center tracking-normal leading-4.5 min-h-10 py-2 px-[27px] select-none whitespace-nowrap'
+                      <CommonDialog
+                        handleConfirm={async () => {
+                          const { code } = await deleteFeed(feed.id)
+                          if (code) return
+                          toast('已删除')
+                        }}
+                        title={'要删除动态吗？'}
+                        desc={'动态删除后将无法恢复，请谨慎操作'}
+                        mainStyles={'red'}
+                        trigger={
+                          <div
+                            className={
+                              'text-text2 cursor-pointer hover:bg-graph_bg_regular flex flex-col text-[13px] justify-center tracking-normal leading-4.5 min-h-10 py-2 px-[27px] select-none whitespace-nowrap'
+                            }
+                          >
+                            <div className={'flex items-center '}>删除</div>
+                          </div>
                         }
-                      >
-                        <div className={'flex items-center '}>删除</div>
-                      </div>
+                      ></CommonDialog>
                     )}
                   </HoverCardContent>
                 </HoverCard>
@@ -152,6 +188,10 @@ const FeedListItem = ({ feed }: { feed: FeedListItemType }) => {
                     ></path>
                   </svg>
                 ),
+                onClick: () => {
+                  if (panelOpen !== 'transpont') setPanelOpen('transpont')
+                  else setPanelOpen(null)
+                },
               },
               {
                 label: '评论',
@@ -169,10 +209,28 @@ const FeedListItem = ({ feed }: { feed: FeedListItemType }) => {
                     ></path>
                   </svg>
                 ),
+                onClick: () => {
+                  if (panelOpen !== 'comment') setPanelOpen('comment')
+                  else setPanelOpen(null)
+                },
+                count: feed.comments,
               },
               {
                 label: '点赞',
-                icon: (
+                icon: isLike ? (
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    viewBox='0 0 18 18'
+                    width='18'
+                    height='18'
+                    className={cn('mr-1')}
+                  >
+                    <path
+                      d='M15.238949999999999 5.8749875L11.728124999999999 5.8749875C11.903625 5.509125 12.108450000000001 5.0146725 12.179124999999999 4.54079C12.225925 4.227235 12.230549999999997 3.8411524999999997 12.192600000000002 3.4729099999999997C12.155475 3.1126975 12.072274999999998 2.715405 11.909324999999999 2.4065275C11.5572 1.73896 11.07925 1.2830650000000001 10.515075 1.1730275000000001C9.9175 1.056475 9.4 1.3591199999999999 9.086975 1.832795C8.821325 2.2348025 8.71795 2.5693425000000003 8.62185 2.8804925L8.619125 2.8893475C8.526275 3.1897624999999996 8.4337 3.488995 8.19635 3.9093850000000003C7.807925000000001 4.59742 7.489369999999999 4.956485000000001 7.062139999999999 5.331055C6.807695000000001 5.5541375 6.541364999999999 5.6883925 6.3125 5.760025L6.3125 15.85475C6.9202625 15.868200000000002 7.573125 15.876800000000003 8.25 15.876800000000003C10.00675 15.876800000000003 11.4894 15.819474999999999 12.466925 15.767950000000003C13.408750000000001 15.7183 14.305975 15.243900000000002 14.795475 14.385325C15.267499999999998 13.557499999999997 15.871775 12.304749999999999 16.235825000000002 10.807475C16.577575000000003 9.40205 16.719975 8.259725 16.7778 7.4839150000000005C16.846225 6.565215 16.10015 5.8749875 15.238949999999999 5.8749875zM5.3125 15.827525L5.3125 5.8749875L3.9767325000000002 5.8749875C2.8486374999999997 5.8749875 1.8491449999999998 6.6792625 1.7212225 7.843025000000001C1.63766 8.60325 1.5625 9.5917 1.5625 10.6893C1.5625 11.876325000000001 1.6504175 12.977975 1.7415649999999998 13.801975C1.864035 14.909174999999998 2.7766325 15.718875 3.8673275 15.770325C4.28143 15.789874999999999 4.769835 15.810149999999998 5.3125 15.827525z'
+                      fill='currentColor'
+                    ></path>
+                  </svg>
+                ) : (
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
                     viewBox='0 0 18 18'
@@ -186,21 +244,45 @@ const FeedListItem = ({ feed }: { feed: FeedListItemType }) => {
                     ></path>
                   </svg>
                 ),
+                onClick: async () => {
+                  if (isLike) {
+                    await unlike()
+                  } else {
+                    await like()
+                  }
+                },
+                count: feed.likes,
               },
             ].map((item) => (
               <div key={item.label}>
                 <div
-                  className={
-                    'items-center flex text-text2 cursor-pointer hover:text-brand_blue text-[13px] h-full relative select-none w-[104px]'
-                  }
+                  onClick={item.onClick}
+                  className={cn(
+                    'items-center flex text-text2 cursor-pointer hover:text-brand_blue text-[13px] h-full relative select-none w-[104px]',
+                    item.label === '点赞' && isLike && 'text-brand_blue'
+                  )}
                 >
                   {item.icon}
-                  {item.label}
+                  {item.count || item.label}
                 </div>
               </div>
             ))}
           </div>
         </div>
+        {panelOpen && (
+          <div className={panel()}>
+            {panelOpen === 'transpont' && (
+              <div className={'px-6 w-full text-xs'}>
+                <FeedTranspontContent feedId={feed.id} />
+              </div>
+            )}
+            {panelOpen === 'comment' && (
+              <div className={'px-6'}>
+                <CommentWrapper user={feed.user} isLink feedId={feed.id} />
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
