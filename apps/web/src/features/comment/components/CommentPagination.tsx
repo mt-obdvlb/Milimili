@@ -1,3 +1,4 @@
+'use client'
 import * as React from 'react'
 import { Dispatch, SetStateAction } from 'react'
 import { MoreHorizontalIcon } from 'lucide-react'

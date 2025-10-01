@@ -1,3 +1,4 @@
+'use client'
 import { CommentGetItem } from '@mtobdvlb/shared-types'
 import { UserHoverAvatar } from '@/components'
 import Link from 'next/link'
