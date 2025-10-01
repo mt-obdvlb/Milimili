@@ -1,7 +1,7 @@
 import { FeedModel, IFeed } from '@/models/feed.model'
 import { FollowModel } from '@/models/follow.model'
 import { Types } from 'mongoose'
-import { CommentModel, IUser, IVideo, IVideoState, VideoStatsModel } from '@/models'
+import { CommentModel, IUser, IVideo, IVideoStats, VideoStatsModel } from '@/models'
 import {
   FeedCreateDTO,
   FeedDeleteDTO,
@@ -131,9 +131,9 @@ export const FeedService = {
     const videoIds = feeds.filter((f) => !!f.videoId).map((f) => f.videoId._id)
 
     const videoStats = await VideoStatsModel.find({ videoId: { $in: videoIds } }).lean<
-      IVideoState[]
+      IVideoStats[]
     >()
-    const videoStatsMap = new Map<string, IVideoState>()
+    const videoStatsMap = new Map<string, IVideoStats>()
     videoStats.forEach((vs) => videoStatsMap.set(vs.videoId.toString(), vs))
 
     // 4️⃣ 查询每条 feed 的最热门评论
@@ -159,9 +159,9 @@ export const FeedService = {
             id: f.videoId._id.toString(),
             title: f.videoId.title,
             description: f.videoId.description,
-            views: videoStatsMap.get(f.videoId._id.toString())?.views || 0,
+            views: videoStatsMap.get(f.videoId._id.toString())?.viewsCount || 0,
             time: f.videoId.time,
-            danmakus: videoStatsMap.get(f.videoId._id.toString())?.danmakus || 0,
+            danmakus: videoStatsMap.get(f.videoId._id.toString())?.danmakusCount || 0,
             thumbnail: f.videoId.thumbnail,
             url: f.videoId.url,
           }
@@ -210,14 +210,14 @@ export const FeedService = {
     if (feed.videoId) {
       const videoStat = await VideoStatsModel.findOne({
         videoId: feed.videoId._id,
-      }).lean<IVideoState>()
+      }).lean<IVideoStats>()
       video = {
         id: feed.videoId._id.toString(),
         title: feed.videoId.title,
         description: feed.videoId.description,
-        views: videoStat?.views || 0,
+        views: videoStat?.viewsCount || 0,
         time: feed.videoId.time,
-        danmakus: videoStat?.danmakus || 0,
+        danmakus: videoStat?.danmakusCount || 0,
         thumbnail: feed.videoId.thumbnail,
         url: feed.videoId.url,
       }

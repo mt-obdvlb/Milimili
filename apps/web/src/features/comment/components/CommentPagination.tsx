@@ -1,18 +1,9 @@
-'use client'
-
 import * as React from 'react'
-
+import { Dispatch, SetStateAction } from 'react'
 import { MoreHorizontalIcon } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-
-type SearchPaginationProps = {
-  page: number
-  setPage: (page: number) => void
-  total: number
-  pageSize?: number
-}
 
 function Pagination({ className, ...props }: React.ComponentProps<'nav'>) {
   return (
@@ -20,7 +11,7 @@ function Pagination({ className, ...props }: React.ComponentProps<'nav'>) {
       role='navigation'
       aria-label='pagination'
       data-slot='pagination'
-      className={cn('my-[50px]  flex items-center justify-center', className)}
+      className={cn('flex items-center text-[13px] text-text1', className)}
       {...props}
     />
   )
@@ -28,11 +19,7 @@ function Pagination({ className, ...props }: React.ComponentProps<'nav'>) {
 
 function PaginationContent({ className, ...props }: React.ComponentProps<'ul'>) {
   return (
-    <ul
-      data-slot='pagination-content'
-      className={cn('flex items-center justify-start', className)}
-      {...props}
-    />
+    <ul data-slot='pagination-content' className={cn('flex items-center ', className)} {...props} />
   )
 }
 
@@ -52,9 +39,9 @@ function PaginationButton({ className, isActive, disabled, ...props }: Paginatio
       data-slot='pagination-button'
       data-active={isActive}
       className={cn(
-        'text-text1 bg-bg1_float border-line_regular hover:bg-graph_bg_thick mr-2 h-[34px] min-w-[34px] cursor-pointer rounded-[8px] border p-2 text-sm leading-[1] whitespace-nowrap transition-all duration-200 select-none',
-        isActive && 'bg-brand_blue border-brand_blue hover:bg-brand_blue text-white',
-        disabled && 'hover:bg-bg1_float cursor-not-allowed',
+        'ml-2 inline-flex items-center hover:text-brand_blue',
+        isActive && 'text-brand_blue ',
+        disabled && 'hidden',
         className
       )}
       {...props}
@@ -64,60 +51,47 @@ function PaginationButton({ className, isActive, disabled, ...props }: Paginatio
 
 function PaginationPrevious({
   disabled,
-  className,
+
   ...props
 }: React.ComponentProps<typeof PaginationButton>) {
   return (
-    <PaginationButton
-      aria-label='Go to previous page'
-      disabled={disabled}
-      className={cn(
-        'h-[34px] min-w-25 rounded-[8px] px-2 text-sm',
-        disabled && 'mr-2 cursor-not-allowed opacity-50',
-        className
-      )}
-      {...props}
-    >
+    <PaginationButton aria-label='Go to previous page' disabled={disabled} {...props}>
       <span className=''>上一页</span>
     </PaginationButton>
   )
 }
 
-function PaginationNext({
-  disabled,
-  className,
-  ...props
-}: React.ComponentProps<typeof PaginationButton>) {
+function PaginationNext({ disabled, ...props }: React.ComponentProps<typeof PaginationButton>) {
   return (
-    <PaginationButton
-      aria-label='Go to next page'
-      disabled={disabled}
-      className={cn(
-        'h-[34px] min-w-25 rounded-[8px] px-2 text-sm',
-        disabled && 'mr-2 cursor-not-allowed opacity-50',
-        className
-      )}
-      {...props}
-    >
+    <PaginationButton aria-label='Go to next page' disabled={disabled} {...props}>
       <span className=''>下一页</span>
     </PaginationButton>
   )
 }
 
-function PaginationEllipsis({ className, ...props }: React.ComponentProps<'span'>) {
+function PaginationEllipsis({ ...props }: React.ComponentProps<typeof PaginationButton>) {
   return (
-    <span
-      aria-hidden
-      data-slot='pagination-ellipsis'
-      className={cn('mr-[8px] inline-flex w-[34px] text-center', className)}
-      {...props}
-    >
+    <PaginationButton {...props}>
       <MoreHorizontalIcon className='size-full' />
-    </span>
+    </PaginationButton>
   )
 }
 
-const SearchPagination = ({ page, setPage, total, pageSize = 20 }: SearchPaginationProps) => {
+type CommentPaginationProps = {
+  page: number
+  setPage: (page: number) => void
+  total: number
+  pageSize?: number
+  setShowReply: Dispatch<SetStateAction<boolean>>
+}
+
+const CommentPagination = ({
+  total,
+  pageSize = 10,
+  setPage,
+  page,
+  setShowReply,
+}: CommentPaginationProps) => {
   const totalPages = Math.max(1, Math.ceil(total / pageSize))
 
   const handlePageChange = (next: number) => {
@@ -149,6 +123,7 @@ const SearchPagination = ({ page, setPage, total, pageSize = 20 }: SearchPaginat
 
   return (
     <Pagination>
+      <div className={'mr-2.5'}>{`共${totalPages}页`}</div>
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
@@ -180,8 +155,13 @@ const SearchPagination = ({ page, setPage, total, pageSize = 20 }: SearchPaginat
           />
         </PaginationItem>
       </PaginationContent>
+      <div>
+        <Button onClick={() => setShowReply(false)} className={'ml-2 hover:text-brand_blue '}>
+          收起
+        </Button>
+      </div>
     </Pagination>
   )
 }
 
-export default SearchPagination
+export default CommentPagination

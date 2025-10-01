@@ -1,5 +1,5 @@
 export * from './ToTopBtn'
-export * from './avatar'
+export * from './UserAvatar'
 export * from './badge'
 export * from './breadcrumb'
 export * from './button'

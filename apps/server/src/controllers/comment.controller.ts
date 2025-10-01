@@ -1,4 +1,5 @@
 import {
+  CommentDeleteDTO,
   CommentDTO,
   CommentGetDTO,
   CommentGetItem,
@@ -33,5 +34,20 @@ export const commentGet: RequestHandler<
       list,
       total,
     },
+  })
+}
+
+export const commentDelete: RequestHandler<ParamsDictionary, Result, CommentDeleteDTO> = async (
+  req,
+  res
+) => {
+  const userId = req.user?.id
+  if (!userId)
+    return res.status(401).json({
+      code: 401,
+    })
+  await CommentService.delete(userId, req.body)
+  return res.status(200).json({
+    code: 0,
   })
 }

@@ -3,4 +3,6 @@ export type UserGetByName = {
   name: string
   email: string
   avatar: string
+  followings: number
+  followers: number
 }

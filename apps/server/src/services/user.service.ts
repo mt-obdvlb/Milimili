@@ -3,7 +3,7 @@ import { MESSAGE } from '@/constants'
 import { comparePassword, hashPassword, HttpError, signToken } from '@/utils'
 import redis from '@/utils/redis.util'
 import { FeedModel } from '@/models/feed.model'
-import { UserAtDTO, UserAtList, UserFindPasswordDTO } from '@mtobdvlb/shared-types'
+import { UserAtDTO, UserAtList, UserFindPasswordDTO, UserGetByName } from '@mtobdvlb/shared-types'
 import { Types } from 'mongoose'
 
 export const UserService = {
@@ -88,14 +88,18 @@ export const UserService = {
     const hashed = await hashPassword(body.password)
     await UserModel.updateOne({ email: body.email }, { password: hashed })
   },
-  getByName: async (name: string) => {
+  getByName: async (name: string): Promise<UserGetByName> => {
     const user = await UserModel.findOne({ name })
     if (!user) throw new HttpError(400, MESSAGE.USER_NOT_FOUND)
+    const followers = await FollowModel.countDocuments({ followedId: user._id })
+    const followings = await FollowModel.countDocuments({ followerId: user._id })
     return {
       id: user._id.toString(),
       name: user.name,
       avatar: user.avatar,
       email: user.email,
+      followers,
+      followings,
     }
   },
   getAtList: async (userId: string, { page, pageSize, keyword }: UserAtDTO) => {

@@ -77,7 +77,7 @@ const HeaderBarRightEntryAvatar = ({ userHomeInfo }: { userHomeInfo?: UserGetInf
       <HoverCardContent
         align={'start'}
         alignOffset={-135}
-        className={'h-auto w-auto rounded-[8px] border-none bg-transparent p-0'}
+        className={'h-auto w-auto rounded-[8px] border-none bg-transparent p-0 z-50 '}
       >
         <div
           className={

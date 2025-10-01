@@ -11,6 +11,7 @@ const API = {
 
 export const like = (body: LikeDTO) => request.post<Result>(baseURL + API.like, body)
 
-export const unlike = (body: UnlikeDTO) => request.post<Result>(baseURL + API.unlike, body)
+export const unlike = (params: UnlikeDTO) =>
+  request.delete<Result>(baseURL + API.unlike, { params })
 
 export const isLike = (params: LikeGetDTO) => request.get<Result>(baseURL + API.isLike, { params })

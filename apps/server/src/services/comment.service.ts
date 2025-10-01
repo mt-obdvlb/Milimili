@@ -1,15 +1,19 @@
-import { CommentDTO, CommentGetDTO, CommentGetList } from '@mtobdvlb/shared-types'
+import {
+  CommentDeleteDTO,
+  CommentDTO,
+  CommentGetDTO,
+  CommentGetList,
+  CommentTargetType,
+} from '@mtobdvlb/shared-types'
 import { Types } from 'mongoose'
-import { CommentModel } from '@/models'
+import { CommentModel, FeedModel, VideoStatsModel } from '@/models'
 import { MESSAGE } from '@/constants'
-
-type TargetType = 'video' | 'feed' | 'comment'
 
 const resolveTarget = (dto: {
   videoId?: string
   feedId?: string
   commentId?: string
-}): { targetId: Types.ObjectId; targetType: TargetType } => {
+}): { targetId: Types.ObjectId; targetType: CommentTargetType } => {
   if (dto.videoId) {
     return { targetId: new Types.ObjectId(dto.videoId), targetType: 'video' }
   }
@@ -28,7 +32,14 @@ export const CommentService = {
    * 返回结构：
    * { total, list: [{ id, content, user: { id, name, avatar }, createdAt, commentCount, likeCount }] }
    */
-  get: async ({ commentId, videoId, feedId, page = 1, pageSize = 20, sort }: CommentGetDTO) => {
+  get: async ({
+    commentId,
+    videoId,
+    feedId,
+    page = 1,
+    pageSize = 20,
+    sort,
+  }: CommentGetDTO): Promise<{ total: number; list: CommentGetList }> => {
     const { targetId, targetType } = resolveTarget({ commentId, videoId, feedId })
 
     const pageNum = Math.max(1, Math.floor(Number(page) || 1))
@@ -36,13 +47,8 @@ export const CommentService = {
     const skip = (pageNum - 1) * size
 
     // 排序逻辑
-    let sortStage: Record<string, 1 | -1>
-    if (sort === 'new') {
-      sortStage = { createdAt: -1 }
-    } else {
-      // 热度排序: likeCount + commentCount
-      sortStage = { hotScore: -1, createdAt: -1 }
-    }
+    const sortStage: Record<string, 1 | -1> =
+      sort === 'new' ? { createdAt: -1 } : { hotScore: -1, createdAt: -1 }
 
     const agg = await CommentModel.aggregate([
       { $match: { targetId, targetType } },
@@ -74,46 +80,36 @@ export const CommentService = {
       },
       {
         $addFields: {
-          likeCount: { $ifNull: ['$likesCount', 0] },
-          commentCount: { $ifNull: [{ $arrayElemAt: ['$replies.count', 0] }, 0] },
+          likes: { $ifNull: ['$likesCount', 0] },
+          comments: { $ifNull: [{ $arrayElemAt: ['$replies.count', 0] }, 0] },
         },
       },
-      // 热度分数
-      {
-        $addFields: {
-          hotScore: { $add: ['$likeCount', '$commentCount'] },
-        },
-      },
+      { $addFields: { hotScore: { $add: ['$likes', '$comments'] } } },
       {
         $project: {
           id: { $toString: '$_id' },
           content: 1,
           createdAt: 1,
-          likeCount: 1,
-          commentCount: 1,
+          likes: 1,
+          comments: 1,
+          type: '$targetType',
           user: {
-            id: { $toString: '$user._id' },
-            name: '$user.name',
-            avatar: '$user.avatar',
+            id: { $toString: { $ifNull: ['$user._id', ''] } },
+            name: { $ifNull: ['$user.name', ''] },
+            avatar: { $ifNull: ['$user.avatar', ''] },
           },
           hotScore: 1,
         },
       },
       { $sort: sortStage },
-      {
-        $facet: {
-          metadata: [{ $count: 'total' }],
-          data: [{ $skip: skip }, { $limit: size }],
-        },
-      },
+      { $facet: { metadata: [{ $count: 'total' }], data: [{ $skip: skip }, { $limit: size }] } },
     ])
 
-    const metadata = (agg[0]?.metadata && agg[0].metadata[0]?.total) || 0
+    const total = agg[0]?.metadata[0]?.total || 0
     const list = (agg[0]?.data || []) as CommentGetList
 
-    return { total: metadata, list }
+    return { total, list }
   },
-
   /**
    * 发布评论（可对 video/feed 评论或对 comment 回复）
    * 返回单条评论的列表项结构（与 get 返回的 list 单项相同）
@@ -126,6 +122,27 @@ export const CommentService = {
     // 解析 target
     const { targetId, targetType } = resolveTarget({ commentId, videoId, feedId })
 
+    if (targetType === 'video') {
+      await VideoStatsModel.updateOne({ _id: targetId }, { $inc: { commentsCount: 1 } })
+    }
+    if (targetType === 'feed') {
+      await FeedModel.updateOne({ _id: targetId }, { $inc: { commentsCount: 1 } })
+    }
+
+    if (commentId) {
+      const comment = await CommentModel.findById(commentId)
+      if (!comment) throw new Error(MESSAGE.COMMENT_NOT_FOUND)
+      if (comment.targetType === 'comment') {
+        await CommentModel.create({
+          userId: new Types.ObjectId(userId),
+          targetId: comment.targetId,
+          targetType: 'comment',
+          content: trimmed,
+        })
+        return
+      }
+    }
+
     // 创建评论
     await CommentModel.create({
       userId: new Types.ObjectId(userId),
@@ -133,5 +150,16 @@ export const CommentService = {
       targetType,
       content: trimmed,
     })
+  },
+  delete: async (userId: string, { id }: CommentDeleteDTO) => {
+    const comment = await CommentModel.findOne({ _id: id, userId })
+    if (!comment) throw new Error(MESSAGE.COMMENT_NOT_FOUND)
+    await CommentModel.deleteOne({ _id: id })
+    if (comment.targetType === 'video') {
+      await VideoStatsModel.updateOne({ _id: comment.targetId }, { $inc: { commentsCount: -1 } })
+    }
+    if (comment.targetType === 'feed') {
+      await FeedModel.updateOne({ _id: comment.targetId }, { $inc: { commentsCount: -1 } })
+    }
   },
 }

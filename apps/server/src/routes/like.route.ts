@@ -10,6 +10,6 @@ router.get('/', authMiddleware, validatorMiddleware({ query: likeGetDTO }), asyn
 
 router.post('/', authMiddleware, validatorMiddleware({ body: likeDTO }), asyncHandler(like))
 
-router.delete('/', authMiddleware, validatorMiddleware({ body: unlikeDTO }), asyncHandler(unlike))
+router.delete('/', authMiddleware, validatorMiddleware({ query: unlikeDTO }), asyncHandler(unlike))
 
 export default router

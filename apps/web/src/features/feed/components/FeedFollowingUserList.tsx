@@ -1,12 +1,12 @@
 'use client'
 
 import { useFeedGetFollowingList } from '@/features'
-import { Dispatch, RefObject, SetStateAction, useEffect, useRef, useState } from 'react'
-import { useScroll } from 'react-use'
+import { Dispatch, SetStateAction, useRef } from 'react'
 import { tv } from 'tailwind-variants'
 import { cn } from '@/lib'
 import Image from 'next/image'
 import { Tabs, TabsList, TabsTrigger } from '@/components'
+import { useCanScroll } from '@/hooks/useCanScroll'
 
 const FeedFollowingUserList = ({
   userId,
@@ -16,12 +16,7 @@ const FeedFollowingUserList = ({
   setUserId: Dispatch<SetStateAction<string>>
 }) => {
   const { followingList } = useFeedGetFollowingList()
-  const ref = useRef<HTMLDivElement | null>(null)
-
-  const [canScrollLeft, setCanScrollLeft] = useState(false)
-  const [canScrollRight, setCanScrollRight] = useState(false)
-
-  const { x } = useScroll(ref as RefObject<HTMLDivElement>)
+  const ref = useRef<HTMLDivElement>(null)
 
   const feedUserStyles = tv({
     slots: {
@@ -52,12 +47,9 @@ const FeedFollowingUserList = ({
   const { base, btn, shim, shadow } = navStyles()
 
   // 更新左右滚动状态
-  useEffect(() => {
-    if (!ref.current) return
-    const el = ref.current
-    setCanScrollLeft(x > 0)
-    setCanScrollRight(el.scrollWidth - el.clientWidth - x > 0)
-  }, [x, followingList])
+
+  const { canScrollRight, canScrollLeft } = useCanScroll<HTMLDivElement>(ref, followingList)
+
   return (
     <section className='mb-2 w-full'>
       <Tabs

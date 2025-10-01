@@ -122,6 +122,9 @@ const FeedPublishWrapper = () => {
                     )}
                   >
                     <AtTextarea
+                      className={
+                        'text-[15px] leading-6 min-h-6 break-words bg-bg1 text-text1 tracking-[1px] pr-[5px] outline-none relative block align-baseline whitespace-pre-wrap w-full break-all'
+                      }
                       onUpdate={(count, html) => {
                         setTextCount(count)
                         form.setValue('content', html) // 同步内容到 react-hook-form
