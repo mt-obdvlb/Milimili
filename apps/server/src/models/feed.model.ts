@@ -27,6 +27,7 @@ const feedSchema = new Schema<IFeed>(
       type: String,
       required: true,
       trim: true,
+      default: '',
     },
     title: {
       type: String,

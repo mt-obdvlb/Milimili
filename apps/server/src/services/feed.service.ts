@@ -254,21 +254,20 @@ export const FeedService = {
 
     if (!originalFeed) throw new Error(MESSAGE.FEED_NOT_FOUND)
 
-    const referenceId =
-      originalFeed.type === 'reference' ? originalFeed.referenceId : originalFeed._id
+    let targetFeed = originalFeed
+    if (originalFeed.type === 'reference') {
+      const feed = await FeedModel.findById(originalFeed.referenceId)
+      if (!feed) throw new Error(MESSAGE.FEED_NOT_FOUND)
+      targetFeed = feed
+    }
 
     await FeedModel.create({
-      content: content || originalFeed.content,
-      mediaUrls: originalFeed.mediaUrls,
-      likesCount: 0,
-      commentsCount: 0,
+      content: content,
       type: 'reference' as FeedType,
-      commentsDisabled: originalFeed.commentsDisabled,
       isOpen: originalFeed.isOpen,
       publishedAt: new Date(),
       userId: new Types.ObjectId(userId),
-      videoId: originalFeed.videoId,
-      referenceId,
+      referenceId: targetFeed._id,
     })
   },
 }

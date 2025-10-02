@@ -24,6 +24,7 @@ const TinyVideoItem = ({
   deleteFn,
   showFavorite,
   hiddenTitle,
+  isRounded = true,
 }: {
   video: VideoListItem & {
     duration?: number
@@ -43,6 +44,7 @@ const TinyVideoItem = ({
   deleteFn?: () => Promise<void>
   showFavorite?: boolean
   hiddenTitle?: boolean
+  isRounded?: boolean
 }) => {
   const [time, setTime] = useState(0)
   const [hover, setHover] = useState(false)
@@ -56,7 +58,7 @@ const TinyVideoItem = ({
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
       >
-        <div className={'relative z-1 overflow-hidden rounded-[6px]'}>
+        <div className={cn('relative z-1 overflow-hidden ', isRounded && 'rounded-[6px]')}>
           <div className={'cursor-pointer bg-[#F1F2F3] pt-[56.25%]'}>
             <div
               className={
