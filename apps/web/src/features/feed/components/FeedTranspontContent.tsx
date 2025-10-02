@@ -25,13 +25,13 @@ const FeedTranspontContent = ({ feedId }: { feedId: string }) => {
   const form = useForm<FeedTranspontForm>({
     resolver: zodResolver(feedTranspontSchema),
     defaultValues: {
-      content: '',
+      content: '转发动态',
       feedId,
     },
   })
 
   const onSubmit = async (data: FeedTranspontForm) => {
-    data.content = atTextRef.current?.getEditor()?.getText() ?? '转发动态'
+    data.content = atTextRef.current?.getEditor()?.getText() || '转发动态'
     const { code } = await transpont(data)
     if (code) return
     form.reset()
@@ -56,7 +56,7 @@ const FeedTranspontContent = ({ feedId }: { feedId: string }) => {
             <FormField
               control={form.control}
               name='content'
-              render={({ field }) => (
+              render={() => (
                 <FormItem>
                   <div
                     className={cn(
@@ -82,7 +82,6 @@ const FeedTranspontContent = ({ feedId }: { feedId: string }) => {
                           ref={atTextRef}
                           onUpdate={(count) => {
                             setTextCount(count)
-                            field.onChange(atTextRef.current?.getEditor()?.getHTML() ?? '')
                           }}
                           className={cn(
                             'text-sm leading-5 min-h-5 text-text1 bg-bg1 tracking-[1px] pr-[5px]'

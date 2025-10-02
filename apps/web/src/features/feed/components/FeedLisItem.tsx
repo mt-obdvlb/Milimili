@@ -14,6 +14,9 @@ import CommonDialog from '@/components/layout/models/common/CommonDialog'
 import { useState } from 'react'
 import CommentWrapper from '@/features/comment/components/CommentWrapper'
 import FeedTranspontContent from '@/features/feed/components/FeedTranspontContent'
+import FeedVideoContent from '@/features/feed/components/FeedVideoContent'
+import FeedReferenceItem from '@/features/feed/components/FeedReferenceItem'
+import Link from 'next/link'
 
 const FeedListItem = ({ feed }: { feed: FeedListItemType }) => {
   const feedStyles = tv({
@@ -147,17 +150,18 @@ const FeedListItem = ({ feed }: { feed: FeedListItemType }) => {
             <div className={'mt-3'}>
               <div className={'-mt-1'}>
                 {feed.title && (
-                  <div
+                  <Link
+                    href={`/feed/${feed.id}`}
                     className={
-                      'line-clamp-2 cursor-pointer text-[15px] font-bold leading-[25px] my-1 break-all break-words text-ellipsis'
+                      'line-clamp-2 cursor-pointer block text-[15px] font-bold leading-[25px] my-1 break-all break-words text-ellipsis'
                     }
                   >
                     {feed.title}
-                  </div>
+                  </Link>
                 )}
                 {feed.content && (
                   <div>
-                    <FeedCollapsibleContent content={feed.content} />
+                    <FeedCollapsibleContent feedId={feed.id} content={feed.content} />
                   </div>
                 )}
                 {!!feed.images?.length && (
@@ -165,8 +169,16 @@ const FeedListItem = ({ feed }: { feed: FeedListItemType }) => {
                     <FeedImagesViewer images={feed.images} />
                   </div>
                 )}
-                {feed.video && <div></div>}
-                {feed.referenceId && <div></div>}
+                {feed.video && (
+                  <div>
+                    <FeedVideoContent feed={feed} />
+                  </div>
+                )}
+                {feed.referenceId && (
+                  <div className={'bg-bg2 rounded-[6px] mt-3 p-5'}>
+                    <FeedReferenceItem feedId={feed.referenceId} />
+                  </div>
+                )}
               </div>
             </div>
           </div>

@@ -2,12 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react'
 import WithAt from '@/components/hoc/WithAt'
+import { openNewTab } from '@/utils'
 
 interface ContentProps {
   content: string
+  feedId: string
 }
 
-const FeedCollapsibleContent = ({ content }: ContentProps) => {
+const FeedCollapsibleContent = ({ content, feedId }: ContentProps) => {
   const contentRef = useRef<HTMLDivElement>(null)
   const [showExpand, setShowExpand] = useState(false)
   const [expanded, setExpanded] = useState(false)
@@ -25,8 +27,9 @@ const FeedCollapsibleContent = ({ content }: ContentProps) => {
   return (
     <div className='text-[15px] antialiased font-normal whitespace-pre-wrap break-words'>
       <div
+        onClick={() => openNewTab(`/feed/${feedId}`)}
         ref={contentRef}
-        className={`leading-[25px]  text-ellipsis text-text1 ${
+        className={`leading-[25px] cursor-pointer  text-ellipsis text-text1 ${
           !expanded ? 'line-clamp-6 max-h-[171px]' : ''
         }`}
       >
