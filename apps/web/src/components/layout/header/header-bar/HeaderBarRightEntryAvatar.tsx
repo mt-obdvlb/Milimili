@@ -151,7 +151,7 @@ const HeaderBarRightEntryAvatar = ({ userHomeInfo }: { userHomeInfo?: UserGetInf
                     </svg>
                   ),
                   name: '个人中心',
-                  url: '',
+                  url: '/account',
                 },
                 {
                   svg: (

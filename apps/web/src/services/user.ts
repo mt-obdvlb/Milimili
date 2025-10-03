@@ -8,6 +8,7 @@ import {
   UserGetByName,
   UserGetInfo,
   UserGetInfoHome,
+  UserUpdateDTO,
 } from '@mtobdvlb/shared-types'
 
 const baseURL = '/users'
@@ -21,6 +22,7 @@ const API = {
   findPassword: '/find-password',
   getByName: '/name',
   getAtList: '/at',
+  update: '/',
 } as const
 
 export const loginUser = (data: UserLoginRequest) =>
@@ -44,3 +46,6 @@ export const getUserByName = (name: string) =>
 
 export const getUserAtList = (params: UserAtDTO) =>
   request.get<Result<PageResult<UserAtItem>>>(`${baseURL}${API.getAtList}`, { params })
+
+export const updateUser = (data: UserUpdateDTO) =>
+  request.put<Result>(`${baseURL}${API.update}`, data)
