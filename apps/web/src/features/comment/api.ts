@@ -1,11 +1,14 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { commentCreate, commentDelete, commentList as commentListApi } from '@/services/comment'
 import { CommentGetDTO } from '@mtobdvlb/shared-types'
-import _ from 'lodash'
 
 const cleanObj = (obj: Record<string, string>) =>
   Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined))
 
+const isEqual = (obj1: Record<string, string>, obj2: Record<string, string>) => {
+  console.log(obj1, obj2)
+  return Object.keys(obj1).every((key) => obj1[key] === obj2[key])
+}
 export const useComment = (props: Pick<CommentGetDTO, 'videoId' | 'feedId' | 'commentId'>) => {
   const queryClient = useQueryClient()
   const params = cleanObj(props)
@@ -14,7 +17,8 @@ export const useComment = (props: Pick<CommentGetDTO, 'videoId' | 'feedId' | 'co
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         predicate: (query) =>
-          query.queryKey[0] === 'commentList' && _.isEqual(query.queryKey[1], params),
+          query.queryKey[0] === 'commentList' &&
+          isEqual(query.queryKey[1] as Record<string, string>, params),
       })
     },
   })
@@ -28,9 +32,24 @@ export const useInfiniteCommentList = ({
   sort,
 }: Pick<CommentGetDTO, 'videoId' | 'feedId' | 'sort' | 'commentId'>) => {
   const { data, fetchNextPage, hasNextPage } = useInfiniteQuery({
-    queryKey: ['commentList', { videoId, feedId, commentId }, sort],
+    queryKey: [
+      'commentList',
+      {
+        videoId,
+        feedId,
+        commentId,
+      },
+      sort,
+    ],
     queryFn: ({ pageParam = 1 }) =>
-      commentListApi({ videoId, commentId, sort, feedId, page: pageParam, pageSize: 10 }),
+      commentListApi({
+        videoId,
+        commentId,
+        sort,
+        feedId,
+        page: pageParam,
+        pageSize: 10,
+      }),
     getNextPageParam: (lastPage, allPages) => {
       const loaded = allPages.reduce((sum, page) => sum + (page.data?.list.length ?? 0), 0)
       if (loaded < (lastPage.data?.total ?? 0)) {
@@ -56,10 +75,15 @@ export const usePageCommentList = ({
 }: Pick<CommentGetDTO, 'videoId' | 'feedId' | 'sort' | 'commentId' | 'page'> & {
   enabled?: boolean
 }) => {
-  const params = cleanObj(props)
   const { data: commmentList } = useQuery({
-    queryKey: ['commentList', params, sort, page],
-    queryFn: () => commentListApi({ ...params, sort, page, pageSize: 10 }),
+    queryKey: ['commentList', props, sort, page],
+    queryFn: () =>
+      commentListApi({
+        ...props,
+        sort,
+        page,
+        pageSize: 10,
+      }),
     enabled,
   })
   return {
@@ -78,7 +102,8 @@ export const useCommentDelete = ({
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         predicate: (query) =>
-          query.queryKey[0] === 'commentList' && _.isEqual(query.queryKey[1], params),
+          query.queryKey[0] === 'commentList' &&
+          isEqual(cleanObj(query.queryKey[1] as Record<string, string>), params),
       })
     },
   })

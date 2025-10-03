@@ -13,6 +13,8 @@ import {
   FeedGetByIdDTO,
   FeedListDTO,
   FeedListItem,
+  FeedListLikeTranspontDTO,
+  FeedListLikeTranspontItem,
   FeedRecentList,
   FeedTranpont,
   FeedTranspontDTO,
@@ -114,12 +116,6 @@ export const feedGetById: RequestHandler<
   Result<FeedGetById>,
   FeedGetByIdDTO
 > = async (req, res) => {
-  const userId = req.user?.id
-  if (!userId)
-    return res.status(401).json({
-      code: 401,
-      message: MESSAGE.AUTH_ERROR,
-    })
   const data = await FeedService.getById(req.body)
   return res.status(200).json({
     code: 0,
@@ -142,5 +138,20 @@ export const feedTranspont: RequestHandler<
   return res.status(200).json({
     code: 0,
     data,
+  })
+}
+
+export const feedListLikeTranspont: RequestHandler<
+  ParamsDictionary,
+  Result<PageResult<FeedListLikeTranspontItem>>,
+  FeedListLikeTranspontDTO
+> = async (req, res) => {
+  const { list, total } = await FeedService.listLikeTranspont(req.params.id as string, req.body)
+  return res.status(200).json({
+    code: 0,
+    data: {
+      list,
+      total,
+    },
   })
 }

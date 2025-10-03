@@ -4,6 +4,8 @@ import {
   FeedGetById,
   FeedListDTO,
   FeedListItem,
+  FeedListLikeTranspontDTO,
+  FeedListLikeTranspontItem,
   FeedRecentList,
   FeedTranpont,
   FeedTranspontDTO,
@@ -22,6 +24,7 @@ const API = {
   getById: '/',
   delete: '/',
   transpont: '/transpont',
+  listLikeTranspont: '/like-transpont',
 } as const
 
 export const feedGetRecent = () => request.get<Result<FeedRecentList>>(`${baseURL}${API.recent}`)
@@ -42,3 +45,11 @@ export const feedDelete = (id: string) => request.delete<Result>(`${baseURL}${AP
 
 export const feedTranspont = (body: FeedTranspontDTO) =>
   request.post<Result<FeedTranpont>>(`${baseURL}${API.transpont}`, body)
+
+export const feedListLikeTranspont = (id: string, params: FeedListLikeTranspontDTO) =>
+  request.get<Result<PageResult<FeedListLikeTranspontItem>>>(
+    `${baseURL}/${id}${API.listLikeTranspont}`,
+    {
+      params,
+    }
+  )

@@ -1,7 +1,7 @@
 import { FeedModel, IFeed } from '@/models/feed.model'
 import { FollowModel } from '@/models/follow.model'
 import { Types } from 'mongoose'
-import { CommentModel, IUser, IVideo, IVideoStats, VideoStatsModel } from '@/models'
+import { CommentModel, IUser, IVideo, IVideoStats, LikeModel, VideoStatsModel } from '@/models'
 import {
   FeedCreateDTO,
   FeedDeleteDTO,
@@ -10,6 +10,9 @@ import {
   FeedGetByIdDTO,
   FeedList,
   FeedListDTO,
+  FeedListLikeTranspontDTO,
+  FeedListLikeTranspontItem,
+  FeedListLikeTranspontList,
   FeedRecentList,
   FeedTranspontDTO,
   FeedType,
@@ -311,6 +314,72 @@ export const FeedService = {
     })
     return {
       id: feed._id.toString(),
+    }
+  },
+  listLikeTranspont: async (
+    feedId: string,
+    { pageSize, page }: FeedListLikeTranspontDTO
+  ): Promise<{ total: number; list: FeedListLikeTranspontList }> => {
+    const feedObjectId = new Types.ObjectId(feedId)
+    const skip = (page - 1) * pageSize
+
+    // 1. 查询 likes（针对 feed）
+    const likes = await LikeModel.aggregate<FeedListLikeTranspontItem & { createdAt: Date }>([
+      { $match: { targetId: feedObjectId, targetType: 'feed' } },
+      { $lookup: { from: 'users', localField: 'userId', foreignField: '_id', as: 'user' } },
+      { $unwind: { path: '$user' } },
+      {
+        $project: {
+          type: { $literal: 'like' as const },
+          createdAt: 1,
+          user: {
+            id: '$user._id',
+            name: '$user.name',
+            avatar: '$user.avatar',
+          },
+        },
+      },
+    ]).exec()
+
+    // 2. 查询转发（referenceId 指向该 feed 的 feed）
+    const transponts = await FeedModel.aggregate<FeedListLikeTranspontItem & { createdAt: Date }>([
+      { $match: { referenceId: feedObjectId } },
+      { $lookup: { from: 'users', localField: 'userId', foreignField: '_id', as: 'user' } },
+      { $unwind: { path: '$user' } },
+      {
+        $project: {
+          type: { $literal: 'transpont' as const },
+          createdAt: 1,
+          user: {
+            id: '$user._id',
+            name: '$user.name',
+            avatar: '$user.avatar',
+          },
+        },
+      },
+    ]).exec()
+
+    // 3. 合并 + 排序
+    const merged = [...likes, ...transponts].sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+    )
+
+    // 4. 分页
+    const paginated = merged.slice(skip, skip + pageSize)
+
+    // 5. 输出格式
+    const list: FeedListLikeTranspontList = paginated.map((item) => ({
+      type: item.type,
+      user: {
+        id: item.user.id.toString(),
+        name: item.user.name,
+        avatar: item.user.avatar,
+      },
+    }))
+
+    return {
+      total: likes.length + transponts.length,
+      list,
     }
   },
 }
