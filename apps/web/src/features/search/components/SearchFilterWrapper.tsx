@@ -79,6 +79,7 @@ const SearchFilterWrapper = ({
       })
     }
   }, [open])
+
   return (
     <div className={'mx-auto mt-[20px] w-full max-w-[2200px] px-16'}>
       <div className={'flex items-center justify-between'}>
@@ -108,7 +109,7 @@ const SearchFilterWrapper = ({
           </svg>
         </Button>
       </div>
-      <div ref={ref} className={cn('overflow-hidden transition-[height] duration-200')}>
+      <div ref={ref} className={cn('overflow-hidden transition-[height] duration-200 h-0')}>
         <Filter<SearchPublishedAt>
           value={publishedAt}
           set={(val) => {

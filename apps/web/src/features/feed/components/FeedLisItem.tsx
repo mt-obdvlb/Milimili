@@ -5,7 +5,7 @@ import { tv } from 'tailwind-variants'
 import { cn, toast } from '@/lib'
 import Image from 'next/image'
 import { formatFeedDate, openNewTab } from '@/utils'
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components'
+import { HoverCard, HoverCardContent, HoverCardTrigger, UserHoverAvatar } from '@/components'
 import { useUserStore } from '@/stores'
 import FeedCollapsibleContent from '@/features/feed/components/FeedCollapsibleContent'
 import FeedImagesViewer from '@/features/feed/components/FeedImageViewer'
@@ -18,22 +18,21 @@ import FeedVideoContent from '@/features/feed/components/FeedVideoContent'
 import FeedReferenceItem from '@/features/feed/components/FeedReferenceItem'
 import Link from 'next/link'
 
+export const feedStyles = tv({
+  slots: {
+    root: cn('antialiased bg-bg1 rounded-[6px] font-normal tracking-normal min-w-[556px] relative'),
+    main: cn('pr-5 pl-22'),
+    avatar: cn(
+      'items-center cursor-pointer flex h-[86.4px] justify-center left-0 absolute top-0 w-[86.4]'
+    ),
+    header: cn('h-[62px] pt-4 '),
+    body: cn('mt-2'),
+    footer: cn('flex h-[50px] justify-between pr-5'),
+    panel: cn('pb-0.5 w-full'),
+  },
+})
+
 const FeedListItem = ({ feed }: { feed: FeedListItemType }) => {
-  const feedStyles = tv({
-    slots: {
-      root: cn(
-        'antialiased bg-bg1 rounded-[6px] font-normal tracking-normal min-w-[556px] relative'
-      ),
-      main: cn('pr-5 pl-22'),
-      avatar: cn(
-        'items-center cursor-pointer flex h-[86.4px] justify-center left-0 absolute top-0 w-[86.4]'
-      ),
-      header: cn('h-[62px] pt-4 '),
-      body: cn('mt-2'),
-      footer: cn('flex h-[50px] justify-between pr-5'),
-      panel: cn('pb-0.5 w-full'),
-    },
-  })
   const { root, main, avatar, header, body, footer, panel } = feedStyles()
   const userStore = useUserStore((state) => state.user)
   const { deleteFeed } = useFeedDelete()
@@ -47,19 +46,25 @@ const FeedListItem = ({ feed }: { feed: FeedListItemType }) => {
       <div className={root()}>
         <div className={main()}>
           <div onClick={() => openNewTab(`/space/${feed.user.id}`)} className={avatar()}>
-            <div className={'size-12 rounded-full relative overflow-hidden'}>
-              <Image fill src={feed.user.avatar} alt={feed.user.name} />
-            </div>
+            <UserHoverAvatar user={feed.user}>
+              <div className={'size-12 rounded-full relative overflow-hidden'}>
+                <Image fill src={feed.user.avatar} alt={feed.user.name} />
+              </div>
+            </UserHoverAvatar>
           </div>
           <div className={header()}>
             <div className={'flex items-center h-[22px] mt-[1px] mb-0.5 max-w-fit'}>
-              <span
-                className={
-                  'text-[17px] leading-8 text-text1 cursor-pointer font-semibold transition-all duration-200'
-                }
-              >
-                {feed.user.name}
-              </span>
+              <UserHoverAvatar user={feed.user}>
+                <Link
+                  href={`/space/${feed.user.id}`}
+                  target={'_blank'}
+                  className={
+                    'text-[17px] leading-8 text-text1 cursor-pointer font-semibold transition-all duration-200'
+                  }
+                >
+                  {feed.user.name}
+                </Link>
+              </UserHoverAvatar>
             </div>
             <div className={'items-center flex pr-30 pt-1'}>
               <span

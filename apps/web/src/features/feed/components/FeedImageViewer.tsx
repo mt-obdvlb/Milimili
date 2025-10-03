@@ -10,9 +10,10 @@ import { useHorizontalScroll } from '@/features/feed/hooks/useHorizontalScroll'
 
 interface FeedImagesViewerProps {
   images: string[]
+  isExpand?: boolean
 }
 
-const FeedImagesViewer = ({ images }: FeedImagesViewerProps) => {
+const FeedImagesViewer = ({ images, isExpand }: FeedImagesViewerProps) => {
   const [index, setIndex] = useState<number | null>(null)
   const [rotateDeg, setRotateDeg] = useState(0)
 
@@ -72,34 +73,61 @@ const FeedImagesViewer = ({ images }: FeedImagesViewerProps) => {
     <>
       {/* 图保持原有样式 */}
       <div className={cn('grid gap-1 grid-cols-3 w-101', isZoom && 'hidden')}>
-        {images.slice(0, 9).map((src, i) => (
-          <div key={src} className={'size-[132px] bg-white rounded-[6px] overflow-hidden relative'}>
-            <div
-              className={'bg-[#f1f2f3] relative size-full cursor-zoom-in rounded-[6px]'}
-              onClick={() => {
-                setIndex(i)
-                setRotateDeg(0)
-                setIsZoom(true)
-              }}
-            >
-              <Image src={src} alt={`image-${i}`} fill className='object-cover' />
-            </div>
-            {i === 8 && images.length > 9 && (
-              <span
-                className={
-                  'items-center flex cursor-zoom-in bg-[rgba(0,0,0,.3)] rounded-[4px] text-white text-[16px] h-full justify-center left-0 absolute inset-0 size-full'
-                }
-                onClick={() => {
-                  setIndex(i)
-                  setRotateDeg(0)
-                  setIsZoom(true)
-                }}
+        {!isExpand ? (
+          <>
+            {images.slice(0, 9).map((src, i) => (
+              <div
+                key={src}
+                className={'size-[132px] bg-white rounded-[6px] overflow-hidden relative'}
               >
-                +{images.length - 9}
-              </span>
-            )}
-          </div>
-        ))}
+                <div
+                  className={'bg-[#f1f2f3] relative size-full cursor-zoom-in rounded-[6px]'}
+                  onClick={() => {
+                    setIndex(i)
+                    setRotateDeg(0)
+                    setIsZoom(true)
+                  }}
+                >
+                  <Image src={src} alt={`image-${i}`} fill className='object-cover' />
+                </div>
+                {i === 8 && images.length > 9 && (
+                  <span
+                    className={
+                      'items-center flex cursor-zoom-in bg-[rgba(0,0,0,.3)] rounded-[4px] text-white text-[16px] h-full justify-center left-0 absolute inset-0 size-full'
+                    }
+                    onClick={() => {
+                      setIndex(i)
+                      setRotateDeg(0)
+                      setIsZoom(true)
+                    }}
+                  >
+                    +{images.length - 9}
+                  </span>
+                )}
+              </div>
+            ))}
+          </>
+        ) : (
+          <>
+            {images.map((src, i) => (
+              <div
+                key={src}
+                className={'size-[132px] bg-white rounded-[6px] overflow-hidden relative'}
+              >
+                <div
+                  className={'bg-[#f1f2f3] relative size-full cursor-zoom-in rounded-[6px]'}
+                  onClick={() => {
+                    setIndex(i)
+                    setRotateDeg(0)
+                    setIsZoom(true)
+                  }}
+                >
+                  <Image src={src} alt={`image-${i}`} fill className='object-cover' />
+                </div>
+              </div>
+            ))}
+          </>
+        )}
       </div>
 
       <div className={cn(!isZoom && 'hidden')}>

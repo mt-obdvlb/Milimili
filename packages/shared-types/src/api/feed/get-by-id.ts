@@ -22,6 +22,7 @@ export type FeedGetById = {
   images?: string[]
   likes: number
   comments: number
+  references: number
   publishedAt: string
   type: FeedType
   referenceId?: string

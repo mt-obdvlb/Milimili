@@ -24,6 +24,7 @@ const FeedAsideTop10List = ({
           <div className={'mt-2 -mx-3'}>
             {searchLogTop10List?.map((item) => (
               <Link
+                target={'_blank'}
                 key={item.rank}
                 href={`/search?kw=${item.keyword}`}
                 className={

@@ -2,8 +2,10 @@ import {
   FeedCreateDTO,
   FeedFollowingList,
   FeedGetById,
+  FeedListDTO,
   FeedListItem,
   FeedRecentList,
+  FeedTranpont,
   FeedTranspontDTO,
   PageResult,
   Result,
@@ -30,7 +32,7 @@ export const feedGetFollowing = () =>
 export const feedPublish = (data: FeedCreateDTO) =>
   request.post<Result>(`${baseURL}${API.publish}`, data)
 
-export const feedList = (params: { page: number }) =>
+export const feedList = (params: FeedListDTO) =>
   request.get<Result<PageResult<FeedListItem>>>(`${baseURL}${API.list}`, { params })
 
 export const feedGetById = (id: string) =>
@@ -39,4 +41,4 @@ export const feedGetById = (id: string) =>
 export const feedDelete = (id: string) => request.delete<Result>(`${baseURL}${API.delete}${id}`)
 
 export const feedTranspont = (body: FeedTranspontDTO) =>
-  request.post<Result>(`${baseURL}${API.transpont}`, body)
+  request.post<Result<FeedTranpont>>(`${baseURL}${API.transpont}`, body)

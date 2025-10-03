@@ -72,7 +72,7 @@ const FeedPublishWrapper = () => {
                   <Input
                     {...field}
                     maxLength={20}
-                    className='bg-bg1 border-none  text-[15px] font-medium h-6 leading-6 outline-none w-full'
+                    className='bg-bg1 border-none  text-[15px] font-medium h-6 leading-6 outline-none w-full placeholder:leading-6 placeholder:text-[15px]'
                     placeholder='好的标题更容易获得支持，选填20字'
                   />
                 </FormControl>
@@ -121,6 +121,15 @@ const FeedPublishWrapper = () => {
                       'max-h-[180px] cursor-text h-full overflow-y-auto relative w-full'
                     )}
                   >
+                    {!textCount && (
+                      <div
+                        className={
+                          'text-text3 text-[15px] leading-6 absolute z-2 tracking-[1px] pointer-events-none left-0 top-0'
+                        }
+                      >
+                        有什么想和大家分享的？
+                      </div>
+                    )}
                     <AtTextarea
                       className={
                         'text-[15px] leading-6 min-h-6 break-words bg-bg1 text-text1 tracking-[1px] pr-[5px] outline-none relative block align-baseline whitespace-pre-wrap w-full break-all'
