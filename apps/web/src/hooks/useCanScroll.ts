@@ -1,3 +1,5 @@
+'use client'
+
 import { RefObject, useEffect, useState } from 'react'
 import { useScroll } from 'react-use'
 

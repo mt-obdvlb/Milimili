@@ -8,6 +8,7 @@ import {
   userGetInfoHome,
   userLogin,
   userLogout,
+  userUpdateInfo,
 } from '@/controllers/user.controller'
 import { authMiddleware, validatorMiddleware } from '@/middlewares'
 import { asyncHandler } from '@/utils'
@@ -17,6 +18,7 @@ import {
   userGetByEmailDTO,
   userGetByNameDTO,
   userLoginDTO,
+  userUpdateDTO,
 } from '@mtobdvlb/shared-types'
 
 const router = Router()
@@ -42,5 +44,6 @@ router.get(
   validatorMiddleware({ query: userAtDTO }),
   asyncHandler(userAtList)
 )
+router.put('/', authMiddleware, validatorMiddleware({ body: userUpdateDTO }), userUpdateInfo)
 
 export default router

@@ -28,6 +28,7 @@ type Props = {
   setUrl: Dispatch<SetStateAction<string>>
   dialogOpen?: boolean
   setDialogOpen?: Dispatch<SetStateAction<boolean>>
+  ASPECT?: number
 }
 
 type CropBox = {
@@ -43,12 +44,18 @@ type DisplayRect = {
   offsetY: number
 }
 
-const ASPECT = 16 / 9
 const CONTAINER_W = 320
 const CONTAINER_H = 180
 const MIN_CROP_WIDTH = 40
 
-const UploadImage: React.FC<Props> = ({ children, setUrl, setDialogOpen, dialogOpen, imgUrl }) => {
+const UploadImage: React.FC<Props> = ({
+  children,
+  setUrl,
+  setDialogOpen,
+  dialogOpen,
+  imgUrl,
+  ASPECT = 16 / 9,
+}) => {
   // 假定 useUploadFile 返回 { uploadFile: (file: File) => Promise<UploadResult> }
   // 若你的实现不同，微调类型断言即可（无 any）
   const { uploadFile } = useUploadFile()
@@ -714,8 +721,9 @@ const UploadImage: React.FC<Props> = ({ children, setUrl, setDialogOpen, dialogO
                       : undefined,
                   backgroundPosition: 'center',
                   backgroundSize: 'cover',
+                  aspectRatio: ASPECT,
                 }}
-                className={'bg-graph_bg_regular relative mt-3 h-[112.5px] w-[200px] rounded-[6px]'}
+                className={'bg-graph_bg_regular relative mt-3  w-[200px] rounded-[6px]'}
               >
                 <div
                   className={

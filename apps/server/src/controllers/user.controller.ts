@@ -13,6 +13,7 @@ import {
   UserGetInfo,
   UserGetInfoHome,
   UserLoginDTO,
+  UserUpdateDTO,
 } from '@mtobdvlb/shared-types'
 import { ParamsDictionary } from 'express-serve-static-core'
 
@@ -151,6 +152,21 @@ export const userAtList: RequestHandler<
       list,
       total,
     },
+    code: 0,
+  })
+}
+
+export const userUpdateInfo: RequestHandler<ParamsDictionary, Result, UserUpdateDTO> = async (
+  req,
+  res
+) => {
+  if (!req.user?.id)
+    return res.status(401).json({
+      message: MESSAGE.INVALID_TOKEN,
+      code: 1,
+    })
+  await UserService.update(req.user.id, req.body)
+  return res.status(200).json({
     code: 0,
   })
 }

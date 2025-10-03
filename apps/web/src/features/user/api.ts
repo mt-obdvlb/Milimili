@@ -9,13 +9,14 @@ import {
   userFindPassword,
   userGetHomeInfo,
 } from '@/services/user'
+import { updateUser } from '@/services'
 
 export const useUserGet = () => {
   const { data: user, error } = useQuery({
     queryKey: ['user'],
     queryFn: () => getUser(),
   })
-  return { user, error }
+  return { user: user?.data, error }
 }
 
 export const useUserLogin = () => {
@@ -85,4 +86,15 @@ export const useUserGetAtList = (keyword: string) => {
     fetchNextPage,
     atList: data?.pages.flatMap((page) => page.data?.list ?? []) ?? [],
   }
+}
+
+export const useUserUpdateInfo = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: updateUserInfo } = useMutation({
+    mutationFn: updateUser,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['user'] })
+    },
+  })
+  return { updateUserInfo }
 }

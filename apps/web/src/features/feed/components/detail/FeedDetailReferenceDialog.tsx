@@ -1,3 +1,4 @@
+'use client'
 import { FeedGetById } from '@mtobdvlb/shared-types'
 import {
   AtTextareaRef,

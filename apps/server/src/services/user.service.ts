@@ -3,7 +3,13 @@ import { MESSAGE } from '@/constants'
 import { comparePassword, hashPassword, HttpError, signToken } from '@/utils'
 import redis from '@/utils/redis.util'
 import { FeedModel } from '@/models/feed.model'
-import { UserAtDTO, UserAtList, UserFindPasswordDTO, UserGetByName } from '@mtobdvlb/shared-types'
+import {
+  UserAtDTO,
+  UserAtList,
+  UserFindPasswordDTO,
+  UserGetByName,
+  UserUpdateDTO,
+} from '@mtobdvlb/shared-types'
 import { Types } from 'mongoose'
 
 export const UserService = {
@@ -158,5 +164,8 @@ export const UserService = {
     })
 
     return { list, total }
+  },
+  update: async (id: string, body: UserUpdateDTO) => {
+    await UserModel.findByIdAndUpdate(id, body, { new: true })
   },
 }
