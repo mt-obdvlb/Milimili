@@ -8,28 +8,26 @@ import CommentPublish from '@/features/comment/components/CommentPublish'
 import { useInfiniteScroll } from '@/hooks'
 import { openNewTab } from '@/utils'
 import CommentItem from '@/features/comment/components/CommentItem'
+import { useUserStore } from '@/stores'
 
 const CommentWrapper = ({
   isLink,
-  user: { name, id, avatar },
   ...props
 }: Pick<CommentGetDTO, 'videoId' | 'feedId'> & {
   isLink?: boolean
-  user: {
-    id: string
-    name: string
-    avatar: string
-  }
 }) => {
   const [sort, setSort] = useState<CommentSort>('hot')
   const { commentList, fetchNextPage, hasNextPage, total } = useInfiniteCommentList({
     ...props,
     sort,
   })
+  const user = useUserStore((state) => state.user)
 
   const { ref: fetchRef } = useInfiniteScroll(fetchNextPage)
 
   const [commentId, setCommentId] = useState<string | null>(null)
+
+  if (!user) return
 
   return (
     <div>
@@ -66,7 +64,7 @@ const CommentWrapper = ({
         </Tabs>
         <div className={'flex'}>
           <div className={'shrink-0 flex items-center justify-center w-[80px] h-[50px]'}>
-            <UserAvatar avatar={avatar} h={48} w={48} />
+            <UserAvatar avatar={user.avatar} h={48} w={48} />
           </div>
           <CommentPublish {...props} />
         </div>
@@ -78,7 +76,7 @@ const CommentWrapper = ({
               isReply={commentId === comment.id}
               setMainCommentId={setCommentId}
               comment={comment}
-              user={{ avatar, id, name }}
+              user={user}
               key={comment.id}
             />
           ))}

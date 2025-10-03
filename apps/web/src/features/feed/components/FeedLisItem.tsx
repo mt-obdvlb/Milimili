@@ -295,7 +295,7 @@ const FeedListItem = ({ feed }: { feed: FeedListItemType }) => {
             )}
             {panelOpen === 'comment' && (
               <div className={'px-6'}>
-                <CommentWrapper user={feed.user} isLink feedId={feed.id} />
+                <CommentWrapper isLink feedId={feed.id} />
               </div>
             )}
           </div>

@@ -1,5 +1,6 @@
 export * from './create.dto'
 export * from './delete.dto'
 export * from './get-by-id.dto'
+export * from './list-like-transpont.dto'
 export * from './list.dto'
 export * from './transpont.dto'

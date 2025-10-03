@@ -4,6 +4,7 @@ import {
   feedGetFollowing,
   feedGetRecent,
   feedList,
+  feedListLikeTranspont,
   feedPublish,
   feedTranspont,
 } from '@/services/feed'
@@ -90,4 +91,26 @@ export const useFeedDelete = () => {
     },
   })
   return { deleteFeed }
+}
+
+export const useFeedGetListLikeTranspont = ({ feedId }: { feedId: string }) => {
+  const { data, fetchNextPage, refetch, hasNextPage } = useInfiniteQuery({
+    queryKey: ['feed', 'like-transpont', feedId],
+    queryFn: ({ pageParam = 1 }) =>
+      feedListLikeTranspont(feedId, { page: pageParam, pageSize: 10 }),
+    getNextPageParam: (lastPage, allPages) => {
+      const loaded = allPages.reduce((sum, page) => sum + (page.data?.list.length ?? 0), 0)
+      if (loaded < (lastPage.data?.total ?? 0)) {
+        return allPages.length + 1
+      }
+      return undefined
+    },
+    initialPageParam: 1,
+  })
+  return {
+    likeTranspotList: data?.pages.flatMap((page) => page.data?.list ?? []) ?? [],
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+  }
 }

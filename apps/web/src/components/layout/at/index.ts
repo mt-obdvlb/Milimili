@@ -1,4 +1,5 @@
 export * from './AtTextarea'
+export * from './AtTextareaPlaceholder'
 export * from './MentionListRef'
 export * from './MetionList'
 export * from './suggesstion'

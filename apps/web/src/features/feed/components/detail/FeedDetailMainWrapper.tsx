@@ -2,7 +2,14 @@
 
 import { FeedGetById } from '@mtobdvlb/shared-types'
 import { formatFeedDate, openNewTab } from '@/utils'
-import { HoverCard, HoverCardContent, HoverCardTrigger, UserHoverAvatar } from '@/components'
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+  Tabs,
+  TabsContent,
+  UserHoverAvatar,
+} from '@/components'
 import Image from 'next/image'
 import Link from 'next/link'
 import CommonDialog from '@/components/layout/models/common/CommonDialog'
@@ -15,6 +22,12 @@ import { feedStyles, useFeedDelete, useUnFollow } from '@/features'
 import { useUserStore } from '@/stores'
 import { useRouter } from 'next/navigation'
 import UserAvatar from '@/components/ui/UserAvatar'
+import { useState } from 'react'
+import FeedDetailTabs from '@/features/feed/components/detail/FeedDetailTabs'
+import CommentWrapper from '@/features/comment/components/CommentWrapper'
+import FeedDetailLikeTranspontList from '@/features/feed/components/detail/FeedDetailLikeTranspontList'
+
+export type FeedDetailTabsType = 'comment' | 'likeTranspont'
 
 const FeedDetailMainWrapper = ({ feed }: { feed: FeedGetById }) => {
   const { main, avatar, header, body } = feedStyles()
@@ -24,6 +37,7 @@ const FeedDetailMainWrapper = ({ feed }: { feed: FeedGetById }) => {
   const { deleteFeed } = useFeedDelete()
   const router = useRouter()
 
+  const [type, setType] = useState<FeedDetailTabsType>('comment')
   return (
     <div className={'pb-25 bg-bg1 rounded-t-[6px]'}>
       <div className={'bg-bg1 antialiased rounded-[6px] tracking-normal min-w-[556px] relative'}>
@@ -293,7 +307,20 @@ const FeedDetailMainWrapper = ({ feed }: { feed: FeedGetById }) => {
           </div>
         </div>
       </div>
-      <div id={'feed-detail-tabs'} className={'mt-5'}></div>
+      <Tabs
+        onValueChange={(value) => setType(value as FeedDetailTabsType)}
+        value={type}
+        id={'feed-detail-tabs'}
+        className={'mt-5 block'}
+      >
+        <FeedDetailTabs type={type} feed={feed} setType={setType} />
+        <TabsContent className={'pt-5 px-[56px]'} value={'comment'}>
+          <CommentWrapper feedId={feed.id} />
+        </TabsContent>
+        <TabsContent value={'likeTranspont'} className={'py-3 px-[56px]'}>
+          <FeedDetailLikeTranspontList feedId={feed.id} />
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

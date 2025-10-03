@@ -7,6 +7,7 @@ import {
   feedFollowingList,
   feedGetById,
   feedList,
+  feedListLikeTranspont,
   feedRecent,
   feedTranspont,
 } from '@/controllers'
@@ -15,6 +16,7 @@ import {
   feedDeleteDTO,
   feedGetByIdDTO,
   feedListDTO,
+  feedListLikeTranspontDTO,
   feedTranspontDTO,
 } from '@mtobdvlb/shared-types'
 
@@ -44,12 +46,7 @@ router.delete(
   validatorMiddleware({ params: feedDeleteDTO }),
   asyncHandler(feedDelete)
 )
-router.get(
-  '/:id',
-  authMiddleware,
-  validatorMiddleware({ params: feedGetByIdDTO }),
-  asyncHandler(feedGetById)
-)
+router.get('/:id', validatorMiddleware({ params: feedGetByIdDTO }), asyncHandler(feedGetById))
 router.post(
   '/transpont',
   authMiddleware,
@@ -57,6 +54,11 @@ router.post(
     body: feedTranspontDTO,
   }),
   asyncHandler(feedTranspont)
+)
+router.get(
+  '/:id/like-transpont',
+  validatorMiddleware({ query: feedListLikeTranspontDTO }),
+  asyncHandler(feedListLikeTranspont)
 )
 
 export default router
