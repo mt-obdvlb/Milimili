@@ -8,6 +8,7 @@ import {
   feedTranspont,
 } from '@/services/feed'
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { FeedPropsType } from '@/features'
 
 export const useFeedGetRecent = () => {
   const { data: feedRecentList } = useQuery({
@@ -38,10 +39,10 @@ export const useFeedPublish = () => {
   return { publishFeed }
 }
 
-export const useFeedGetList = () => {
+export const useFeedGetList = ({ userId, type }: { type: FeedPropsType; userId: string }) => {
   const { data, fetchNextPage, refetch, hasNextPage } = useInfiniteQuery({
-    queryKey: ['feed', 'list'],
-    queryFn: ({ pageParam = 1 }) => feedList({ page: pageParam }),
+    queryKey: ['feed', 'list', userId, type],
+    queryFn: ({ pageParam = 1 }) => feedList({ page: pageParam, pageSize: 10, type, userId }),
     getNextPageParam: (lastPage, allPages) => {
       const loaded = allPages.reduce((sum, page) => sum + (page.data?.list.length ?? 0), 0)
       if (loaded < (lastPage.data?.total ?? 0)) {

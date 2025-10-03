@@ -14,6 +14,7 @@ import {
   FeedListDTO,
   FeedListItem,
   FeedRecentList,
+  FeedTranpont,
   FeedTranspontDTO,
   PageResult,
   Result,
@@ -119,25 +120,27 @@ export const feedGetById: RequestHandler<
       code: 401,
       message: MESSAGE.AUTH_ERROR,
     })
-  const data = await FeedService.getById(userId, req.body)
+  const data = await FeedService.getById(req.body)
   return res.status(200).json({
     code: 0,
     data,
   })
 }
 
-export const feedTranspont: RequestHandler<ParamsDictionary, Result, FeedTranspontDTO> = async (
-  req,
-  res
-) => {
+export const feedTranspont: RequestHandler<
+  ParamsDictionary,
+  Result<FeedTranpont>,
+  FeedTranspontDTO
+> = async (req, res) => {
   const userId = req.user?.id
   if (!userId)
     return res.status(401).json({
       code: 401,
       message: MESSAGE.AUTH_ERROR,
     })
-  await FeedService.transpont(userId, req.body)
+  const data = await FeedService.transpont(userId, req.body)
   return res.status(200).json({
     code: 0,
+    data,
   })
 }

@@ -1,12 +1,12 @@
 'use client'
 
-import { useFeedGetList } from '@/features'
+import { FeedPropsType, useFeedGetList } from '@/features'
 import { useInfiniteScroll } from '@/hooks'
 import Image from 'next/image'
 import FeedListItem from '@/features/feed/components/FeedLisItem'
 
-const FeedList = () => {
-  const { feedList, refetch, fetchNextPage, hasNextPage } = useFeedGetList()
+const FeedList = ({ type, userId }: { type: FeedPropsType; userId: string }) => {
+  const { feedList, refetch, fetchNextPage, hasNextPage } = useFeedGetList({ type, userId })
 
   const { ref: fetchRef } = useInfiniteScroll(fetchNextPage)
 

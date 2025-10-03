@@ -17,8 +17,14 @@ function DialogPortal({ ...props }: React.ComponentProps<typeof DialogPrimitive.
   return <DialogPrimitive.Portal data-slot='dialog-portal' {...props} />
 }
 
-function DialogClose({ ...props }: React.ComponentProps<typeof DialogPrimitive.Close>) {
-  return <DialogPrimitive.Close data-slot='dialog-close' {...props} />
+function DialogClose({ className, ...props }: React.ComponentProps<typeof DialogPrimitive.Close>) {
+  return (
+    <DialogPrimitive.Close
+      data-slot='dialog-close'
+      className={cn('outline-none', className)}
+      {...props}
+    />
+  )
 }
 
 function DialogOverlay({
@@ -51,7 +57,7 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot='dialog-content'
         className={cn(
-          'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 text-text1 bg-bg1 fixed top-[50%] left-[50%] z-10010 translate-x-[-50%] translate-y-[-50%] rounded-xl text-sm shadow-[0_8px_40px_rgba(0,0,0,.1)] duration-200',
+          'data-[state=open]:animate-in data-[state=closed]:animate-out outline-none data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 text-text1 bg-bg1 fixed top-[50%] left-[50%] z-10010 translate-x-[-50%] translate-y-[-50%] rounded-xl text-sm shadow-[0_8px_40px_rgba(0,0,0,.1)] duration-200',
           className
         )}
         {...props}
@@ -61,7 +67,7 @@ function DialogContent({
           <DialogPrimitive.Close
             data-slot='dialog-close'
             className={
-              'text-text2 hover:bg-graph_bg_regular_float absolute top-[14px] right-[14px] flex size-8 cursor-pointer items-center justify-center rounded-md transition-all transition-colors duration-200'
+              'text-text2 hover:bg-graph_bg_regular_float absolute top-[14px] right-[14px] flex size-8 cursor-pointer items-center justify-center rounded-md transition-all duration-200'
             }
           >
             <svg

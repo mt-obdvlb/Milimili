@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { UserHoverAvatar } from '@/components'
 import UserAvatar from '@/components/ui/UserAvatar'
 
-const FeedReferenceItem = ({ feedId }: { feedId: string }) => {
+const FeedReferenceItem = ({ feedId, isExpand }: { feedId: string; isExpand?: boolean }) => {
   const { feed } = useFeedGetById(feedId)
 
   if (!feed) return null
@@ -51,12 +51,12 @@ const FeedReferenceItem = ({ feedId }: { feedId: string }) => {
       )}
       {feed.content && (
         <div>
-          <FeedCollapsibleContent content={feed.content} feedId={feed.id} />
+          <FeedCollapsibleContent isExpand={isExpand} content={feed.content} feedId={feed.id} />
         </div>
       )}
       {!!feed.images?.length && (
         <div className={'mt-3 font-normal antialiased'}>
-          <FeedImagesViewer images={feed.images} />
+          <FeedImagesViewer isExpand={isExpand} images={feed.images} />
         </div>
       )}
       {feed.video && (

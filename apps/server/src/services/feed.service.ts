@@ -6,6 +6,7 @@ import {
   FeedCreateDTO,
   FeedDeleteDTO,
   FeedFollowingList,
+  FeedGetById,
   FeedGetByIdDTO,
   FeedList,
   FeedListDTO,
@@ -14,6 +15,16 @@ import {
   FeedType,
 } from '@mtobdvlb/shared-types'
 import { MESSAGE } from '@/constants'
+
+type PopulatedFeed = IFeed & {
+  userId: { _id: Types.ObjectId; name: string; avatar: string }
+  videoId?: IVideo | Types.ObjectId
+}
+
+interface CommentAggResult {
+  _id: Types.ObjectId
+  topComment: string
+}
 
 export const FeedService = {
   recent: async (userId: string): Promise<FeedRecentList> => {
@@ -93,79 +104,103 @@ export const FeedService = {
       mediaUrls: imageUrls,
     })
   },
-  list: async (userId: string, { page, pageSize }: FeedListDTO) => {
-    const followees = await FollowModel.find({ followerId: userId })
-      .select('followingId')
-      .lean<{ followingId: Types.ObjectId }[]>()
+  list: async (
+    currentUserId: string,
+    { page = 1, pageSize = 20, userId: targetUserId, type = 'all' }: FeedListDTO
+  ): Promise<{ list: FeedList; total: number }> => {
+    const pageNum = Math.max(1, Math.floor(Number(page) || 1))
+    const size = Math.min(100, Math.max(1, Math.floor(Number(pageSize) || 20)))
 
-    const followeeIds = followees.map((f) => f.followingId.toString())
-    followeeIds.push(userId) // 包含自己
+    const baseQuery: Record<string, unknown> = { isOpen: true }
 
-    // 2️⃣ 查询 feed，并 populate userId 和 videoId
-    const [feeds, total] = await Promise.all([
-      FeedModel.find({
-        userId: { $in: followeeIds.map((id) => new Types.ObjectId(id)) },
-        isOpen: true,
+    if (targetUserId) {
+      // 只查某个用户
+      baseQuery.userId = new Types.ObjectId(targetUserId)
+    } else {
+      // 查关注的人 + 自己
+      const followees = await FollowModel.find({
+        followerId: new Types.ObjectId(currentUserId),
       })
+        .select('followingId')
+        .lean<{ followingId: Types.ObjectId }[]>()
+
+      const followeeIds = followees.map((f) => f.followingId)
+      followeeIds.push(new Types.ObjectId(currentUserId))
+
+      baseQuery.userId = { $in: followeeIds }
+    }
+
+    if (type !== 'all') {
+      baseQuery.type = type
+    }
+
+    // feed + total
+    const [feeds, total] = await Promise.all([
+      FeedModel.find(baseQuery)
         .sort({ publishedAt: -1 })
-        .skip((page - 1) * pageSize)
-        .limit(pageSize)
+        .skip((pageNum - 1) * size)
+        .limit(size)
         .populate<{ userId: { _id: Types.ObjectId; name: string; avatar: string } }>(
           'userId',
           'name avatar'
         )
         .populate<{ videoId?: IVideo }>('videoId')
-        .lean<
-          (IFeed & {
-            userId: { _id: Types.ObjectId; name: string; avatar: string }
-            videoId?: IVideo
-          })[]
-        >(),
-      FeedModel.countDocuments({
-        userId: { $in: followeeIds.map((id) => new Types.ObjectId(id)) },
-        isOpen: true,
-      }),
+        .lean<PopulatedFeed[]>(),
+      FeedModel.countDocuments(baseQuery),
     ])
 
-    // 3️⃣ 查询视频 stats
-    const videoIds = feeds.filter((f) => !!f.videoId).map((f) => f.videoId._id)
+    // 视频统计
+    const videoIds: Types.ObjectId[] = feeds
+      .filter(
+        (f): f is PopulatedFeed & { videoId: IVideo } =>
+          !!f.videoId && (f.videoId as IVideo)._id !== undefined
+      )
+      .map((f) => (f.videoId as IVideo)._id)
 
-    const videoStats = await VideoStatsModel.find({ videoId: { $in: videoIds } }).lean<
-      IVideoStats[]
-    >()
+    const videoStats: IVideoStats[] = videoIds.length
+      ? await VideoStatsModel.find({ videoId: { $in: videoIds } }).lean<IVideoStats[]>()
+      : []
+
     const videoStatsMap = new Map<string, IVideoStats>()
     videoStats.forEach((vs) => videoStatsMap.set(vs.videoId.toString(), vs))
 
-    // 4️⃣ 查询每条 feed 的最热门评论
+    // 每条 feed 的热门评论
     const feedIds = feeds.map((f) => f._id)
-    const comments = await CommentModel.aggregate([
-      { $match: { feedId: { $in: feedIds.map((id) => new Types.ObjectId(id)) } } },
-      { $sort: { likesCount: -1, createdAt: -1 } },
-      {
-        $group: {
-          _id: '$feedId',
-          topComment: { $first: '$content' },
-        },
-      },
-    ])
+    const comments: CommentAggResult[] =
+      feedIds.length > 0
+        ? await CommentModel.aggregate<CommentAggResult>([
+            { $match: { feedId: { $in: feedIds } } },
+            { $sort: { likesCount: -1, createdAt: -1 } },
+            {
+              $group: {
+                _id: '$feedId',
+                topComment: { $first: '$content' },
+              },
+            },
+          ])
+        : []
 
     const commentMap = new Map<string, string>()
     comments.forEach((c) => commentMap.set(c._id.toString(), c.topComment))
 
-    // 5️⃣ 组装 FeedListItem
+    // 组装返回结果
     const feedList: FeedList = feeds.map((f) => {
-      const video = f.videoId
-        ? {
-            id: f.videoId._id.toString(),
-            title: f.videoId.title,
-            description: f.videoId.description,
-            views: videoStatsMap.get(f.videoId._id.toString())?.viewsCount || 0,
-            time: f.videoId.time,
-            danmakus: videoStatsMap.get(f.videoId._id.toString())?.danmakusCount || 0,
-            thumbnail: f.videoId.thumbnail,
-            url: f.videoId.url,
-          }
-        : undefined
+      let video: FeedList[number]['video'] | undefined
+
+      if (f.videoId && (f.videoId as IVideo)._id) {
+        const v = f.videoId as IVideo
+        const stats = videoStatsMap.get(v._id.toString())
+        video = {
+          id: v._id.toString(),
+          title: v.title,
+          description: v.description,
+          views: stats?.viewsCount ?? 0,
+          time: v.time,
+          danmakus: stats?.danmakusCount ?? 0,
+          thumbnail: v.thumbnail,
+          url: v.url,
+        }
+      }
 
       return {
         id: f._id.toString(),
@@ -189,7 +224,7 @@ export const FeedService = {
 
     return { list: feedList, total }
   },
-  getById: async (userId: string, { id }: FeedGetByIdDTO) => {
+  getById: async ({ id }: FeedGetByIdDTO): Promise<FeedGetById> => {
     // 1️⃣ 查询 feed 并 populate userId 和 videoId
     const feed = await FeedModel.findById(id)
       .populate<{
@@ -223,6 +258,10 @@ export const FeedService = {
       }
     }
 
+    const references = await FeedModel.countDocuments({
+      referenceId: feed._id,
+    }).lean()
+
     // 3️⃣ 查询最热门评论
     // 4️⃣ 组装返回
     return {
@@ -241,6 +280,7 @@ export const FeedService = {
       publishedAt: feed.publishedAt.toISOString(),
       type: feed.type,
       referenceId: feed.referenceId?.toString(),
+      references,
     }
   },
   delete: async (userId: string, { id }: FeedDeleteDTO) => {
@@ -261,7 +301,7 @@ export const FeedService = {
       targetFeed = feed
     }
 
-    await FeedModel.create({
+    const feed = await FeedModel.create({
       content: content,
       type: 'reference' as FeedType,
       isOpen: originalFeed.isOpen,
@@ -269,5 +309,8 @@ export const FeedService = {
       userId: new Types.ObjectId(userId),
       referenceId: targetFeed._id,
     })
+    return {
+      id: feed._id.toString(),
+    }
   },
 }
