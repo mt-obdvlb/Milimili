@@ -1,4 +1,11 @@
-import { MessageListItem, MessageStatisticsList, PageResult, Result } from '@mtobdvlb/shared-types'
+import {
+  MessageGetConversationList,
+  MessageListItem,
+  MessageReadDTO,
+  MessageStatisticsList,
+  PageResult,
+  Result,
+} from '@mtobdvlb/shared-types'
 import request from '@/lib/request'
 import { MessageListRequest, MessageSendWhisperRequest } from '@/types'
 
@@ -7,8 +14,12 @@ const baseURL = '/messages'
 const API = {
   statistics: '/statistics',
   list: '/',
-  sendWhisper: '/whisper',
+  sendWhisper: '/send-whisper',
   delete: '/',
+  getConversation: '/conversation',
+  createConversation: '/conversation',
+  deleteConversation: '/conversation',
+  read: '/read',
 } as const
 
 export const messageGetStatistics = () =>
@@ -23,3 +34,15 @@ export const messageSendWhisper = (params: MessageSendWhisperRequest) =>
   request.post<Result>(`${baseURL}${API.sendWhisper}`, params)
 
 export const messageDelete = (id: string) => request.delete<Result>(`${baseURL}${API.delete}${id}`)
+
+export const messageRead = (data: MessageReadDTO) =>
+  request.put<Result>(`${baseURL}${API.read}`, data)
+
+export const messageGetConversation = (userId: string) =>
+  request.get<Result<MessageGetConversationList>>(`${baseURL}${API.getConversation}/${userId}`)
+
+export const messageCreateConversation = (userId: string) =>
+  request.post<Result>(`${baseURL}${API.createConversation}/${userId}`)
+
+export const messageDeleteConversation = (conversationId: string) =>
+  request.delete<Result>(`${baseURL}${API.deleteConversation}/${conversationId}`)

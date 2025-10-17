@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { cloneElement, ReactElement, ReactNode } from 'react'
 import { Button, HoverCard, HoverCardContent, HoverCardTrigger } from '@/components'
 import Link from 'next/link'
-import { useFollow, useFollowGet, useUserGetByName } from '@/features'
+import { useFollow, useFollowGet, useMessageConversation, useUserGetByName } from '@/features'
 import { openNewTab } from '@/utils'
 import { cn, toast } from '@/lib'
 
@@ -32,6 +32,7 @@ export const UserHoverAvatar = ({
   const { data } = useUserGetByName(name)
   const { follow, unfollow } = useFollow(id)
   const { isFollowing } = useFollowGet(id)
+  const { createConversation } = useMessageConversation()
 
   return (
     <HoverCard openDelay={150} closeDelay={150}>
@@ -104,7 +105,13 @@ export const UserHoverAvatar = ({
               </div>
             </Button>
             <Button
-              onClick={() => openNewTab(`/message/whisper/${id}`)}
+              onClick={async (e) => {
+                e.stopPropagation()
+                e.preventDefault()
+                const { code } = await createConversation(id)
+                if (code) return
+                openNewTab(`/message/whisper/${id}`)
+              }}
               className={
                 'items-center rounded-[3px] border cursor-pointer flex text-sm h-[30px] justify-center transition duration-300 w-25 ml-2 text-text2 border-text3 bg-transparent'
               }

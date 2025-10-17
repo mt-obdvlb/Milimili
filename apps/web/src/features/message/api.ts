@@ -1,4 +1,13 @@
-import { messageDelete, messageGetList, messageGetStatistics } from '@/services'
+import {
+  messageCreateConversation,
+  messageDelete,
+  messageDeleteConversation,
+  messageGetConversation,
+  messageGetList,
+  messageGetStatistics,
+  messageRead,
+  messageSendWhisper,
+} from '@/services'
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { MessageType } from '@mtobdvlb/shared-types'
 
@@ -46,5 +55,64 @@ export const useMessageDelete = () => {
   })
   return {
     deleteMessage: mutateAsync,
+  }
+}
+
+export const useMessageRead = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync } = useMutation({
+    mutationFn: messageRead,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['messages', 'statistics'] })
+    },
+  })
+  return {
+    readMessage: mutateAsync,
+  }
+}
+
+export const useMessageConversation = () => {
+  const queryClient = useQueryClient()
+
+  const { mutateAsync: deleteConversation } = useMutation({
+    mutationFn: messageDeleteConversation,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['messages'] })
+    },
+  })
+
+  const { mutateAsync: createConversation } = useMutation({
+    mutationFn: messageCreateConversation,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['messages'] })
+    },
+  })
+
+  return {
+    deleteConversation,
+    createConversation,
+  }
+}
+
+export const useMessageConversationDetail = (userId: string) => {
+  const { data: conversation } = useQuery({
+    queryKey: ['messages', 'conversation', userId],
+    queryFn: () => messageGetConversation(userId),
+  })
+  return {
+    conversation: conversation?.data,
+  }
+}
+
+export const useMessageSend = (userId: string) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: sendMessage } = useMutation({
+    mutationFn: messageSendWhisper,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['messages', 'conversation', userId] })
+    },
+  })
+  return {
+    sendMessage,
   }
 }

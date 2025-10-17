@@ -14,7 +14,7 @@ const HeaderBarHoverCardWithBounce = ({
   children,
   building,
   href,
-  badge = false,
+  badge,
   className,
   alignOffset,
   align,
@@ -24,7 +24,7 @@ const HeaderBarHoverCardWithBounce = ({
   hidden?: boolean
   children?: React.ReactNode
   building?: boolean
-  href?: string
+  href: string
   badge?: boolean
   className?: string
   alignOffset?: number
@@ -44,7 +44,7 @@ const HeaderBarHoverCardWithBounce = ({
       <HoverCardTrigger asChild>
         <Link
           target={'_blank'}
-          href={href ?? ''}
+          href={href}
           onClick={building ? toastBuilding : () => {}}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={() => {}}
@@ -71,7 +71,7 @@ const HeaderBarHoverCardWithBounce = ({
             <Badge
               variant='destructive'
               className={
-                'absolute top-0 left-[35px] z-1 size-1.5 rounded-full bg-[#fa5a57] text-white'
+                'absolute top-0 left-[35px] z-1 size-1.5 p-0 rounded-full bg-[#fa5a57] text-white'
               }
             />
           )}

@@ -117,7 +117,7 @@ export const messageGetConversation: RequestHandler<
       message: MESSAGE.INVALID_TOKEN,
       code: 1,
     })
-  const data = await MessageService.getConversation(id, req.body.conversationId)
+  const data = await MessageService.getConversation(id, req.body.userId)
   return res.status(200).json({
     code: 0,
     data,

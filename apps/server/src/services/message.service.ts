@@ -73,6 +73,7 @@ export const MessageService = {
         {
           new: true,
           upsert: true, // 如果不存在就新建
+          timestamps: true,
         }
       ),
       ConversationModel.findOneAndUpdate(
@@ -88,6 +89,7 @@ export const MessageService = {
         {
           new: true,
           upsert: true, // 如果不存在就新建
+          timestamps: true,
         }
       ),
     ])
@@ -290,51 +292,65 @@ export const MessageService = {
 
     return { list, total }
   },
-  createConversation: async (userId: string, toId: string) => {
-    const user = await UserModel.findById(toId).lean()
+  createConversation: async (userId: string, toUserId: string) => {
+    const user = await UserModel.findById(toUserId).lean()
     if (!user) throw new HttpError(400, MESSAGE.USER_NOT_FOUND)
+    const message = await MessageModel.findOne({
+      $or: [
+        {
+          userId: new Types.ObjectId(userId),
+          fromUserId: new Types.ObjectId(toUserId),
+          type: 'whisper',
+        },
+        {
+          userId: new Types.ObjectId(toUserId),
+          fromUserId: new Types.ObjectId(userId),
+          type: 'whisper',
+        },
+      ],
+    })
+      .sort({ createdAt: -1 })
+      .limit(1)
+      .lean()
     await ConversationModel.findOneAndUpdate(
       {
         userId: new Types.ObjectId(userId),
-        toUserId: new Types.ObjectId(toId),
+        toUserId: new Types.ObjectId(toUserId),
       },
       {
         $set: {
           userId: new Types.ObjectId(userId),
-          toUserId: new Types.ObjectId(toId),
+          toUserId: new Types.ObjectId(toUserId),
+          lastContent: message?.content ?? '',
         },
       },
       {
         upsert: true,
         new: true,
+        timestamps: true,
       }
     )
   },
   getConversation: async (
     userId: string,
-    conversationId: string
+    toUserId: string
   ): Promise<MessageGetConversationList> => {
-    const conversation = await ConversationModel.findById(conversationId).lean()
+    const conversation = await ConversationModel.findOne({ userId, toUserId }).lean()
     if (!conversation) throw new HttpError(400, MESSAGE.CONVERSATION_NOT_FOUND)
 
     // 确定会话双方
     const uidA = conversation.userId.toString()
     const uidB = conversation.toUserId.toString()
 
-    if (uidA !== userId && uidB !== userId) {
-      throw new HttpError(403, 'No permission to access this conversation')
-    }
-
-    // 找出双方的消息
+    // 找出双方的消息，按 createdAt 倒序
     const messages = await MessageModel.find({
       type: 'whisper',
-      sourceId: conversation._id,
       $or: [
         { userId: uidA, fromUserId: uidB },
         { userId: uidB, fromUserId: uidA },
       ],
     })
-      .sort({ createdAt: 1 })
+      .sort({ createdAt: -1 }) // 倒序
       .lean()
 
     if (messages.length === 0) return []
@@ -355,7 +371,7 @@ export const MessageService = {
       users.map((u) => [u._id.toString(), { id: u._id.toString(), name: u.name, avatar: u.avatar }])
     )
 
-    // === 按 5 分钟分组 ===
+    // === 按 5 分钟分组，倒序 ===
     const result: MessageGetConversationList = []
     let currentGroup: MessageGetConversationList[number] | null = null
     const FIVE_MINUTES = 5 * 60 * 1000
@@ -364,9 +380,10 @@ export const MessageService = {
       const createdAt = m.createdAt ?? new Date()
       const timeStr = createdAt.toISOString()
 
+      // 倒序分组：如果 currentGroup 为 null 或消息比 currentGroup 时间更早，则新建组
       if (
         !currentGroup ||
-        createdAt.getTime() - new Date(currentGroup.date).getTime() > FIVE_MINUTES
+        new Date(currentGroup.date).getTime() - createdAt.getTime() > FIVE_MINUTES
       ) {
         currentGroup = { date: timeStr, conversations: [] }
         result.push(currentGroup)

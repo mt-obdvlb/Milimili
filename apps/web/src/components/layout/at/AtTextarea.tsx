@@ -66,7 +66,10 @@ const AtTextarea = ({
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: cn('focus:outline-none overflow-auto break-words break-all', className),
+        class: cn(
+          'focus:outline-none overflow-y-auto overflow-x-hidden break-words break-all',
+          className
+        ),
       },
       handlePaste: (view, event) => {
         const text = event.clipboardData?.getData('text/plain')
