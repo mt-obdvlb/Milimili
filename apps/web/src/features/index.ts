@@ -1,3 +1,4 @@
+export * from './account/index'
 export * from './auth/index'
 export * from './category/index'
 export * from './comment/index'
