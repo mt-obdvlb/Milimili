@@ -2,7 +2,7 @@
 
 import { Button } from '@/components'
 import { cn, toast } from '@/lib'
-import { useFollow, useFollowGet, useUnFollow } from '@/features/follow/api'
+import { useFollow, useFollowGet } from '@/features/follow/api'
 import { useUiStore, useUserStore } from '@/stores'
 
 const SearchFollowBtn = ({
@@ -13,8 +13,7 @@ const SearchFollowBtn = ({
   className?: string
 }) => {
   const { isFollowing } = useFollowGet(followingId)
-  const { follow } = useFollow(followingId)
-  const { unfollow } = useUnFollow(followingId)
+  const { follow, unfollow } = useFollow(followingId)
   const user = useUserStore((state) => state.user)
   const setLoginModel = useUiStore((state) => state.setLoginModel)
 

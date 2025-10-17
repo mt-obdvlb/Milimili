@@ -36,7 +36,7 @@ const messageSchema = new Schema<IMessage>(
     type: {
       type: String,
       required: true,
-      enum: ['reply', 'at', 'like', 'system', 'whisper'],
+      enum: ['reply', 'at', 'like', 'system', 'whisper'] satisfies MessageType[],
     },
     sourceType: {
       type: String,

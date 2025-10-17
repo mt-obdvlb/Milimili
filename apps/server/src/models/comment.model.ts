@@ -25,7 +25,7 @@ const commentSchema = new Schema<IComment>(
     targetId: {
       type: Schema.Types.ObjectId,
       required: true,
-    }, // 可能是 Video 或 Feed
+    },
     targetType: {
       type: String,
       enum: ['video', 'feed', 'comment'] satisfies CommentTargetType[],

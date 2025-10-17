@@ -6,7 +6,7 @@ export const messageListDTO = z.object({
   pageSize: z.coerce.number().default(10),
   type: z
     .enum(['reply', 'at', 'like', 'system', 'whisper'])
-    .default('reply') as z.ZodType<MessageType>,
+    .default('whisper') as z.ZodType<MessageType>,
 })
 
 export type MessageListDTO = z.infer<typeof messageListDTO>

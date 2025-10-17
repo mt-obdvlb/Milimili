@@ -14,7 +14,7 @@ export const useMessageStatistics = () => {
 
 export const useMessageList = (type: MessageType) => {
   const { data, fetchNextPage } = useInfiniteQuery({
-    queryKey: ['messages', type], // 不同 type 会从头开始
+    queryKey: ['messages', 'list', type], // 不同 type 会从头开始
     queryFn: ({ pageParam = 1 }) =>
       messageGetList({ type, page: pageParam as number, pageSize: 10 }),
     getNextPageParam: (lastPage, allPages) => {

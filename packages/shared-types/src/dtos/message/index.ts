@@ -1,2 +1,6 @@
+export * from './create-conversation.dto'
+export * from './delete-conversation.dto'
+export * from './get-conversation.dto'
 export * from './list.dto'
+export * from './read.dto'
 export * from './send-whisper.dto'

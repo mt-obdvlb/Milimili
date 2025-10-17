@@ -4,7 +4,9 @@ import Image from 'next/image'
 import { cloneElement, ReactElement, ReactNode } from 'react'
 import { Button, HoverCard, HoverCardContent, HoverCardTrigger } from '@/components'
 import Link from 'next/link'
-import { useUserGetByName } from '@/features'
+import { useFollow, useFollowGet, useUserGetByName } from '@/features'
+import { openNewTab } from '@/utils'
+import { cn, toast } from '@/lib'
 
 const UserAvatar = ({ h, w, avatar }: { avatar: string; h: number; w: number }) => {
   return (
@@ -28,6 +30,9 @@ export const UserHoverAvatar = ({
   user: { avatar: string; name: string; id: string }
 }) => {
   const { data } = useUserGetByName(name)
+  const { follow, unfollow } = useFollow(id)
+  const { isFollowing } = useFollowGet(id)
+
   return (
     <HoverCard openDelay={150} closeDelay={150}>
       <HoverCardTrigger asChild>{cloneElement(children as ReactElement)}</HoverCardTrigger>
@@ -71,9 +76,22 @@ export const UserHoverAvatar = ({
 
           <div className={'flex items-center mt-4 '}>
             <Button
-              className={
-                'items-center rounded-[3px] border hover:bg-[#00b8f6] hover:border-[#00b8f6] cursor-pointer flex text-sm h-[30px] justify-center transition duration-300 w-25 ml-2 text-white border-brand_blue bg-brand_blue'
-              }
+              onClick={async () => {
+                if (isFollowing) {
+                  const { code } = await unfollow({ followingId: id })
+                  if (code) return
+                  toast('已取关')
+                } else {
+                  const { code } = await follow({ followingId: id })
+                  if (code) return
+                  toast('已关注')
+                }
+              }}
+              className={cn(
+                'items-center rounded-[3px] border hover:bg-[#00b8f6] hover:border-[#00b8f6] cursor-pointer flex text-sm h-[30px] justify-center transition duration-300 w-25 ml-2 text-white border-brand_blue bg-brand_blue',
+                isFollowing &&
+                  'bg-graph_bg_thick hover:bg-graph_bg_regular text-text3 border-graph_bg_thick'
+              )}
             >
               <div className={'inline-flex items-center   mr-[3px]'}>
                 <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'>
@@ -82,10 +100,11 @@ export const UserHoverAvatar = ({
                     fill='currentColor'
                   ></path>
                 </svg>
-                <span>关注</span>
+                <span>{isFollowing ? '已关注' : '关注'}</span>
               </div>
             </Button>
             <Button
+              onClick={() => openNewTab(`/message/whisper/${id}`)}
               className={
                 'items-center rounded-[3px] border cursor-pointer flex text-sm h-[30px] justify-center transition duration-300 w-25 ml-2 text-text2 border-text3 bg-transparent'
               }

@@ -1,8 +1,23 @@
 import { Router } from 'express'
 import { authMiddleware, validatorMiddleware } from '@/middlewares'
 import { asyncHandler } from '@/utils'
-import { messageList, messageSendWhisper, messageStatistics } from '@/controllers'
-import { messageListDTO, messageSendWhisperDTO } from '@mtobdvlb/shared-types'
+import {
+  messageCreateConversation,
+  messageDeleteConversation,
+  messageGetConversation,
+  messageList,
+  messageRead,
+  messageSendWhisper,
+  messageStatistics,
+} from '@/controllers'
+import {
+  messageCreateConversationDTO,
+  messageDeleteConversationDTO,
+  messageGetConversationDTO,
+  messageListDTO,
+  messageReadDTO,
+  messageSendWhisperDTO,
+} from '@mtobdvlb/shared-types'
 
 const router = Router()
 
@@ -19,5 +34,25 @@ router.get(
   validatorMiddleware({ query: messageListDTO }),
   asyncHandler(messageList)
 )
+router.get(
+  '/conversation/:conversationId',
+  authMiddleware,
+  validatorMiddleware({ params: messageGetConversationDTO }),
+  asyncHandler(messageGetConversation)
+)
+
+router.post(
+  '/conversation/:userId',
+  authMiddleware,
+  validatorMiddleware({ params: messageCreateConversationDTO }),
+  asyncHandler(messageCreateConversation)
+)
+router.delete(
+  '/conversation/:conversationId',
+  authMiddleware,
+  validatorMiddleware({ params: messageDeleteConversationDTO }),
+  asyncHandler(messageDeleteConversation)
+)
+router.put('/read', validatorMiddleware({ body: messageReadDTO }), asyncHandler(messageRead))
 
 export default router
