@@ -173,4 +173,14 @@ export const UserService = {
   update: async (id: string, body: UserUpdateDTO) => {
     await UserModel.findByIdAndUpdate(id, body, { new: true })
   },
+  getById: async (id: string) => {
+    const user = await UserModel.findById(id)
+    if (!user) throw new Error(MESSAGE.USER_NOT_FOUND)
+    return {
+      id: user._id.toString(),
+      name: user.name,
+      avatar: user.avatar,
+      email: user.email,
+    }
+  },
 }

@@ -27,6 +27,7 @@ export const useLikeGet = (params: LikeGetDTO) => {
   const { data } = useQuery({
     queryKey: ['like', params],
     queryFn: () => isLike(params),
+    enabled: !!(params.feedId || params.videoId || params.commentId),
   })
   return {
     isLike: !data?.code,

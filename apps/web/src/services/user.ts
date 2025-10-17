@@ -23,6 +23,7 @@ const API = {
   getByName: '/name',
   getAtList: '/at',
   update: '/',
+  getById: '/id',
 } as const
 
 export const loginUser = (data: UserLoginRequest) =>
@@ -49,3 +50,6 @@ export const getUserAtList = (params: UserAtDTO) =>
 
 export const updateUser = (data: UserUpdateDTO) =>
   request.put<Result>(`${baseURL}${API.update}`, data)
+
+export const getUserById = (id: string) =>
+  request.get<Result<UserGetInfo>>(`${baseURL}${API.getById}/${id}`)

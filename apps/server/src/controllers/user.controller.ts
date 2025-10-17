@@ -170,3 +170,20 @@ export const userUpdateInfo: RequestHandler<ParamsDictionary, Result, UserUpdate
     code: 0,
   })
 }
+
+export const userGetById: RequestHandler<ParamsDictionary, Result<UserGetInfo>> = async (
+  req,
+  res
+) => {
+  const { id } = req.params
+  if (!id)
+    return res.status(400).json({
+      message: MESSAGE.INVALID_PARAMS,
+      code: 1,
+    })
+  const data = await UserService.getById(id)
+  return res.status(200).json({
+    data,
+    code: 0,
+  })
+}

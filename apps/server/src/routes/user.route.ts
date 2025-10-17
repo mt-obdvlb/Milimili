@@ -3,6 +3,7 @@ import {
   userAtList,
   userFindPassword,
   userGetByEmail,
+  userGetById,
   userGetByName,
   userGetInfo,
   userGetInfoHome,
@@ -44,6 +45,12 @@ router.get(
   validatorMiddleware({ query: userAtDTO }),
   asyncHandler(userAtList)
 )
-router.put('/', authMiddleware, validatorMiddleware({ body: userUpdateDTO }), userUpdateInfo)
+router.put(
+  '/',
+  authMiddleware,
+  validatorMiddleware({ body: userUpdateDTO }),
+  asyncHandler(userUpdateInfo)
+)
+router.get('/id/:id', asyncHandler(userGetById))
 
 export default router

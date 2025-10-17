@@ -3,6 +3,7 @@ import {
   getUser,
   getUserAtList,
   getUserByEmail,
+  getUserById,
   getUserByName,
   loginUser,
   logoutUser,
@@ -97,4 +98,13 @@ export const useUserUpdateInfo = () => {
     },
   })
   return { updateUserInfo }
+}
+
+export const useUserGetById = (id: string) => {
+  const { data } = useQuery({
+    queryKey: ['user', id],
+    queryFn: () => getUserById(id),
+    enabled: !!id,
+  })
+  return { user: data?.data }
 }

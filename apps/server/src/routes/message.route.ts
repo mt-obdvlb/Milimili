@@ -37,7 +37,7 @@ router.get(
   asyncHandler(messageList)
 )
 router.get(
-  '/conversation/:conversationId',
+  '/conversation/:userId',
   authMiddleware,
   validatorMiddleware({ params: messageGetConversationDTO }),
   asyncHandler(messageGetConversation)
