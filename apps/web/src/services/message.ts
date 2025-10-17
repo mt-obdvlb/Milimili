@@ -35,8 +35,10 @@ export const messageSendWhisper = (params: MessageSendWhisperRequest) =>
 
 export const messageDelete = (id: string) => request.delete<Result>(`${baseURL}${API.delete}${id}`)
 
-export const messageRead = (data: MessageReadDTO) =>
-  request.put<Result>(`${baseURL}${API.read}`, data)
+export const messageRead = ({ userId, type }: MessageReadDTO & { userId?: string }) =>
+  request.put<Result>(userId ? `${baseURL}${API.read}/${userId}` : `${baseURL}${API.read}`, {
+    type,
+  })
 
 export const messageGetConversation = (userId: string) =>
   request.get<Result<MessageGetConversationList>>(`${baseURL}${API.getConversation}/${userId}`)
