@@ -18,6 +18,7 @@ import {
   FeedType,
 } from '@mtobdvlb/shared-types'
 import { MESSAGE } from '@/constants'
+import { MessageService } from '@/services/message.service'
 
 type PopulatedFeed = IFeed & {
   userId: { _id: Types.ObjectId; name: string; avatar: string }
@@ -99,13 +100,14 @@ export const FeedService = {
     ])) as FeedFollowingList // 强制类型断言，确保返回类型
   },
   create: async (userId: string, { title, imageUrls, content }: FeedCreateDTO) => {
-    await FeedModel.create({
+    const feed = await FeedModel.create({
       userId,
       type: 'image-text',
       content,
       title,
       mediaUrls: imageUrls,
     })
+    await MessageService.atMessage(userId, 'feed', feed._id, content)
   },
   list: async (
     currentUserId: string,
@@ -296,7 +298,7 @@ export const FeedService = {
     const originalFeed = await FeedModel.findById(feedId)
 
     if (!originalFeed) throw new Error(MESSAGE.FEED_NOT_FOUND)
-
+    await MessageService.atMessage(userId, 'feed', new Types.ObjectId(feedId), content)
     let targetFeed = originalFeed
     if (originalFeed.type === 'reference') {
       const feed = await FeedModel.findById(originalFeed.referenceId)

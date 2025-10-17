@@ -9,7 +9,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger, UserHoverAvatar } from '
 import { useUserStore } from '@/stores'
 import FeedCollapsibleContent from '@/features/feed/components/FeedCollapsibleContent'
 import FeedImagesViewer from '@/features/feed/components/FeedImageViewer'
-import { useFeedDelete, useLike, useLikeGet, useUnFollow } from '@/features'
+import { useFeedDelete, useFollow, useLike, useLikeGet } from '@/features'
 import CommonDialog from '@/components/layout/models/common/CommonDialog'
 import { useState } from 'react'
 import CommentWrapper from '@/features/comment/components/CommentWrapper'
@@ -38,7 +38,7 @@ const FeedListItem = ({ feed }: { feed: FeedListItemType }) => {
   const { deleteFeed } = useFeedDelete()
   const { isLike } = useLikeGet({ feedId: feed.id })
   const { like, unlike } = useLike({ feedId: feed.id })
-  const { unfollow } = useUnFollow(feed.user.id)
+  const { unfollow } = useFollow(feed.user.id)
   const [panelOpen, setPanelOpen] = useState<'comment' | 'transpont' | null>(null)
 
   return (

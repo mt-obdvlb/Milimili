@@ -17,4 +17,5 @@ export const MESSAGE = {
   NOT_PERMISSION: '没有权限',
   FEED_NOT_FOUND: '动态不存在',
   COMMENT_NOT_FOUND: '评论不存在',
+  CONVERSATION_NOT_FOUND: '会话不存在',
 }

@@ -1,5 +1,6 @@
 import { CommentModel, FeedModel, IMessage, MessageModel, UserModel, VideoModel } from '@/models'
 import {
+  MessageGetConversationList,
   MessageList,
   MessageListDTO,
   MessageListItem,
@@ -8,6 +9,8 @@ import {
 } from '@mtobdvlb/shared-types'
 import { Types } from 'mongoose'
 import { ConversationModel } from '@/models/conversation.model'
+import { MESSAGE } from '@/constants'
+import { HttpError } from '@/utils'
 
 type MessageStatisticsItem = {
   type: MessageType
@@ -15,11 +18,6 @@ type MessageStatisticsItem = {
 }
 
 const allTypes: MessageType[] = ['like', 'whisper', 'at', 'reply', 'system']
-
-type LikeGroup = {
-  total: number
-  sampleFromUserIds: string[]
-}
 
 export const MessageService = {
   statistics: async (userId: string) => {
@@ -51,20 +49,102 @@ export const MessageService = {
     }))
   },
   sendWhisper: async ({ toId, id, content }: { id: string; toId: string; content: string }) => {
-    await MessageModel.create({
-      userId: toId,
-      fromUserId: id,
-      type: 'whisper',
-      content,
-    })
+    const senderId = new Types.ObjectId(id)
+    const receiverId = new Types.ObjectId(toId)
+    await Promise.all([
+      MessageModel.create({
+        userId: receiverId,
+        fromUserId: senderId,
+        type: 'whisper',
+        content,
+      }),
+    ])
+    await Promise.all([
+      ConversationModel.findOneAndUpdate(
+        {
+          userId: senderId,
+          toUserId: receiverId,
+        },
+        {
+          userId: senderId,
+          toUserId: receiverId,
+          lastContent: content,
+        },
+        {
+          new: true,
+          upsert: true, // 如果不存在就新建
+        }
+      ),
+      ConversationModel.findOneAndUpdate(
+        {
+          userId: receiverId,
+          toUserId: senderId,
+        },
+        {
+          userId: receiverId,
+          toUserId: senderId,
+          lastContent: content,
+        },
+        {
+          new: true,
+          upsert: true, // 如果不存在就新建
+        }
+      ),
+    ])
   },
   getList: async (
     id: string,
     { type, pageSize = 20, page = 1 }: MessageListDTO
   ): Promise<{ list: MessageList; total: number }> => {
     const userObjectId = new Types.ObjectId(id)
-    const baseQuery: Partial<Pick<IMessage, 'type' | 'userId'>> = { userId: userObjectId }
-    if (type) baseQuery.type = type
+    if (type === 'whisper') {
+      const total = await ConversationModel.countDocuments({ userId: userObjectId })
+
+      const conversations = await ConversationModel.find({ userId: userObjectId })
+        .sort({
+          updatedAt: -1,
+        })
+        .lean()
+
+      const users = await UserModel.find({
+        _id: { $in: conversations.map((s) => new Types.ObjectId(s.toUserId)) },
+      })
+        .select('_id name avatar')
+        .lean()
+
+      return {
+        total,
+        list: conversations.map((c) => {
+          const fromUser = users.find((u) => u._id.toString() === c.toUserId.toString())
+          if (!fromUser)
+            return {
+              id: '',
+              fromUser: {
+                id: '',
+                name: '',
+                avatar: '',
+              },
+              type: 'whisper',
+              createdAt: c.updatedAt.toISOString(),
+            } satisfies MessageListItem
+          return {
+            id: c._id.toString(),
+            fromUser: {
+              id: fromUser._id.toString(),
+              name: fromUser.name,
+              avatar: fromUser.avatar,
+            },
+            content: c.lastContent,
+            type: 'whisper',
+            createdAt: c.updatedAt.toISOString(),
+          } satisfies MessageListItem
+        }) satisfies MessageList,
+      }
+    }
+    const baseQuery: Partial<Pick<IMessage, 'type' | 'userId'>> = {
+      userId: userObjectId,
+      type: type,
+    }
 
     const total = await MessageModel.countDocuments(baseQuery)
 
@@ -75,81 +155,22 @@ export const MessageService = {
       .lean()
 
     // === 准备批量查询 ===
-    const likeGroups = new Map<string, LikeGroup>()
     const sourceIdByType: Record<MessageSourceType, Set<string>> = {
       comment: new Set(),
       video: new Set(),
       feed: new Set(),
     }
     const userIdSet = new Set<string>()
-    const atQueryKeys = new Set<string>()
 
     messages.forEach((m) => {
       const sid = m.sourceId?.toString()
       if (sid) {
-        if (m.type === 'like')
-          likeGroups.set(sid, {
-            total: 0,
-            sampleFromUserIds: [],
-          })
-        if (m.type === 'reply' || m.type === 'like') {
+        if (m.type !== 'system') {
           if (m.sourceType) sourceIdByType[m.sourceType].add(sid)
-        }
-        if (m.type !== 'whisper' && m.type !== 'system' && m.sourceType && sid) {
-          atQueryKeys.add(`${m.sourceType}:${sid}`)
         }
       }
       if (m.fromUserId) userIdSet.add(m.fromUserId.toString())
     })
-
-    // === 批量处理 like ===
-    if (likeGroups.size > 0) {
-      const likeSourceIds = Array.from(likeGroups.keys()).map((s) => new Types.ObjectId(s))
-      const totals = await MessageModel.aggregate<{
-        _id: Types.ObjectId
-        total: number
-      }>([
-        {
-          $match: {
-            userId: userObjectId,
-            type: 'like',
-            sourceId: { $in: likeSourceIds },
-          },
-        },
-        {
-          $group: {
-            _id: '$sourceId',
-            total: { $sum: 1 },
-          },
-        },
-      ])
-      totals.forEach((t) => {
-        likeGroups.get(t._id.toString())!.total = t.total
-      })
-
-      const sampleDocs = await MessageModel.find({
-        userId: userObjectId,
-        type: 'like',
-        sourceId: { $in: likeSourceIds },
-      })
-        .sort({ createdAt: -1 })
-        .select('sourceId fromUserId')
-        .lean()
-
-      const tmpMap = new Map<string, Set<string>>()
-      sampleDocs.forEach((d) => {
-        if (!d.sourceId || !d.fromUserId) return
-        const sid = d.sourceId.toString()
-        if (!tmpMap.has(sid)) tmpMap.set(sid, new Set())
-        const set = tmpMap.get(sid)!
-        set.add(d.fromUserId.toString())
-      })
-      tmpMap.forEach((set, sid) => {
-        const arr = Array.from(set).slice(0, 2)
-        arr.forEach((u) => userIdSet.add(u))
-        likeGroups.get(sid)!.sampleFromUserIds = arr
-      })
-    }
 
     // === 批量获取 source 内容 ===
     const videoIds = Array.from(sourceIdByType.video).map((s) => new Types.ObjectId(s))
@@ -197,22 +218,20 @@ export const MessageService = {
       }
     >(feeds.map((f) => [f._id.toString(), f]))
 
-    // === 批量获取 At ===
-
     // === 批量获取用户信息 ===
     const users =
       userIdSet.size > 0
         ? await UserModel.find({
             _id: { $in: Array.from(userIdSet).map((s) => new Types.ObjectId(s)) },
           })
-            .select('_id username avatar')
+            .select('_id name avatar')
             .lean()
         : []
     const userMap = new Map<
       string,
       {
         _id: Types.ObjectId
-        username?: string
+        name?: string
         avatar?: string
       }
     >(users.map((u) => [u._id.toString(), u]))
@@ -226,61 +245,31 @@ export const MessageService = {
         id: msgId,
         type: m.type as MessageType,
         createdAt,
-        total: 0,
+        fromUser: {
+          name: '',
+          avatar: '',
+          id: '',
+        },
       }
 
       if (m.type === 'system') {
-        const [fromName, content] = (m.content ?? '').split(' ')
-        item.fromName = fromName ?? ''
+        const [fromName, content] = (m.content ?? '').split('/z/')
+        item.fromUser.name = fromName ?? ''
         item.content = content ?? ''
         list.push(item)
         continue
       }
 
-      if (m.type === 'whisper') {
-        const conv = m.sourceId ? await ConversationModel.findById(m.sourceId).lean() : null
-        item.content = conv?.lastContent ?? m.content
-        let partnerId: string | undefined
-        if (conv) {
-          const uidA = conv.userId?.toString()
-          const uidB = conv.toUserId?.toString()
-          partnerId = uidA === id ? uidB : uidA
-          if (partnerId) {
-            item.fromUserId = [partnerId]
-            const u = userMap.get(partnerId)
-            if (u?.avatar) item.avatar = [u.avatar]
-          }
+      if (m.fromUserId) {
+        const fu = m.fromUserId.toString()
+        const u = userMap.get(fu)
+        item.fromUser = {
+          id: fu,
+          name: u?.name ?? '',
+          avatar: u?.avatar ?? '',
         }
-        if (m.sourceId)
-          item.total = await MessageModel.countDocuments({
-            type: 'whisper',
-            sourceId: m.sourceId,
-            userId: userObjectId,
-            isRead: false,
-          })
-        continue
       }
-
-      if (m.type === 'like') {
-        const sid = m.sourceId?.toString()
-        if (sid && likeGroups.has(sid)) {
-          const lg = likeGroups.get(sid)!
-          item.total = lg.total
-          item.fromUserId = lg.sampleFromUserIds
-          item.avatar = lg.sampleFromUserIds
-            .map((u) => userMap.get(u)?.avatar)
-            .filter((v): v is string => !!v)
-        }
-      } else {
-        if (m.fromUserId) {
-          const fu = m.fromUserId.toString()
-          item.fromUserId = [fu]
-          const u = userMap.get(fu)
-          item.avatar = u?.avatar ? [u.avatar] : undefined
-          item.fromName = u?.username
-        }
-        item.content = m.content
-      }
+      item.content = m.content
 
       // myContent
       if ((m.type === 'reply' || m.type === 'like') && m.sourceId && m.sourceType) {
@@ -291,11 +280,164 @@ export const MessageService = {
         else if (m.sourceType === 'feed') item.myContent = feedMap.get(sid)?.content
       }
 
-      // ats
-
       list.push(item)
     }
 
     return { list, total }
+  },
+  createConversation: async (userId: string, toId: string) => {
+    const user = await UserModel.findById(toId).lean()
+    if (!user) throw new HttpError(400, MESSAGE.USER_NOT_FOUND)
+    await ConversationModel.findOneAndUpdate(
+      {
+        userId: new Types.ObjectId(userId),
+        toUserId: new Types.ObjectId(toId),
+      },
+      {
+        $set: {
+          userId: new Types.ObjectId(userId),
+          toUserId: new Types.ObjectId(toId),
+        },
+      },
+      {
+        upsert: true,
+        new: true,
+      }
+    )
+  },
+  getConversation: async (
+    userId: string,
+    conversationId: string
+  ): Promise<MessageGetConversationList> => {
+    const conversation = await ConversationModel.findById(conversationId).lean()
+    if (!conversation) throw new HttpError(400, MESSAGE.CONVERSATION_NOT_FOUND)
+
+    // 确定会话双方
+    const uidA = conversation.userId.toString()
+    const uidB = conversation.toUserId.toString()
+
+    if (uidA !== userId && uidB !== userId) {
+      throw new HttpError(403, 'No permission to access this conversation')
+    }
+
+    // 找出双方的消息
+    const messages = await MessageModel.find({
+      type: 'whisper',
+      sourceId: conversation._id,
+      $or: [
+        { userId: uidA, fromUserId: uidB },
+        { userId: uidB, fromUserId: uidA },
+      ],
+    })
+      .sort({ createdAt: 1 })
+      .lean()
+
+    if (messages.length === 0) return []
+
+    // 批量查用户
+    const userIds = new Set<string>()
+    messages.forEach((m) => {
+      if (m.fromUserId) userIds.add(m.fromUserId.toString())
+    })
+
+    const users = await UserModel.find({
+      _id: { $in: Array.from(userIds).map((s) => new Types.ObjectId(s)) },
+    })
+      .select('_id name avatar')
+      .lean()
+
+    const userMap = new Map(
+      users.map((u) => [u._id.toString(), { id: u._id.toString(), name: u.name, avatar: u.avatar }])
+    )
+
+    // === 按 5 分钟分组 ===
+    const result: MessageGetConversationList = []
+    let currentGroup: MessageGetConversationList[number] | null = null
+    const FIVE_MINUTES = 5 * 60 * 1000
+
+    for (const m of messages) {
+      const createdAt = m.createdAt ?? new Date()
+      const timeStr = createdAt.toISOString()
+
+      if (
+        !currentGroup ||
+        createdAt.getTime() - new Date(currentGroup.date).getTime() > FIVE_MINUTES
+      ) {
+        currentGroup = { date: timeStr, conversations: [] }
+        result.push(currentGroup)
+      }
+
+      currentGroup.conversations.push({
+        id: m._id.toString(),
+        content: m.content ?? '',
+        user: userMap.get(m.fromUserId?.toString() ?? '') ?? {
+          id: '',
+          name: 'Unknown',
+          avatar: '',
+        },
+      })
+    }
+
+    return result
+  },
+  deleteConversation: async (userId: string, conversationId: string) => {
+    const conversation = await ConversationModel.findById(conversationId).lean()
+    if (!conversation) throw new HttpError(400, MESSAGE.CONVERSATION_NOT_FOUND)
+    await ConversationModel.deleteOne({
+      _id: new Types.ObjectId(conversationId),
+      userId: new Types.ObjectId(userId),
+    })
+  },
+  read: async (userId: string, type: string, toUserId: string) => {
+    if (type === 'whisper') {
+      await MessageModel.updateOne(
+        {
+          userId: new Types.ObjectId(userId),
+          type: 'whisper',
+          fromUserId: new Types.ObjectId(toUserId),
+        },
+        {
+          isRead: true,
+        }
+      )
+    } else {
+      await MessageModel.updateMany(
+        {
+          userId: new Types.ObjectId(userId),
+          type,
+        },
+        {
+          isRead: true,
+        }
+      )
+    }
+  },
+  atMessage: async (
+    userId: string,
+    type: MessageSourceType,
+    id: Types.ObjectId,
+    content?: string
+  ) => {
+    if (!content) return
+    const mentions = content.match(/@([a-zA-Z0-9_-]+)/g)
+    if (!mentions) return
+
+    // 去重并提取用户名
+    const names = Array.from(new Set(mentions.map((m) => m.slice(1))))
+
+    // 批量查询用户
+    const users = await UserModel.find({ name: { $in: names } }).lean()
+    if (!users.length) return
+
+    // 批量创建消息
+    const messages = users.map((user) => ({
+      type: 'at',
+      userId: new Types.ObjectId(user._id),
+      sourceType: type,
+      fromUserId: new Types.ObjectId(userId),
+      sourceId: id,
+    }))
+
+    await MessageModel.insertMany(messages)
   },
 }

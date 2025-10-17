@@ -7,6 +7,7 @@ import {
   IFeed,
   IVideoStats,
   LikeModel,
+  MessageModel,
   VideoStatsModel,
 } from '@/models'
 import { MESSAGE } from '@/constants'
@@ -75,6 +76,13 @@ export const LikeService = {
     const exist = await LikeModel.findOne(query)
     if (!exist) {
       await LikeModel.create(query)
+      await MessageModel.create({
+        userId: query.userId,
+        fromUserId: query.userId,
+        type: 'like',
+        sourceId: query.targetId,
+        sourceType: query.targetType,
+      })
     }
 
     return 1

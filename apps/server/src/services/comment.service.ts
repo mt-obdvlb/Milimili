@@ -6,23 +6,56 @@ import {
   CommentTargetType,
 } from '@mtobdvlb/shared-types'
 import { Types } from 'mongoose'
-import { CommentModel, FeedModel, VideoStatsModel } from '@/models'
+import { CommentModel, FeedModel, MessageModel, VideoModel, VideoStatsModel } from '@/models'
 import { MESSAGE } from '@/constants'
+import { MessageService } from '@/services/message.service'
 
-const resolveTarget = (dto: {
+const resolveTarget = async (dto: {
   videoId?: string
   feedId?: string
   commentId?: string
-}): { targetId: Types.ObjectId; targetType: CommentTargetType } => {
+}): Promise<{
+  targetId: Types.ObjectId
+  targetType: CommentTargetType
+  targetUserId: Types.ObjectId
+}> => {
+  // 对视频评论
   if (dto.videoId) {
-    return { targetId: new Types.ObjectId(dto.videoId), targetType: 'video' }
+    const video = await VideoModel.findById(dto.videoId).lean()
+    if (!video) throw new Error(MESSAGE.VIDEO_NOT_FOUND)
+    await VideoStatsModel.updateOne(
+      { videoId: new Types.ObjectId(dto.videoId) },
+      { $inc: { commentsCount: 1 } }
+    )
+    return {
+      targetId: new Types.ObjectId(dto.videoId),
+      targetType: 'video',
+      targetUserId: new Types.ObjectId(video.userId),
+    }
   }
+
+  // 对动态评论
   if (dto.feedId) {
-    return { targetId: new Types.ObjectId(dto.feedId), targetType: 'feed' }
+    const feed = await FeedModel.findById(dto.feedId).lean()
+    if (!feed) throw new Error(MESSAGE.FEED_NOT_FOUND)
+    return {
+      targetId: new Types.ObjectId(dto.feedId),
+      targetType: 'feed',
+      targetUserId: new Types.ObjectId(feed.userId),
+    }
   }
+
+  // 对评论回复
   if (dto.commentId) {
-    return { targetId: new Types.ObjectId(dto.commentId), targetType: 'comment' }
+    const comment = await CommentModel.findById(dto.commentId).lean()
+    if (!comment) throw new Error(MESSAGE.COMMENT_NOT_FOUND)
+    return {
+      targetId: new Types.ObjectId(dto.commentId),
+      targetType: 'comment',
+      targetUserId: new Types.ObjectId(comment.userId),
+    }
   }
+
   throw new Error(MESSAGE?.NOT_FOUND ?? 'target not found')
 }
 
@@ -40,7 +73,7 @@ export const CommentService = {
     pageSize = 20,
     sort,
   }: CommentGetDTO): Promise<{ total: number; list: CommentGetList }> => {
-    const { targetId, targetType } = resolveTarget({ commentId, videoId, feedId })
+    const { targetId, targetType } = await resolveTarget({ commentId, videoId, feedId })
 
     const pageNum = Math.max(1, Math.floor(Number(page) || 1))
     const size = Math.min(100, Math.max(1, Math.floor(Number(pageSize) || 20)))
@@ -120,13 +153,14 @@ export const CommentService = {
     if (!trimmed) throw new Error(MESSAGE.INVALID_PARAMS)
 
     // 解析 target
-    const { targetId, targetType } = resolveTarget({ commentId, videoId, feedId })
+    const { targetId, targetType, targetUserId } = await resolveTarget({
+      commentId,
+      videoId,
+      feedId,
+    })
 
     if (targetType === 'video') {
       await VideoStatsModel.updateOne({ _id: targetId }, { $inc: { commentsCount: 1 } })
-    }
-    if (targetType === 'feed') {
-      await FeedModel.updateOne({ _id: targetId }, { $inc: { commentsCount: 1 } })
     }
 
     if (commentId) {
@@ -144,11 +178,20 @@ export const CommentService = {
     }
 
     // 创建评论
-    await CommentModel.create({
+    const message = await CommentModel.create({
       userId: new Types.ObjectId(userId),
       targetId,
       targetType,
       content: trimmed,
+    })
+    await MessageService.atMessage(userId, 'comment', message._id, trimmed)
+    await MessageModel.create({
+      userId: targetUserId,
+      sourceType: targetType,
+      fromUserId: userId,
+      type: 'reply',
+      content: trimmed,
+      sourceId: targetId,
     })
   },
   delete: async (userId: string, { id }: CommentDeleteDTO) => {

@@ -3,7 +3,7 @@ import { followCreate, followDelete, followGet } from '@/services/follow'
 
 export const useFollow = (followingId: string) => {
   const queryClient = useQueryClient()
-  const { mutateAsync } = useMutation({
+  const { mutateAsync: follow } = useMutation({
     mutationFn: followCreate,
     onSuccess: async () => {
       await queryClient.invalidateQueries({
@@ -11,14 +11,7 @@ export const useFollow = (followingId: string) => {
       })
     },
   })
-  return {
-    follow: mutateAsync,
-  }
-}
-
-export const useUnFollow = (followingId: string) => {
-  const queryClient = useQueryClient()
-  const { mutateAsync } = useMutation({
+  const { mutateAsync: unfollow } = useMutation({
     mutationFn: followDelete,
     onSuccess: async () => {
       await queryClient.invalidateQueries({
@@ -26,8 +19,10 @@ export const useUnFollow = (followingId: string) => {
       })
     },
   })
+
   return {
-    unfollow: mutateAsync,
+    follow,
+    unfollow,
   }
 }
 

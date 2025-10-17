@@ -2,7 +2,7 @@
 
 import { useMessageContext } from '@/features/message/useMessageContext'
 import { useInfiniteScroll } from '@/hooks'
-import { MessageList, MessageSourceType } from '@mtobdvlb/shared-types'
+import { MessageSourceType } from '@mtobdvlb/shared-types'
 import MessageCommonAvatar from '@/features/message/components/common/MessageCommonAvatar'
 import MessageCommonItemContent from '@/features/message/components/common/MessageCommonItemContent'
 import MessageCommonItemTitle from '@/features/message/components/common/MessageCommonItemTitle'
@@ -16,37 +16,9 @@ import dayjs from 'dayjs'
 const MessageReplyList = () => {
   const { messageList, fetchNextPage } = useMessageContext()
   const { ref } = useInfiniteScroll(fetchNextPage)
-  const list: MessageList = [
-    {
-      id: '',
-      avatar: ['https://mtobdvlb-web.oss-cn-beijing.aliyuncs.com/milimili/avatar.jpg'],
-      content: '123 @mtobdvlb df',
-      createdAt: '',
-      fromName: '123',
-      fromUserId: [''],
-      myContent: '123',
-      sourceId: '',
-      isLiked: false,
-      type: 'reply',
-      sourceType: 'video',
-    },
-    {
-      id: 'sdf',
-      avatar: ['https://mtobdvlb-web.oss-cn-beijing.aliyuncs.com/milimili/avatar.jpg'],
-      content: '123 @mtobdvlb @mtobdvlb df',
-      createdAt: '',
-      fromName: '1dsf23',
-      fromUserId: [''],
-      myContent: '1sdf23',
-      sourceId: '',
-      isLiked: false,
-      type: 'reply',
-      sourceType: 'comment',
-    },
-  ]
   return (
     <div className={'h-full overflow-y-auto'}>
-      {list.map((item, index) => (
+      {messageList.map((item, index) => (
         <div
           className={'relative cursor-pointer flex group'}
           ref={index === messageList.length - 1 ? ref : null}

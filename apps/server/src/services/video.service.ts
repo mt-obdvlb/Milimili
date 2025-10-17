@@ -24,6 +24,7 @@ import {
   VideoListItem,
 } from '@mtobdvlb/shared-types'
 import { FilterQuery, Types } from 'mongoose'
+import { MessageService } from '@/services/message.service'
 
 export const VideoService = {
   list: async ({ page, pageSize }: { page: number; pageSize: number }) => {
@@ -73,7 +74,7 @@ export const VideoService = {
     if (!user) throw new Error(MESSAGE.USER_NOT_FOUND)
     const res = await VideoModel.create({ ...body, userId })
     await VideoStatsModel.create({ videoId: res._id })
-    await FeedModel.create({
+    const video = await FeedModel.create({
       type: 'video',
       videoId: res._id,
       userId,
@@ -82,6 +83,7 @@ export const VideoService = {
       isOpen: res.isOpen,
       commentsDisabled: res.commentsDisabled,
     })
+    await MessageService.atMessage(userId, 'video', video._id, body.description)
   },
   getDanmakus: async (videoId: string) => {
     const video = await VideoModel.findById(videoId, { time: 1 }).lean()

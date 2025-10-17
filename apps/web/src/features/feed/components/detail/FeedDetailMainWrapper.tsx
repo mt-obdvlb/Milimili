@@ -18,7 +18,7 @@ import FeedCollapsibleContent from '@/features/feed/components/FeedCollapsibleCo
 import FeedImagesViewer from '@/features/feed/components/FeedImageViewer'
 import FeedVideoContent from '@/features/feed/components/FeedVideoContent'
 import FeedReferenceItem from '@/features/feed/components/FeedReferenceItem'
-import { feedStyles, useFeedDelete, useUnFollow } from '@/features'
+import { feedStyles, useFeedDelete, useFollow } from '@/features'
 import { useUserStore } from '@/stores'
 import { useRouter } from 'next/navigation'
 import UserAvatar from '@/components/ui/UserAvatar'
@@ -33,7 +33,7 @@ const FeedDetailMainWrapper = ({ feed }: { feed: FeedGetById }) => {
   const { main, avatar, header, body } = feedStyles()
   const userStore = useUserStore((state) => state.user)
 
-  const { unfollow } = useUnFollow(feed.user.id)
+  const { unfollow } = useFollow(feed.user.id)
   const { deleteFeed } = useFeedDelete()
   const router = useRouter()
 
