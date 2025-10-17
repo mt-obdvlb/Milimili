@@ -2,13 +2,14 @@
 
 import MessageLayoutList from '@/features/message/components/layout/MessageLayoutList'
 import { ReactNode, useEffect, useState } from 'react'
-import { useMessageList } from '@/features'
+import { useMessageList, useMessageRead } from '@/features'
 import { MessageType } from '@mtobdvlb/shared-types'
 import { usePathname } from 'next/navigation'
 import { MessageProvider } from '@/features/message/useMessageContext'
 
 const MessageLayoutWrapper = ({ children }: { children: ReactNode }) => {
   const [type, setType] = useState<MessageType>('whisper')
+  const { readMessage } = useMessageRead()
 
   const pathname = usePathname()
 
@@ -17,13 +18,19 @@ const MessageLayoutWrapper = ({ children }: { children: ReactNode }) => {
     // 假设路径类似 /message/whisper
     const segments = pathname.split('/').filter(Boolean)
     const last = segments[1] as MessageType
+    const userId = segments[2]
+
+    void readMessage({
+      type: last,
+      userId,
+    })
 
     if (['reply', 'at', 'like', 'system', 'whisper'].includes(last)) {
       setType(last)
     } else {
       setType('whisper') // 默认值
     }
-  }, [pathname])
+  }, [pathname, readMessage])
   const { messageList, fetchNextPage } = useMessageList(type)
 
   return (
