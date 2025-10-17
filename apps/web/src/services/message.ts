@@ -8,6 +8,7 @@ const API = {
   statistics: '/statistics',
   list: '/',
   sendWhisper: '/whisper',
+  delete: '/',
 } as const
 
 export const messageGetStatistics = () =>
@@ -20,3 +21,5 @@ export const messageGetList = (params: MessageListRequest) =>
 
 export const messageSendWhisper = (params: MessageSendWhisperRequest) =>
   request.post<Result>(`${baseURL}${API.sendWhisper}`, params)
+
+export const messageDelete = (id: string) => request.delete<Result>(`${baseURL}${API.delete}${id}`)

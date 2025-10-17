@@ -3,6 +3,7 @@ import { ParamsDictionary } from 'express-serve-static-core'
 import {
   MessageCreateConversationDTO,
   MessageDeleteConversationDTO,
+  MessageDeleteDTO,
   MessageGetConversationDTO,
   MessageGetConversationList,
   MessageListDTO,
@@ -135,6 +136,22 @@ export const messageCreateConversation: RequestHandler<
       code: 1,
     })
   await MessageService.createConversation(id, req.body.userId)
+  return res.status(200).json({
+    code: 0,
+  })
+}
+
+export const messageDelete: RequestHandler<ParamsDictionary, Result, MessageDeleteDTO> = async (
+  req,
+  res
+) => {
+  const id = req.user?.id
+  if (!id)
+    return res.status(401).json({
+      message: MESSAGE.INVALID_TOKEN,
+      code: 1,
+    })
+  await MessageService.delete(id, req.body.id)
   return res.status(200).json({
     code: 0,
   })

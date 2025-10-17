@@ -1,10 +1,10 @@
-import { messageGetList, messageGetStatistics } from '@/services'
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
+import { messageDelete, messageGetList, messageGetStatistics } from '@/services'
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { MessageType } from '@mtobdvlb/shared-types'
 
 export const useMessageStatistics = () => {
   const { data: messageStatistics } = useQuery({
-    queryKey: ['message', 'statistics'],
+    queryKey: ['messages', 'statistics'],
     queryFn: () => messageGetStatistics(),
   })
   return {
@@ -25,9 +25,26 @@ export const useMessageList = (type: MessageType) => {
       return undefined // 没有下一页
     },
     initialPageParam: 1,
+    refetchOnMount: true, // 组件挂载时重新请求
+    refetchOnWindowFocus: false, // 避免切换窗口时重复请求
+    refetchOnReconnect: false,
+    staleTime: 0, // 每次都认为是旧数据,
   })
   return {
     messageList: data?.pages.flatMap((page) => page.data?.list ?? []) ?? [],
     fetchNextPage,
+  }
+}
+
+export const useMessageDelete = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync } = useMutation({
+    mutationFn: (id: string) => messageDelete(id),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['messages'] })
+    },
+  })
+  return {
+    deleteMessage: mutateAsync,
   }
 }

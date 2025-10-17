@@ -3,6 +3,7 @@ import { authMiddleware, validatorMiddleware } from '@/middlewares'
 import { asyncHandler } from '@/utils'
 import {
   messageCreateConversation,
+  messageDelete,
   messageDeleteConversation,
   messageGetConversation,
   messageList,
@@ -13,6 +14,7 @@ import {
 import {
   messageCreateConversationDTO,
   messageDeleteConversationDTO,
+  messageDeleteDTO,
   messageGetConversationDTO,
   messageListDTO,
   messageReadDTO,
@@ -53,6 +55,19 @@ router.delete(
   validatorMiddleware({ params: messageDeleteConversationDTO }),
   asyncHandler(messageDeleteConversation)
 )
-router.put('/read', validatorMiddleware({ body: messageReadDTO }), asyncHandler(messageRead))
+router.put(
+  '/read',
+  authMiddleware,
+  validatorMiddleware({ body: messageReadDTO }),
+  asyncHandler(messageRead)
+)
+router.delete(
+  '/:id',
+  authMiddleware,
+  validatorMiddleware({
+    params: messageDeleteDTO,
+  }),
+  asyncHandler(messageDelete)
+)
 
 export default router
