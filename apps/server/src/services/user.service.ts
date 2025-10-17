@@ -1,4 +1,4 @@
-import { FavoriteFolderModel, FollowModel, UserModel } from '@/models'
+import { FavoriteFolderModel, FollowModel, MessageModel, UserModel } from '@/models'
 import { MESSAGE } from '@/constants'
 import { comparePassword, hashPassword, HttpError, signToken } from '@/utils'
 import redis from '@/utils/redis.util'
@@ -40,6 +40,11 @@ export const UserService = {
         userId: user!._id,
         type: 'watch-later',
         name: '稍后再看',
+      })
+      await MessageModel.create({
+        userId: user!._id,
+        type: 'system',
+        content: `尊敬的${user!.name} 欢迎来到仿照bilibili的milimili`,
       })
     }
     if (!user) throw new Error(MESSAGE.UNKNOWN_ERROR)

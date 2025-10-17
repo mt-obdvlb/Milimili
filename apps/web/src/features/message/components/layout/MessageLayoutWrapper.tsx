@@ -16,7 +16,7 @@ const MessageLayoutWrapper = ({ children }: { children: ReactNode }) => {
     if (!pathname) return
     // 假设路径类似 /message/whisper
     const segments = pathname.split('/').filter(Boolean)
-    const last = segments[segments.length - 1] as MessageType
+    const last = segments[1] as MessageType
 
     if (['reply', 'at', 'like', 'system', 'whisper'].includes(last)) {
       setType(last)

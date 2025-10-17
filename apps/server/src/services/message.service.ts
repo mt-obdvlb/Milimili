@@ -24,7 +24,7 @@ export const MessageService = {
     const res = await MessageModel.aggregate<MessageStatisticsItem>([
       {
         $match: {
-          userId,
+          userId: new Types.ObjectId(userId),
           isRead: false,
         },
       },
@@ -190,7 +190,7 @@ export const MessageService = {
         : Promise.resolve([]),
       feedIds.length
         ? FeedModel.find({ _id: { $in: feedIds } })
-            .select('_id content')
+            .select('_id content mediaUrls')
             .lean()
         : Promise.resolve([]),
     ])
@@ -215,6 +215,7 @@ export const MessageService = {
       {
         _id: Types.ObjectId
         content: string
+        mediaUrls?: string[]
       }
     >(feeds.map((f) => [f._id.toString(), f]))
 
@@ -253,7 +254,7 @@ export const MessageService = {
       }
 
       if (m.type === 'system') {
-        const [fromName, content] = (m.content ?? '').split('/z/')
+        const [fromName, content] = (m.content ?? '').split(' ')
         item.fromUser.name = fromName ?? ''
         item.content = content ?? ''
         list.push(item)
@@ -271,13 +272,17 @@ export const MessageService = {
       }
       item.content = m.content
 
+      item.sourceId = m.sourceId?.toString()
+      item.sourceType = m.sourceType
+
       // myContent
       if ((m.type === 'reply' || m.type === 'like') && m.sourceId && m.sourceType) {
         const sid = m.sourceId.toString()
         if (m.sourceType === 'video')
           item.myContent = videoMap.get(sid)?.thumbnail ?? videoMap.get(sid)?.title
         else if (m.sourceType === 'comment') item.myContent = commentMap.get(sid)?.content
-        else if (m.sourceType === 'feed') item.myContent = feedMap.get(sid)?.content
+        else if (m.sourceType === 'feed')
+          item.myContent = feedMap.get(sid)?.mediaUrls?.[0] ?? feedMap.get(sid)?.content
       }
 
       list.push(item)
@@ -436,8 +441,15 @@ export const MessageService = {
       sourceType: type,
       fromUserId: new Types.ObjectId(userId),
       sourceId: id,
+      content,
     }))
 
     await MessageModel.insertMany(messages)
+  },
+  delete: async (userId: string, messageId: string) => {
+    await MessageModel.deleteOne({
+      _id: new Types.ObjectId(messageId),
+      userId: new Types.ObjectId(userId),
+    })
   },
 }

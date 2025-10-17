@@ -1,21 +1,20 @@
 'use client'
 
-import { useMessageContext } from '@/features/message/useMessageContext'
+import { useMessageContext } from '@/features'
 import { useInfiniteScroll } from '@/hooks'
-import MessageReplyListItem from '@/features/message/components/reply/MessageReplyListItem'
+import MessageSystemListItem from '@/features/message/components/system/MessageSystemListItem'
 
-const MessageReplyList = () => {
+const MessageSystemList = () => {
   const { messageList, fetchNextPage } = useMessageContext()
   const { ref } = useInfiniteScroll(fetchNextPage)
-
   return (
-    <div className={'h-full overflow-y-auto'}>
+    <div>
       {messageList.map((item, index) => (
-        <MessageReplyListItem
+        <MessageSystemListItem
+          key={item.id}
           item={item}
           total={messageList.length}
           index={index}
-          key={item.id}
           ref={ref}
         />
       ))}
@@ -23,4 +22,4 @@ const MessageReplyList = () => {
   )
 }
 
-export default MessageReplyList
+export default MessageSystemList
