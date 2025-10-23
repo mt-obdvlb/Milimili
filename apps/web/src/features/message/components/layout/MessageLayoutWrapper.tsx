@@ -57,7 +57,7 @@ const MessageLayoutWrapper = ({ children }: { children: ReactNode }) => {
           <MessageLayoutList />
         </div>
       </aside>
-      <MessageProvider messageList={messageList} fetchNextPage={fetchNextPage}>
+      <MessageProvider messageList={messageList} fetchNextPageAction={fetchNextPage}>
         <main className={'pt-2.5 w-[calc(100%-140px)] bg-[rgba(var(--bg1_rgb),.5)]'}>
           {children}
         </main>

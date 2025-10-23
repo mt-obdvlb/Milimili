@@ -18,15 +18,15 @@ export const useMessageContext = () => {
 
 export const MessageProvider = ({
   children,
-  fetchNextPage,
+  fetchNextPageAction,
   messageList,
 }: {
   children: ReactNode
   messageList: MessageList
-  fetchNextPage: () => void
+  fetchNextPageAction: () => void
 }) => {
   return (
-    <MessageContext.Provider value={{ messageList, fetchNextPage }}>
+    <MessageContext.Provider value={{ messageList, fetchNextPage: fetchNextPageAction }}>
       {children}
     </MessageContext.Provider>
   )
