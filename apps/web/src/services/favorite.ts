@@ -17,6 +17,7 @@ const API = {
   moveBatch: 'move-batch',
   cleanWatchLater: '/clean-watch-later',
   folderAdd: '/folder',
+  videoId: '/videoId',
 } as const
 
 export const favoriteGetRecent = () =>
@@ -39,3 +40,6 @@ export const favoriteCleanWatchLater = () =>
 
 export const favoriteAddFolder = (body: FavoriteFolderAddRequest) =>
   request.post<Result>(`${baseURL}${API.folderAdd}`, body)
+
+export const favoriteGetByVideoId = (videoId: string) =>
+  request.get<Result>(`${baseURL}${API.videoId}/${videoId}`)

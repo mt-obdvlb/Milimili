@@ -7,10 +7,12 @@ import {
   VideoCreateDTO,
   VideoGetDanmakusDTO,
   VideoGetDanmakusList,
+  VideoGetDetail,
   VideoGetWatchLaterDTO,
   VideoGetWaterLaterList,
   VideoListDTO,
   VideoListItem,
+  VideoShareDTO,
 } from '@mtobdvlb/shared-types'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { VideoService } from '@/services/video.service'
@@ -102,5 +104,41 @@ export const videoGetWatchLater: RequestHandler<
   return res.status(200).json({
     code: 0,
     data,
+  })
+}
+
+export const videoGetDetail: RequestHandler<ParamsDictionary, Result<VideoGetDetail>> = async (
+  req,
+  res
+) => {
+  const videoId = req.params.videoId
+  const userId = req.user?.id
+  if (!videoId || !userId) {
+    return res.status(400).json({
+      code: 400,
+      message: MESSAGE.INVALID_PARAMS,
+    })
+  }
+  const data = await VideoService.getDetail(videoId, userId)
+  return res.status(200).json({
+    code: 0,
+    data,
+  })
+}
+
+export const videoShare: RequestHandler<ParamsDictionary, Result, VideoShareDTO> = async (
+  req,
+  res
+) => {
+  const userId = req.user?.id
+  if (!userId) {
+    return res.status(400).json({
+      code: 400,
+      message: MESSAGE.INVALID_PARAMS,
+    })
+  }
+  await VideoService.share(userId, req.body)
+  return res.status(200).json({
+    code: 0,
   })
 }

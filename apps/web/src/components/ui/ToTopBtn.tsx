@@ -2,6 +2,7 @@
 
 import { Button } from '@/components'
 import { cn } from '@/lib'
+import { useShow } from '@/hooks'
 
 const ToTopBtn = ({
   className,
@@ -47,6 +48,20 @@ const ToTopBtn = ({
       </Button>
     </div>
   )
+}
+
+export const ToTopBtnWrapper = ({
+  className,
+  inlineClassName,
+  y,
+}: {
+  className?: string
+  inlineClassName?: string
+  y: number
+}) => {
+  const { isShow } = useShow(y)
+
+  return <ToTopBtn isShow={isShow} className={className} inlineClassName={inlineClassName} />
 }
 
 export default ToTopBtn

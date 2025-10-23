@@ -8,6 +8,7 @@ import {
   favoriteDeleteBatch,
   favoriteFolderAdd,
   favoriteFolderList,
+  favoriteGetByVideoId,
   favoriteList,
   favoriteMoveBatch,
   favoriteRecent,
@@ -62,5 +63,6 @@ router.post(
   validatorMiddleware({ body: favoriteFolderAddDTO }),
   asyncHandler(favoriteFolderAdd)
 )
+router.get('/videoId/:videoId', authMiddleware, asyncHandler(favoriteGetByVideoId))
 
 export default router

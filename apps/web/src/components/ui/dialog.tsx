@@ -67,7 +67,7 @@ function DialogContent({
           <DialogPrimitive.Close
             data-slot='dialog-close'
             className={
-              'text-text2 hover:bg-graph_bg_regular_float absolute top-[14px] right-[14px] flex size-8 cursor-pointer items-center justify-center rounded-md transition-all duration-200'
+              'text-text2 hover:bg-graph_bg_regular_float outline-none absolute top-[14px] right-[14px] flex size-8 cursor-pointer items-center justify-center rounded-md transition-all duration-200'
             }
           >
             <svg

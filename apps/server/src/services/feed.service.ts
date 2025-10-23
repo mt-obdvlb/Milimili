@@ -306,7 +306,7 @@ export const FeedService = {
       targetFeed = feed
     }
 
-    const feed = await FeedModel.create({
+    await FeedModel.create({
       content: content,
       type: 'reference' as FeedType,
       isOpen: originalFeed.isOpen,
@@ -314,8 +314,8 @@ export const FeedService = {
       userId: new Types.ObjectId(userId),
       referenceId: targetFeed._id,
     })
-    return {
-      id: feed._id.toString(),
+    if (targetFeed.type === 'video') {
+      await VideoStatsModel.updateOne({ videoId: targetFeed.videoId }, { $inc: { sharesCount: 1 } })
     }
   },
   listLikeTranspont: async (

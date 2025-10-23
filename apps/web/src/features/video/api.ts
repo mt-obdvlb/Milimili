@@ -1,5 +1,5 @@
-import { videoList } from '@/services/video'
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
+import { videoGetDetail, videoList, videoShare } from '@/services/video'
+import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query'
 
 export const getVideoList = async () => {
   const { data } = await videoList(1, 9)
@@ -8,10 +8,10 @@ export const getVideoList = async () => {
   }
 }
 
-export const useVideoList = () => {
+export const useVideoList = (pageSize: number = 11) => {
   const { data: videoRecommendList } = useQuery({
-    queryKey: ['video', 'recommend'],
-    queryFn: () => videoList(1, 11),
+    queryKey: ['video', 'recommend', pageSize],
+    queryFn: () => videoList(1, pageSize),
   })
 
   const { data: videoRandomList, fetchNextPage } = useInfiniteQuery({
@@ -27,5 +27,21 @@ export const useVideoList = () => {
     videoRandomList: allRandomVideos,
     videoRecommendList: videoRecommendList?.data?.list,
     fetchNextPage,
+  }
+}
+
+export const getVideoDetail = async (id: string) => {
+  const { data } = await videoGetDetail(id)
+  return {
+    videoDetail: data,
+  }
+}
+
+export const useVideoShare = () => {
+  const { mutateAsync } = useMutation({
+    mutationFn: videoShare,
+  })
+  return {
+    shareVideo: mutateAsync,
   }
 }

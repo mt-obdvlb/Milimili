@@ -2,6 +2,7 @@ import {
   favoriteAddBatch,
   favoriteAddFolder,
   favoriteDeleteBatch,
+  favoriteGetByVideoId,
   favoriteGetFolderList,
   favoriteGetRecent,
   favoriteMoveBatch,
@@ -75,4 +76,14 @@ export const useFavoriteFolderAdd = () => {
     },
   })
   return { favoriteFolderAdd }
+}
+
+export const useFavoriteGetByVideoId = (videoId: string) => {
+  const { data } = useQuery({
+    queryKey: ['favorite', videoId],
+    queryFn: () => favoriteGetByVideoId(videoId),
+  })
+  return {
+    isFavorite: !data?.code,
+  }
 }

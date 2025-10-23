@@ -241,9 +241,15 @@ export const FavoriteService = {
 
     if (toInsert.length) {
       await FavoriteModel.insertMany(toInsert)
+      await VideoStatsModel.updateOne(
+        { videoId: { $in: videoIds.map((id) => new Types.ObjectId(id)) } },
+        { $set: { favoritesCount: 0 } },
+        { upsert: true }
+      )
       await VideoStatsModel.updateMany(
-        { _id: { $in: videoIds.map((id) => new Types.ObjectId(id)) } },
-        { $inc: { favoritesCount: 1 } }
+        { videoId: { $in: videoIds.map((id) => new Types.ObjectId(id)) } },
+
+        { $inc: { favoritesCount: toInsert.length } }
       )
     }
   },
@@ -268,5 +274,12 @@ export const FavoriteService = {
       name,
       description,
     })
+  },
+  get: async (videoId: string, userId: string) => {
+    const favorite = await FavoriteModel.findOne({
+      videoId,
+      userId,
+    })
+    return favorite ? 0 : 1
   },
 }

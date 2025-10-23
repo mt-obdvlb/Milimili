@@ -134,10 +134,9 @@ export const feedTranspont: RequestHandler<
       code: 401,
       message: MESSAGE.AUTH_ERROR,
     })
-  const data = await FeedService.transpont(userId, req.body)
+  await FeedService.transpont(userId, req.body)
   return res.status(200).json({
     code: 0,
-    data,
   })
 }
 
