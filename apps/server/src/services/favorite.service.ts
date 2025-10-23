@@ -249,7 +249,7 @@ export const FavoriteService = {
       await VideoStatsModel.updateMany(
         { videoId: { $in: videoIds.map((id) => new Types.ObjectId(id)) } },
 
-        { $inc: { favoritesCount: toInsert.length } }
+        { $inc: { favoritesCount: 1 } }
       )
     }
   },

@@ -10,7 +10,7 @@ export const useDanmakuGet = (videoId: string, isGet: boolean = true) => {
     enabled: isGet,
   })
   return {
-    danmakuList: data?.data,
+    danmakuList: data?.data ?? [],
   }
 }
 

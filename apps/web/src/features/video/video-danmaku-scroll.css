@@ -1,0 +1,56 @@
+/* 自定义 OverlayScrollbars 主题：os-theme-milimili */
+.os-theme-milimili {
+
+}
+
+/* ========== 纵向滚动条 ========== */
+.os-theme-milimili.os-scrollbar-vertical {
+  position: absolute !important;
+  z-index: 9999 !important;
+  bottom: 2px !important;
+  top: 2px !important;
+  right: 1px !important;
+  overflow: hidden !important;
+  transition-duration: 500ms !important;
+  width: 6px !important;
+}
+
+.os-theme-milimili.os-scrollbar-vertical > .os-scrollbar-track {
+  height: 100% !important;
+  width: 100% !important;
+}
+
+.os-theme-milimili.os-scrollbar-vertical > .os-scrollbar-track > .os-scrollbar-handle {
+  box-sizing: border-box !important;
+  position: absolute !important;
+  border-radius: 3px !important;
+  width: 100% !important;
+  height: 30px !important;
+  cursor: pointer !important;
+  background: #6d7f7a !important;
+}
+
+
+/* ========== 横向滚动条 ========== */
+/*.os-theme-milimili > .os-scrollbar-horizontal {*/
+/*  height: var(--scrollbar-size);*/
+/*}*/
+
+/*.os-theme-milimili > .os-scrollbar-horizontal > .os-scrollbar-track > .os-scrollbar-handle {*/
+/*  background: var(--scrollbar-thumb);*/
+/*  border-radius: 9999px;*/
+/*  transition: background 0.25s ease;*/
+/*}*/
+
+/*.os-theme-milimili > .os-scrollbar-horizontal:hover > .os-scrollbar-track > .os-scrollbar-handle {*/
+/*  background: var(--scrollbar-thumb-hover);*/
+/*}*/
+
+/*.os-theme-milimili > .os-scrollbar-horizontal > .os-scrollbar-track > .os-scrollbar-handle.active {*/
+/*  background: var(--scrollbar-thumb-active);*/
+/*}*/
+
+/*!* 轻微阴影，让滚动条更柔和 *!*/
+/*.os-theme-milimili > .os-scrollbar > .os-scrollbar-track > .os-scrollbar-handle {*/
+/*  box-shadow: 0 0 4px rgba(255, 182, 193, 0.4);*/
+/*}*/
