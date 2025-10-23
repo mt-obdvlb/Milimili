@@ -3,8 +3,10 @@ import {
   videoAddDanmaku,
   videoCreate,
   videoGetDanmakus,
+  videoGetDetail,
   videoGetWatchLater,
   videoList,
+  videoShare,
 } from '@/controllers/video.controller'
 import { authMiddleware, validatorMiddleware } from '@/middlewares'
 import { asyncHandler } from '@/utils'
@@ -14,6 +16,7 @@ import {
   videoGetDanmakusDTO,
   videoGetWatchLaterDTO,
   videoListDTO,
+  videoShareDTO,
 } from '@mtobdvlb/shared-types'
 
 const router = Router()
@@ -41,6 +44,13 @@ router.get(
   authMiddleware,
   validatorMiddleware({ query: videoGetWatchLaterDTO }),
   asyncHandler(videoGetWatchLater)
+)
+router.get('/detail/:videoId', authMiddleware, asyncHandler(videoGetDetail))
+router.post(
+  '/share',
+  authMiddleware,
+  validatorMiddleware({ body: videoShareDTO }),
+  asyncHandler(videoShare)
 )
 
 export default router

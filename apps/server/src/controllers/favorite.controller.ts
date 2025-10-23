@@ -156,3 +156,20 @@ export const favoriteFolderAdd: RequestHandler<
     code: 0,
   })
 }
+
+export const favoriteGetByVideoId: RequestHandler<
+  ParamsDictionary,
+  Result<FavoriteListItem>
+> = async (req, res) => {
+  const videoId = req.params.videoId
+  const userId = req.user?.id
+  if (!userId || !videoId)
+    return res.status(401).json({
+      code: 400,
+      message: MESSAGE.AUTH_ERROR,
+    })
+  const code = await FavoriteService.get(videoId, userId)
+  return res.status(200).json({
+    code,
+  })
+}

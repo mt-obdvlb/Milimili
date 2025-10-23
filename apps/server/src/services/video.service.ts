@@ -5,10 +5,13 @@ import {
   HistoryModel,
   IFavorite,
   IFavoriteFolder,
+  IFeed,
   IHistory,
+  ITag,
   IUser,
   IVideo,
   IVideoStats,
+  TagModel,
   UserModel,
   VideoModel,
   VideoStatsModel,
@@ -20,18 +23,21 @@ import {
   VideoAddDanmakuDTO,
   VideoCreateDTO,
   VideoGetDanmakusList,
+  VideoGetDetail,
   VideoGetWatchLaterDTO,
   VideoListItem,
+  VideoShareDTO,
 } from '@mtobdvlb/shared-types'
 import { FilterQuery, Types } from 'mongoose'
 import { MessageService } from '@/services/message.service'
+import { FeedService } from '@/services/feed.service'
 
 export const VideoService = {
   list: async ({ page, pageSize }: { page: number; pageSize: number }) => {
     console.log(page, pageSize)
 
     // 直接用 $sample 随机取 pageSize 个视频
-    return VideoModel.aggregate<VideoListItem>([
+    const allVideos = await VideoModel.aggregate<VideoListItem>([
       { $match: { isOpen: true } },
       { $sample: { size: pageSize } }, // 随机抽取
       {
@@ -68,6 +74,13 @@ export const VideoService = {
         },
       },
     ])
+    if (allVideos.length === 0) return []
+
+    // 随机重复抽取 pageSize 个视频
+    return Array.from({ length: pageSize }, (): VideoListItem => {
+      const randomIndex = Math.floor(Math.random() * allVideos.length)
+      return allVideos[randomIndex]!
+    })
   },
   create: async (body: VideoCreateDTO, userId: string) => {
     const user = await UserModel.findById(userId)
@@ -302,5 +315,92 @@ export const VideoService = {
     result.sort((a, b) => (indexMap.get(a.data.id) ?? 0) - (indexMap.get(b.data.id) ?? 0))
 
     return result.map((item) => item.data)
+  },
+  getDetail: async (videoId: string, userId: string): Promise<VideoGetDetail> => {
+    // 1️⃣ 参数校验
+    if (!Types.ObjectId.isValid(videoId)) throw new HttpError(400, 'videoId 非法')
+    if (!Types.ObjectId.isValid(userId)) throw new HttpError(400, 'userId 非法')
+
+    // 2️⃣ 查询视频并 populate 用户信息
+    type PopulatedVideoDoc = Omit<IVideo, 'userId'> & {
+      userId: { _id: Types.ObjectId; name?: string; avatar?: string }
+    }
+    const videoDoc = await VideoModel.findById(videoId)
+      .populate('userId', 'name avatar')
+      .lean<PopulatedVideoDoc>()
+    if (!videoDoc) throw new HttpError(404, '视频不存在')
+
+    // 3️⃣ 并行：更新统计 + upsert history
+    const now = new Date()
+    const statsPromise = VideoStatsModel.findOneAndUpdate(
+      { videoId: videoDoc._id },
+      { $inc: { viewsCount: 1 } },
+      { new: true, upsert: true, setDefaultsOnInsert: true }
+    ).lean<IVideoStats | null>()
+
+    const historyPromise = HistoryModel.findOneAndUpdate(
+      {
+        userId: new Types.ObjectId(userId),
+        videoId: new Types.ObjectId(videoId),
+      },
+      {
+        $set: { watchedAt: now },
+        $setOnInsert: { duration: 0 },
+      },
+      { new: true, upsert: true, setDefaultsOnInsert: true }
+    ).lean<IHistory | null>()
+
+    const [statsDoc, historyDoc] = await Promise.all([statsPromise, historyPromise])
+
+    const stats = {
+      viewsCount: statsDoc?.viewsCount ?? 0,
+      likesCount: statsDoc?.likesCount ?? 0,
+      favoritesCount: statsDoc?.favoritesCount ?? 0,
+      danmakusCount: statsDoc?.danmakusCount ?? 0,
+      commentsCount: statsDoc?.commentsCount ?? 0,
+      sharesCount: statsDoc?.sharesCount ?? 0,
+    }
+
+    // 4️⃣ 查询标签
+    const tagDocs = await TagModel.find({ videoId: videoDoc._id }).lean<ITag[]>()
+    const tags: string[] = tagDocs.map((t) => t.name).filter(Boolean)
+
+    // 5️⃣ 构造 user
+    const user = {
+      id: videoDoc.userId._id.toHexString(),
+      name: videoDoc.userId.name ?? '未知用户',
+      avatar: videoDoc.userId.avatar ?? '',
+    }
+
+    // 6️⃣ 构造 video 返回
+    const publishAtIso =
+      videoDoc.publishedAt instanceof Date
+        ? videoDoc.publishedAt.toISOString()
+        : new Date(videoDoc.publishedAt).toISOString()
+
+    const video = {
+      id: videoDoc._id.toHexString(),
+      thumbnail: videoDoc.thumbnail,
+      description: videoDoc.description ?? '',
+      title: videoDoc.title,
+      duration: historyDoc?.duration ?? 0,
+      time: videoDoc.time,
+      publishAt: publishAtIso,
+      views: stats.viewsCount,
+      likes: stats.likesCount,
+      comments: stats.commentsCount,
+      favorites: stats.favoritesCount,
+      danmakus: stats.danmakusCount,
+      shares: stats.sharesCount,
+      url: videoDoc.url,
+    }
+
+    return { user, tags, video }
+  },
+
+  share: async (userId: string, { videoId, content }: VideoShareDTO) => {
+    const feed = await FeedModel.findOne({ videoId, type: 'video' }).lean<IFeed>()
+    if (feed) await FeedService.transpont(userId, { feedId: feed._id.toString(), content })
+    await VideoStatsModel.findOneAndUpdate({ videoId }, { $inc: { sharesCount: 1 } }).exec()
   },
 }

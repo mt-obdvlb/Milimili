@@ -62,11 +62,16 @@ type TargetDocMap = {
 // 更新 likesCount 的函数
 const updateLikesCount = async <T extends TargetType>(
   targetType: T,
-  targetId: string | Types.ObjectId,
+  targetId: Types.ObjectId,
   inc: number
 ) => {
+  console.log(targetId)
+  if (targetType === 'video') {
+    await VideoStatsModel.updateOne({ videoId: targetId }, { $inc: { likesCount: inc } })
+    return
+  }
   const model = targetModelMap[targetType] as unknown as Model<TargetDocMap[T]>
-  await model.updateOne({ _id: targetId }, { $inc: { likesCount: inc } })
+  await model.updateOne({ _id: targetId }, { $inc: { likesCount: inc } }, { upsert: true })
 }
 
 export const LikeService = {
@@ -84,15 +89,12 @@ export const LikeService = {
         sourceType: query.targetType,
       })
     }
-
-    return 1
   },
 
   unlike: async (userId: string, dto: UnlikeDTO) => {
     const query = resolveTarget(userId, dto)
     await updateLikesCount(query.targetType, query.targetId, -1)
     await LikeModel.deleteOne(query)
-    return 1
   },
 
   isLike: async (userId: string, dto: LikeGetDTO) => {

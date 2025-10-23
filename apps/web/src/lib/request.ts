@@ -174,7 +174,7 @@ const request: AxiosInstance = (() => {
               error.response.data as {
                 message: string
               }
-            )?.message || `${error.message}`
+            )?.message
           )
         }
         return error.response.data

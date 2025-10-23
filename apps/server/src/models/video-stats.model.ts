@@ -6,6 +6,7 @@ type VideoStateBase = {
   favoritesCount: number
   danmakusCount: number
   commentsCount: number
+  sharesCount: number
 }
 
 type VideoStateDB = VideoStateBase & {
@@ -27,6 +28,7 @@ const videoStatsSchema = new Schema<IVideoStats>(
     favoritesCount: { type: Number, default: 0, required: true },
     danmakusCount: { type: Number, default: 0, required: true },
     commentsCount: { type: Number, default: 0, required: true },
+    sharesCount: { type: Number, default: 0, required: true },
   },
   { versionKey: false, timestamps: true }
 )

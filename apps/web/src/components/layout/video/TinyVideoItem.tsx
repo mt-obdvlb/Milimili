@@ -25,6 +25,7 @@ const TinyVideoItem = ({
   showFavorite,
   hiddenTitle,
   isRounded = true,
+  hiddenPlayerTime,
 }: {
   video: VideoListItem & {
     duration?: number
@@ -45,6 +46,7 @@ const TinyVideoItem = ({
   showFavorite?: boolean
   hiddenTitle?: boolean
   isRounded?: boolean
+  hiddenPlayerTime?: boolean
 }) => {
   const [time, setTime] = useState(0)
   const [hover, setHover] = useState(false)
@@ -115,7 +117,7 @@ const TinyVideoItem = ({
                 <div className={'relative size-full shadow-none'}>
                   {!disabled && (
                     <TinyVideoPlayer
-                      hiddenTime={hiddenTime}
+                      hiddenTime={hiddenTime || hiddenPlayerTime}
                       hover={hover}
                       time={time}
                       setTime={setTime}
