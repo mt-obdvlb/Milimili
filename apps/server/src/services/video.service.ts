@@ -400,7 +400,11 @@ export const VideoService = {
 
   share: async (userId: string, { videoId, content }: VideoShareDTO) => {
     const feed = await FeedModel.findOne({ videoId, type: 'video' }).lean<IFeed>()
-    if (feed) await FeedService.transpont(userId, { feedId: feed._id.toString(), content })
+    if (feed)
+      await FeedService.transpont(userId, {
+        feedId: feed._id.toString(),
+        content: content ?? '转发视频',
+      })
     await VideoStatsModel.findOneAndUpdate({ videoId }, { $inc: { sharesCount: 1 } }).exec()
   },
 }
