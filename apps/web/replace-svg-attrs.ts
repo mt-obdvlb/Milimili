@@ -13,8 +13,11 @@ const ATTR_MAP: Record<string, string> = {
   'stroke-miterlimit': 'strokeMiterlimit',
   'stroke-dasharray': 'strokeDasharray',
   'stroke-dashoffset': 'strokeDashoffset',
+  'stroke-opacity': 'strokeOpacity',
   'view-box': 'viewBox',
   'color-interpolation-filters': 'colorInterpolationFilters',
+  'fill-opacity': 'fillOpacity',
+
   // 可以继续添加更多
 }
 

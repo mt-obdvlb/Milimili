@@ -38,7 +38,7 @@ export default defineConfig([
   },
 
   {
-    ignores: ['dist/**'],
+    ignores: ['dist/**', 'apps/web/public'],
   },
 
   {

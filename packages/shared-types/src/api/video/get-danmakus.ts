@@ -1,4 +1,4 @@
-import { DanmakuPosition } from '../danmaku'
+import { DanmakuPosition } from '@/api'
 
 export type VideoGetDanmakusItem = {
   content: string

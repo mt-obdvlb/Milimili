@@ -1,7 +1,6 @@
 import { cn } from '@/lib'
 import { OverlayScrollbarsComponent, OverlayScrollbarsComponentRef } from 'overlayscrollbars-react'
 import { ReactNode, RefObject } from 'react'
-import '@/features/video/video-danmaku-scroll.css'
 
 const VideoDanmakuScrollbar = ({
   children,
