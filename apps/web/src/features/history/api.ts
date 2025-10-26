@@ -1,4 +1,5 @@
 import {
+  historyAdd,
   historyClearUp,
   historyDeleteBatch,
   historyGetList,
@@ -78,4 +79,11 @@ export const useHistoryDeleteBatch = () => {
     },
   })
   return { historyDelete }
+}
+
+export const useHistoryAdd = () => {
+  const { mutateAsync } = useMutation({
+    mutationFn: historyAdd,
+  })
+  return { historyAdd: mutateAsync }
 }

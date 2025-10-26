@@ -1,7 +1,9 @@
 export const formatTime = (time: number): string => {
-  const hours = Math.floor(time / 3600)
-  const minutes = Math.floor((time % 3600) / 60)
-  const seconds = time % 60
+  if (!time || isNaN(time)) return '00:00'
+  const totalSeconds = Math.floor(time ?? 0) // 👈 保证只取整秒
+  const hours = Math.floor(totalSeconds / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+  const seconds = totalSeconds % 60
 
   const h = hours > 0 ? `${String(hours).padStart(2, '0')}:` : ''
   const m = String(minutes).padStart(2, '0')

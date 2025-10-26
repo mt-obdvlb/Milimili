@@ -1,5 +1,11 @@
 import request from '@/lib/request'
-import { HistoryGetItem, HistoryList, PageResult, Result } from '@mtobdvlb/shared-types'
+import {
+  HistoryAddDTO,
+  HistoryGetItem,
+  HistoryList,
+  PageResult,
+  Result,
+} from '@mtobdvlb/shared-types'
 import { HistoryDeleteBatchRequest, HistoryGetRequest } from '@/types'
 
 const baseURL = '/histories'
@@ -9,6 +15,7 @@ const API = {
   list: '/list',
   deleteBatch: '/',
   clear: '/clear',
+  add: '/',
 } as const
 
 export const historyGetRecent = () => request.get<Result<HistoryList>>(`${baseURL}${API.recent}`)
@@ -24,3 +31,6 @@ export const historyDeleteBatch = (params: HistoryDeleteBatchRequest) =>
   })
 
 export const historyClearUp = () => request.delete<Result>(`${baseURL}${API.clear}`)
+
+export const historyAdd = (body: HistoryAddDTO) =>
+  request.post<Result>(`${baseURL}${API.add}`, body)

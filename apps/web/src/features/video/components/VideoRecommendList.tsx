@@ -1,3 +1,4 @@
+'use client'
 import { useVideoList } from '@/features'
 import { Label, Separator } from '@/components'
 import { Switch } from '@/components/ui/switch'

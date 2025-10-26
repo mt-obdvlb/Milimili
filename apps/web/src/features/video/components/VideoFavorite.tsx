@@ -1,3 +1,4 @@
+'use client'
 import { cn, toast } from '@/lib'
 import { formatPlayCount } from '@/utils'
 import { useFavoriteAddBatch, useFavoriteGetByVideoId, useFavoriteGetFolderList } from '@/features'
