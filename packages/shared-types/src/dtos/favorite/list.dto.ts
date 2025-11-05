@@ -1,7 +1,7 @@
 import { z } from 'zod/v4'
 
 export const favoriteListDTO = z.object({
-  userId: z.string(),
+  userId: z.string().optional(),
   page: z.number().default(1),
   pageSize: z.number().default(10),
   favoriteFolderId: z.string(),

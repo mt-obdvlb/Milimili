@@ -11,6 +11,7 @@ import {
   IUser,
   IVideo,
   IVideoStats,
+  LikeModel,
   TagModel,
   UserModel,
   VideoModel,
@@ -25,6 +26,7 @@ import {
   VideoGetDanmakusList,
   VideoGetDetail,
   VideoGetWatchLaterDTO,
+  VideoList,
   VideoListItem,
   VideoShareDTO,
 } from '@mtobdvlb/shared-types'
@@ -406,5 +408,62 @@ export const VideoService = {
         content: content ?? '转发视频',
       })
     await VideoStatsModel.findOneAndUpdate({ videoId }, { $inc: { sharesCount: 1 } }).exec()
+  },
+  listLike: async (userId: string): Promise<VideoList> => {
+    const likes = await LikeModel.find({ userId, targetType: 'video' })
+      .sort({ createdAt: -1 })
+      .limit(20)
+      .lean()
+
+    const videoIds = likes.map((like) => like.targetId)
+    if (videoIds.length === 0) return []
+
+    // 查询视频并关联用户信息
+    const videos = await VideoModel.aggregate<VideoListItem>([
+      {
+        $match: {
+          _id: { $in: videoIds.map((id) => new Types.ObjectId(id.toString())) },
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      { $unwind: '$user' },
+      {
+        $lookup: {
+          from: 'videostats',
+          localField: '_id',
+          foreignField: 'videoId',
+          as: 'videostat',
+        },
+      },
+      { $unwind: { path: '$videostat', preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          _id: 0,
+          id: { $toString: '$_id' },
+          title: 1,
+          thumbnail: 1,
+          time: 1,
+          views: { $ifNull: ['$videostat.viewsCount', 0] },
+          danmakus: { $ifNull: ['$videostat.danmakusCount', 0] },
+          username: '$user.name',
+          publishedAt: '$createdAt',
+          userId: { $toString: '$user._id' },
+          url: 1,
+        },
+      },
+    ])
+
+    // 保持与点赞记录相同的顺序
+    const videoMap = new Map(videos.map((v) => [v.id, v]))
+    return videoIds
+      .map((id) => videoMap.get(id.toString()))
+      .filter((v): v is VideoListItem => Boolean(v))
   },
 }

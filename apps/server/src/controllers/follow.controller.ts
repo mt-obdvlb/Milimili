@@ -1,5 +1,13 @@
 import { RequestHandler } from 'express'
-import { FollowCreateDTO, FollowDeleteDTO, FollowGetDTO, Result } from '@mtobdvlb/shared-types'
+import {
+  FollowCreateDTO,
+  FollowDeleteDTO,
+  FollowGetDTO,
+  FollowListDTO,
+  FollowListItem,
+  PageResult,
+  Result,
+} from '@mtobdvlb/shared-types'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { MESSAGE } from '@/constants'
 import { FollowService } from '@/services/follow.service'
@@ -60,4 +68,16 @@ export const followDelete: RequestHandler<ParamsDictionary, Result, FollowDelete
     followingId: req.body.followingId,
   })
   return res.status(200).json({ code: 0 })
+}
+
+export const followList: RequestHandler<
+  ParamsDictionary,
+  Result<PageResult<FollowListItem>>,
+  FollowListDTO
+> = async (req, res) => {
+  const data = await FollowService.list(req.body)
+  return res.status(200).json({
+    code: 0,
+    data,
+  })
 }

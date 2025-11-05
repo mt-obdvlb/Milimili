@@ -6,6 +6,7 @@ import {
   videoGetDetail,
   videoGetWatchLater,
   videoList,
+  videoListLike,
   videoShare,
 } from '@/controllers/video.controller'
 import { authMiddleware, validatorMiddleware } from '@/middlewares'
@@ -52,5 +53,6 @@ router.post(
   validatorMiddleware({ body: videoShareDTO }),
   asyncHandler(videoShare)
 )
+router.get('/list-like/:userId', asyncHandler(videoListLike))
 
 export default router
