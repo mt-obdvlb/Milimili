@@ -8,6 +8,7 @@ import {
   UserAtList,
   UserFindPasswordDTO,
   UserGetByName,
+  UserGetInfo,
   UserUpdateDTO,
 } from '@mtobdvlb/shared-types'
 import { Types } from 'mongoose'
@@ -79,11 +80,15 @@ export const UserService = {
   getInfo: async (id: string) => {
     const user = await UserModel.findById(id)
     if (!user) throw new Error(MESSAGE.USER_NOT_FOUND)
+    const followings = await FollowModel.countDocuments({ followerId: id })
+    const followers = await FollowModel.countDocuments({ followedId: id })
     return {
       name: user.name,
       avatar: user.avatar,
       email: user.email,
       id: user._id.toString(),
+      followers,
+      followings,
     }
   },
   getByEmail: async (email: string) => {
@@ -173,14 +178,18 @@ export const UserService = {
   update: async (id: string, body: UserUpdateDTO) => {
     await UserModel.findByIdAndUpdate(id, body, { new: true })
   },
-  getById: async (id: string) => {
+  getById: async (id: string): Promise<UserGetInfo> => {
     const user = await UserModel.findById(id)
     if (!user) throw new Error(MESSAGE.USER_NOT_FOUND)
+    const followings = await FollowModel.countDocuments({ followerId: id })
+    const followers = await FollowModel.countDocuments({ followedId: id })
     return {
       id: user._id.toString(),
       name: user.name,
       avatar: user.avatar,
       email: user.email,
+      followers,
+      followings,
     }
   },
 }

@@ -23,8 +23,8 @@ const API = {
 export const favoriteGetRecent = () =>
   request.get<Result<FavoriteRecentList>>(`${baseURL}${API.recent}`)
 
-export const favoriteGetFolderList = () =>
-  request.get<Result<FavoriteFolderList>>(`${baseURL}${API.folderList}`)
+export const favoriteGetFolderList = (userId?: string) =>
+  request.get<Result<FavoriteFolderList>>(`${baseURL}${API.folderList}/${userId ?? ''}`)
 
 export const favoriteDeleteBatch = (body: FavoriteDeleteBatchRequest) =>
   request.delete<Result>(`${baseURL}${API.deleteBatch}`, { data: body })

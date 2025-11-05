@@ -3,4 +3,6 @@ export type UserGetInfo = {
   id: string
   email: string
   avatar: string
+  followings: number
+  followers: number
 }

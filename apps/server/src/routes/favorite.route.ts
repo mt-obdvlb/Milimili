@@ -25,6 +25,7 @@ import {
 const router = Router()
 
 router.get('/folder', authMiddleware, asyncHandler(favoriteFolderList))
+router.get('/folder/:id', asyncHandler(favoriteFolderList))
 router.get(
   '/',
   authMiddleware,

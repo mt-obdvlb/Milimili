@@ -19,11 +19,13 @@ const HeaderBar = ({
   userHomeInfo,
   isFixed,
   bg,
+  allFirst,
 }: {
   searchLogTop10List?: SearchLogTop10List
   userHomeInfo?: UserGetInfoHome
   isFixed?: boolean
   bg?: string
+  allFirst?: boolean
 }) => {
   const { y } = useWindowScroll()
   const [type, setType] = useState<'first' | 'second'>('first')
@@ -34,6 +36,10 @@ const HeaderBar = ({
   const { feedRecentList } = useFeedGetRecent()
 
   useEffect(() => {
+    if (allFirst) {
+      setType('first')
+      return
+    }
     if (isFixed) {
       setType('second')
     } else {
@@ -43,7 +49,7 @@ const HeaderBar = ({
         setType('first')
       }
     }
-  }, [y, type, isFixed])
+  }, [y, type, isFixed, allFirst])
   return (
     <div
       className={cn(

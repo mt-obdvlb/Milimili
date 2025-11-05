@@ -20,7 +20,7 @@ export const favoriteFolderList: RequestHandler<
   ParamsDictionary,
   Result<FavoriteFolderList>
 > = async (req, res) => {
-  const userId = req.user?.id
+  const userId = req.params.id || req.user?.id
   if (!userId)
     return res.status(401).json({
       code: 401,

@@ -19,10 +19,10 @@ export const useFavoriteGetRecent = () => {
   }
 }
 
-export const useFavoriteGetFolderList = () => {
+export const useFavoriteGetFolderList = (userId?: string) => {
   const { data: favoriteFolderList } = useQuery({
-    queryKey: ['favorite', 'list', 'folder'],
-    queryFn: () => favoriteGetFolderList(),
+    queryKey: ['favorite', 'list', 'folder', userId],
+    queryFn: () => favoriteGetFolderList(userId),
   })
   return {
     favoriteFolderList: favoriteFolderList?.data,
