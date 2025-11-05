@@ -10,6 +10,7 @@ import {
   VideoGetDetail,
   VideoGetWatchLaterDTO,
   VideoGetWaterLaterList,
+  VideoList,
   VideoListDTO,
   VideoListItem,
   VideoShareDTO,
@@ -140,5 +141,22 @@ export const videoShare: RequestHandler<ParamsDictionary, Result, VideoShareDTO>
   await VideoService.share(userId, req.body)
   return res.status(200).json({
     code: 0,
+  })
+}
+
+export const videoListLike: RequestHandler<ParamsDictionary, Result<VideoList>> = async (
+  req,
+  res
+) => {
+  const userId = req.user?.id
+  if (!userId)
+    return res.status(401).json({
+      code: 400,
+      message: MESSAGE.INVALID_PARAMS,
+    })
+  const data = await VideoService.listLike(userId)
+  return res.status(200).json({
+    code: 0,
+    data,
   })
 }

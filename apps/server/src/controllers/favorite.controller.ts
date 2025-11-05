@@ -38,7 +38,7 @@ export const favoriteList: RequestHandler<
   Result<PageResult<FavoriteListItem>>,
   FavoriteListDTO
 > = async (req, res) => {
-  const userId = req.user?.id
+  const userId = req.body.userId || req.user?.id
   if (!userId)
     return res.status(401).json({
       code: 401,
