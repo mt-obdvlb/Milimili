@@ -34,6 +34,7 @@ export const FavoriteService = {
           name: folder.name,
           number: count,
           type: folder.type,
+          thumbnail: folder.thumbnail,
         }
       })
     )

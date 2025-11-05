@@ -1,7 +1,13 @@
 import HeaderBar from '@/components/layout/header/header-bar/HeaderBar'
 import { getSearchLogTop10, getUserHomeInfo } from '@/features'
 
-const HeaderBarWrapper = async ({ isFixed }: { isFixed?: boolean }) => {
+const HeaderBarWrapper = async ({
+  isFixed,
+  allFirst,
+}: {
+  isFixed?: boolean
+  allFirst?: boolean
+}) => {
   const [{ userHomeInfo }, { searchLogTop10List }] = await Promise.all([
     getUserHomeInfo(),
     getSearchLogTop10(),
@@ -12,6 +18,7 @@ const HeaderBarWrapper = async ({ isFixed }: { isFixed?: boolean }) => {
       userHomeInfo={userHomeInfo}
       isFixed={isFixed}
       searchLogTop10List={searchLogTop10List}
+      allFirst={allFirst}
     />
   )
 }
