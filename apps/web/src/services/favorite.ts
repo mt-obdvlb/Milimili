@@ -1,4 +1,12 @@
-import { FavoriteFolderList, FavoriteRecentList, Result } from '@mtobdvlb/shared-types'
+import {
+  FavoriteFolderList,
+  FavoriteFolderListItem,
+  FavoriteListDTO,
+  FavoriteListItem,
+  FavoriteRecentList,
+  PageResult,
+  Result,
+} from '@mtobdvlb/shared-types'
 import request from '@/lib/request'
 import {
   FavoriteAddBatchRequest,
@@ -18,6 +26,8 @@ const API = {
   cleanWatchLater: '/clean-watch-later',
   folderAdd: '/folder',
   videoId: '/videoId',
+  detail: '/detail',
+  list: '',
 } as const
 
 export const favoriteGetRecent = () =>
@@ -43,3 +53,9 @@ export const favoriteAddFolder = (body: FavoriteFolderAddRequest) =>
 
 export const favoriteGetByVideoId = (videoId: string) =>
   request.get<Result>(`${baseURL}${API.videoId}/${videoId}`)
+
+export const favoriteGetDetail = (id: string) =>
+  request.get<Result<FavoriteFolderListItem>>(`${baseURL}${API.detail}/${id}`)
+
+export const favoriteList = (params: FavoriteListDTO) =>
+  request.get<Result<PageResult<FavoriteListItem>>>(`${baseURL}${API.list}`, { params })

@@ -6,6 +6,7 @@ import {
   FavoriteDeleteBatchDTO,
   FavoriteFolderAddDTO,
   FavoriteFolderList,
+  FavoriteFolderListItem,
   FavoriteListDTO,
   FavoriteListItem,
   FavoriteMoveBatchDTO,
@@ -39,6 +40,7 @@ export const favoriteList: RequestHandler<
   FavoriteListDTO
 > = async (req, res) => {
   const userId = req.body.userId || req.user?.id
+
   if (!userId)
     return res.status(401).json({
       code: 401,
@@ -171,5 +173,22 @@ export const favoriteGetByVideoId: RequestHandler<
   const code = await FavoriteService.get(videoId, userId)
   return res.status(200).json({
     code,
+  })
+}
+
+export const favoriteDetailGetByFolderId: RequestHandler<
+  ParamsDictionary,
+  Result<FavoriteFolderListItem>
+> = async (req, res) => {
+  const folderId = req.params.folderId
+  if (!folderId)
+    return res.status(401).json({
+      code: 400,
+      message: MESSAGE.INVALID_PARAMS,
+    })
+  const data = await FavoriteService.detailByFolderId(folderId)
+  return res.status(200).json({
+    code: 0,
+    data,
   })
 }

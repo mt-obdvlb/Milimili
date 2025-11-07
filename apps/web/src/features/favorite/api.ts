@@ -3,11 +3,14 @@ import {
   favoriteAddFolder,
   favoriteDeleteBatch,
   favoriteGetByVideoId,
+  favoriteGetDetail,
   favoriteGetFolderList,
   favoriteGetRecent,
+  favoriteList,
   favoriteMoveBatch,
 } from '@/services/favorite'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { FavoriteListDTO } from '@mtobdvlb/shared-types'
 
 export const useFavoriteGetRecent = () => {
   const { data: favoriteRecentList } = useQuery({
@@ -85,5 +88,29 @@ export const useFavoriteGetByVideoId = (videoId: string) => {
   })
   return {
     isFavorite: !data?.code,
+  }
+}
+
+export const useFavoriteList = (params: FavoriteListDTO) => {
+  const { data } = useQuery({
+    queryKey: ['favorite', 'list', params],
+    queryFn: () => favoriteList(params),
+    enabled: !!params.favoriteFolderId,
+  })
+
+  return {
+    favoriteList: data?.data?.list ?? [],
+    total: data?.data?.total ?? 0,
+  }
+}
+
+export const useFavoriteDetail = (folderId: string) => {
+  const { data } = useQuery({
+    queryKey: ['favorite', 'detail', folderId],
+    queryFn: () => favoriteGetDetail(folderId),
+    enabled: !!folderId,
+  })
+  return {
+    favoriteDetail: data?.data,
   }
 }

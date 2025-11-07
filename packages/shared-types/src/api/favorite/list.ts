@@ -1,14 +1,19 @@
 export type FavoriteListItem = {
   id: string
   video: {
-    title: string
     id: string
-    time: number
+    title: string
     thumbnail: string
+    time: number
+    views: number
+    danmakus: number
+    publishedAt: string
+    url: string
   }
   user: {
     name: string
     id: string
+    avatar: string
   }
 }
 

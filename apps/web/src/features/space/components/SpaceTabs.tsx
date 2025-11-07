@@ -1,7 +1,7 @@
 'use client'
 
 import { UserGetInfo } from '@mtobdvlb/shared-types'
-import { Label, Tabs, TabsList, TabsTrigger } from '@/components'
+import { Label, Tabs, TabsList } from '@/components'
 import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib'
@@ -63,18 +63,19 @@ const SpaceTabs = ({ user }: { user: UserGetInfo }) => {
       >
         <div className={'shrink-0 flex items-center mr-[15px]'}>
           <LayoutGroup id='space-tabs'>
-            <div className='relative flex items-center'>
+            <div className='relative flex  items-center'>
               {tabs.map((item) => {
                 const isActive = item.value === select
                 return (
                   <motion.div
                     key={item.value}
                     layout
-                    className='relative flex items-center justify-center h-16 not-first-of-type:ml-[30px]'
+                    className='relative flex pointer-events-none items-center justify-center h-16 not-first-of-type:ml-[30px]'
                   >
                     <Link
+                      prefetch={'auto'}
                       href={`/space/${user.id}/${item.href || item.value}`}
-                      className='flex items-center justify-center size-full  relative'
+                      className='flex items-center justify-center pointer-events-auto size-full  relative'
                     >
                       <i
                         className={cn(
@@ -110,16 +111,16 @@ const SpaceTabs = ({ user }: { user: UserGetInfo }) => {
               {
                 name: '关注数',
                 num: user.followings,
-                value: 'fans',
+                value: 'follow',
               },
-              { name: '粉丝数', num: user.followers, value: 'follow' },
+              { name: '粉丝数', num: user.followers, value: 'fans' },
             ].map((item) => (
-              <TabsTrigger
+              <Link
                 className={
                   'cursor-pointer not-first-of-type:ml-4 group flex flex-col items-center min-w-[52px]'
                 }
-                value={item.value}
                 key={item.value}
+                href={`/space/${user.id}/relation/${item.value}`}
                 onClick={() => {
                   router.push(`/space/${user.id}/relation/${item.value}`)
                 }}
@@ -140,7 +141,7 @@ const SpaceTabs = ({ user }: { user: UserGetInfo }) => {
                 >
                   {item.num}
                 </span>
-              </TabsTrigger>
+              </Link>
             ))}
           </div>
         </div>
