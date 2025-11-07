@@ -12,7 +12,7 @@ const NotFoundErrorPanel = () => {
           className={
             'float-none inline-block cursor-pointer rounded-[4px] bg-[#00a1d6] px-5 text-center align-middle text-[16px] leading-10 text-white transition duration-200'
           }
-          href={'/'}
+          href={''}
           onClick={(e) => {
             e.preventDefault()
             window.history.back()

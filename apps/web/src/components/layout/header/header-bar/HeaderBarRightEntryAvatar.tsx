@@ -25,7 +25,7 @@ const HeaderBarRightEntryAvatar = ({ userHomeInfo }: { userHomeInfo?: UserGetInf
         <div className={'relative box-content size-[50px] cursor-pointer pr-[10px]'}>
           <div className={'relative z-55'}>
             <Link
-              href={'/apps/web/public'}
+              href={'/space'}
               target={'_blank'}
               className={cn(
                 'absolute top-[5px] left-[10px] z-2 block size-[38px] rounded-full transition-all',
@@ -46,7 +46,7 @@ const HeaderBarRightEntryAvatar = ({ userHomeInfo }: { userHomeInfo?: UserGetInf
               </picture>
             </Link>
             <Link
-              href={'/apps/web/public'}
+              href={'/space'}
               target={'_blank'}
               className={cn(
                 'absolute top-[5px] left-[10px] z-2 block origin-top-left rounded-full transition-all duration-350 will-change-transform',

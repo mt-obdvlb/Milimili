@@ -7,6 +7,7 @@ import {
   videoGetWatchLater,
   videoList,
   videoListLike,
+  videoListSpace,
   videoShare,
 } from '@/controllers/video.controller'
 import { authMiddleware, validatorMiddleware } from '@/middlewares'
@@ -17,12 +18,18 @@ import {
   videoGetDanmakusDTO,
   videoGetWatchLaterDTO,
   videoListDTO,
+  videoListSpaceDTO,
   videoShareDTO,
 } from '@mtobdvlb/shared-types'
 
 const router = Router()
 
 router.get('/list', validatorMiddleware({ query: videoListDTO }), asyncHandler(videoList))
+router.get(
+  '/list-space',
+  validatorMiddleware({ query: videoListSpaceDTO }),
+  asyncHandler(videoListSpace)
+)
 router.post(
   '/',
   authMiddleware,

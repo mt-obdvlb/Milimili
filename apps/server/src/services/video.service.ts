@@ -28,6 +28,7 @@ import {
   VideoGetWatchLaterDTO,
   VideoList,
   VideoListItem,
+  VideoListSpaceDTO,
   VideoShareDTO,
 } from '@mtobdvlb/shared-types'
 import { FilterQuery, Types } from 'mongoose'
@@ -35,7 +36,7 @@ import { MessageService } from '@/services/message.service'
 import { FeedService } from '@/services/feed.service'
 
 export const VideoService = {
-  list: async ({ page, pageSize }: { page: number; pageSize: number }) => {
+  list: async ({ page, pageSize }: { page: number; pageSize: number }): Promise<VideoList> => {
     console.log(page, pageSize)
 
     // 直接用 $sample 随机取 pageSize 个视频
@@ -465,5 +466,93 @@ export const VideoService = {
     return videoIds
       .map((id) => videoMap.get(id.toString()))
       .filter((v): v is VideoListItem => Boolean(v))
+  },
+  listSpace: async ({
+    userId,
+    pageSize,
+    page,
+    sort,
+  }: VideoListSpaceDTO): Promise<{ total: number; list: VideoList }> => {
+    // 验证用户ID有效性
+    if (!Types.ObjectId.isValid(userId)) {
+      throw new HttpError(400, '无效的用户ID')
+    }
+
+    const userObjectId = new Types.ObjectId(userId)
+
+    // 构建排序条件
+    const sortOptions: Record<string, 1 | -1> = {}
+    switch (sort) {
+      case 'publishedAt':
+        sortOptions['createdAt'] = -1 // 最新发布在前
+        break
+      case 'views':
+        sortOptions['videostat.viewsCount'] = -1 // 最多观看在前
+        break
+      case 'favorites':
+        sortOptions['videostat.favoritesCount'] = -1 // 最多收藏在前
+        break
+      default:
+        sortOptions['createdAt'] = -1
+    }
+
+    // 计算分页偏移量
+    const skip = (page - 1) * pageSize
+
+    // 聚合查询视频列表及总数
+    const [result] = await VideoModel.aggregate([
+      {
+        $facet: {
+          // 分页查询视频数据
+          list: [
+            { $match: { userId: userObjectId, isOpen: true } },
+            { $skip: skip },
+            { $limit: pageSize },
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'userId',
+                foreignField: '_id',
+                as: 'user',
+              },
+            },
+            { $unwind: '$user' },
+            {
+              $lookup: {
+                from: 'videostats',
+                localField: '_id',
+                foreignField: 'videoId',
+                as: 'videostat',
+              },
+            },
+            { $unwind: { path: '$videostat', preserveNullAndEmptyArrays: true } },
+            { $sort: sortOptions },
+            {
+              $project: {
+                _id: 0,
+                id: { $toString: '$_id' },
+                title: 1,
+                thumbnail: 1,
+                time: 1,
+                views: { $ifNull: ['$videostat.viewsCount', 0] },
+                danmakus: { $ifNull: ['$videostat.danmakusCount', 0] },
+                username: '$user.name',
+                publishedAt: '$createdAt',
+                userId: { $toString: '$user._id' },
+                url: 1,
+              },
+            },
+          ],
+          // 计算符合条件的总数量
+          total: [{ $match: { userId: userObjectId, isOpen: true } }, { $count: 'count' }],
+        },
+      },
+    ])
+
+    // 处理查询结果
+    const total = result.total[0]?.count || 0
+    const list = result.list as VideoListItem[]
+
+    return { total, list }
   },
 }

@@ -12,7 +12,7 @@ const Space = async ({ params }: { params: Promise<{ userId: string }> }) => {
           <SpaceHomeFavoriteWrapper userId={userId} />
         </section>
         <section>
-          <SpaceHomeLikeListWrapper />
+          <SpaceHomeLikeListWrapper userId={userId} />
         </section>
       </div>
       <div className={'shrink-0 w-[240px] ml-9'}></div>
