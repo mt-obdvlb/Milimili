@@ -7,10 +7,15 @@ type VideoSkeletonProps = React.SVGProps<SVGSVGElement> & {
   ref?: React.Ref<SVGSVGElement> // React 19 可以直接作为 prop
 }
 
-const VideoSkeleton = ({ className, ref, ...props }: VideoSkeletonProps) => {
+const VideoSkeleton = ({
+  className,
+  ref,
+  mt = true,
+  ...props
+}: VideoSkeletonProps & { mt?: boolean }) => {
   return (
     <svg
-      className={cn('mt-[20px] h-full w-full', className)}
+      className={cn(' h-full w-full', mt && 'mt-[20px]', className)}
       viewBox='0 0 300 220'
       xmlns='http://www.w3.org/2000/svg'
       ref={ref}

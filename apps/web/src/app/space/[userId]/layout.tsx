@@ -28,7 +28,7 @@ const SpaceLayout = async ({
           className={'pointer-events-none -z-1 fixed inset-0 bg-[top_center] bg-no-repeat bg-cover'}
         ></div>
         <SpaceHeader user={user} />
-        <div className={'sticky z-99 top-0 bg-bg1 shadow-[0_0_0_1px_var(--bg2_float)]'}>
+        <div className={'sticky z-10 top-0 bg-bg1 shadow-[0_0_0_1px_var(--bg2_float)]'}>
           <SpaceTabs user={user} />
         </div>
         <main className={'min-w-[1100px] max-w-[2260px] mx-auto min-h-[calc(100vh-294px)] px-15'}>

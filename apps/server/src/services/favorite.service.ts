@@ -12,6 +12,7 @@ import {
   FavoriteDeleteBatchDTO,
   FavoriteFolderAddDTO,
   FavoriteFolderList,
+  FavoriteFolderListItem,
   FavoriteList,
   FavoriteListDTO,
   FavoriteListItem,
@@ -90,6 +91,20 @@ export const FavoriteService = {
               },
             },
             {
+              $lookup: {
+                from: 'videostats',
+                localField: 'videoId',
+                foreignField: 'videoId',
+                as: 'videostat',
+              },
+            },
+            {
+              $unwind: {
+                path: '$videostat',
+                preserveNullAndEmptyArrays: true,
+              },
+            },
+            {
               $project: {
                 id: '$_id',
                 video: {
@@ -97,10 +112,15 @@ export const FavoriteService = {
                   title: { $ifNull: ['$video.title', '[已删除]'] },
                   time: { $ifNull: ['$video.time', 0] },
                   thumbnail: { $ifNull: ['$video.thumbnail', ''] },
+                  url: { $ifNull: ['$video.url', ''] },
+                  views: { $ifNull: ['$videostat.viewsCount', 0] },
+                  danmakus: { $ifNull: ['$video.danmakus', 0] },
+                  publishedAt: { $ifNull: ['$video.publishedAt', 0] },
                 },
                 user: {
                   id: { $ifNull: ['$user._id', ''] },
                   name: { $ifNull: ['$user.name', '[已注销]'] },
+                  avatar: { $ifNull: ['$user.avatar', ''] },
                 },
               },
             },
@@ -282,5 +302,19 @@ export const FavoriteService = {
       userId,
     })
     return favorite ? 0 : 1
+  },
+  detailByFolderId: async (folderId: string): Promise<FavoriteFolderListItem> => {
+    const folder = await FavoriteFolderModel.findById(folderId).lean()
+    if (!folder) throw new HttpError(400, MESSAGE.FAVORITE_FOLDER_NOT_FOUND)
+
+    const count = await FavoriteModel.countDocuments({ folderId: folder._id })
+
+    return {
+      id: folder._id.toString(),
+      name: folder.name,
+      thumbnail: folder.thumbnail,
+      type: folder.type,
+      number: count,
+    }
   },
 }

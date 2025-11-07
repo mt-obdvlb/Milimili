@@ -1,8 +1,17 @@
+'use client'
+
 import { UserGetInfo } from '@mtobdvlb/shared-types'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useUserStore } from '@/stores'
+import FollowBtn from '@/components/ui/follow-btn'
+import { openNewTab } from '@/utils'
+import { Button } from '@/components'
+import { useMessageConversation } from '@/features'
 
 const SpaceHeader = ({ user }: { user: UserGetInfo }) => {
+  const meUser = useUserStore((state) => state.user)
+  const { createConversation } = useMessageConversation()
   return (
     <div className={'h-[200px] relative flex'}>
       <div className={'pointer-events-none -z-1 absolute inset-0'}>
@@ -64,6 +73,32 @@ const SpaceHeader = ({ user }: { user: UserGetInfo }) => {
             </div>
           </div>
         </div>
+        {meUser?.id && meUser?.id !== user.id && (
+          <div className={'self-end flex items-center'}>
+            <div className={'flex items-center'}>
+              <div className={'mr-6'}>
+                <FollowBtn
+                  className={'w-[150px] h-[34px] rounded-[6px] text-sm font-bold'}
+                  followingId={user.id}
+                />
+              </div>
+              <Button
+                className={
+                  'cursor-pointer flex items-center justify-center w-[150px] h-[34px] rounded-[6px] text-sm font-bold transition-all duration-300 text-white border border-white/20 hover:bg-white/40 bg-white/14'
+                }
+                onClick={async (e) => {
+                  e.stopPropagation()
+                  e.preventDefault()
+                  const { code } = await createConversation(user.id)
+                  if (code) return
+                  openNewTab(`/message/whisper/${user.id}`)
+                }}
+              >
+                发消息
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

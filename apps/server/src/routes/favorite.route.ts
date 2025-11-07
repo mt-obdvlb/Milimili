@@ -6,6 +6,7 @@ import {
   favoriteAddBatch,
   favoriteCleanWatchLater,
   favoriteDeleteBatch,
+  favoriteDetailGetByFolderId,
   favoriteFolderAdd,
   favoriteFolderList,
   favoriteGetByVideoId,
@@ -33,6 +34,7 @@ router.get(
   asyncHandler(favoriteList)
 )
 router.get('/recent', authMiddleware, asyncHandler(favoriteRecent))
+router.get('/detail/:folderId', asyncHandler(favoriteDetailGetByFolderId))
 router.post(
   '/',
   authMiddleware,

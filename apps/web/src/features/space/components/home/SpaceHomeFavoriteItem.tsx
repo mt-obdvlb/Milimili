@@ -15,7 +15,7 @@ const SpaceHomeFavoriteItem = ({
   return (
     <div className={'h-full pt-4'}>
       <div
-        onClick={() => router.push(`/space/${userId}/favorite/${favoriteFolder.id}`)}
+        onClick={() => router.push(`/space/${userId}/favorite?folderId=${favoriteFolder.id}`)}
         className={'relative bg-[#c9ccd0] rounded-[6px] cursor-pointer'}
       >
         <div className={'relative'}>

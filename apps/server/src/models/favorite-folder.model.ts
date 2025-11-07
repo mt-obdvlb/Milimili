@@ -6,7 +6,7 @@ type FavoriteFolderBase = {
   description?: string
   type: FavoriteFolderType
   isOpen: boolean
-  thumbnail?: string
+  thumbnail: string
 }
 
 type FavoriteFolderDB = FavoriteFolderBase & {
@@ -34,7 +34,7 @@ const favoriteFolderSchema = new Schema<IFavoriteFolder>(
       required: true,
       default: true,
     },
-    thumbnail: { type: String, trim: true },
+    thumbnail: { type: String, trim: true, required: true },
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',

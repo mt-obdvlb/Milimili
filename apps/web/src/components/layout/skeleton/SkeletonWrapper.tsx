@@ -9,7 +9,7 @@ const SkeletonWrapper = ({ fetchData }: { fetchData: () => void }) => {
   return (
     <>
       {Array.from({ length: 15 }, (_, index) => (
-        <VideoSkeleton ref={index === 0 ? ref : null} key={index} />
+        <VideoSkeleton mt={index >= 5} ref={index === 0 ? ref : null} key={index} />
       ))}
     </>
   )
