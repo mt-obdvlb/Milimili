@@ -1,5 +1,12 @@
-import { videoGetDetail, videoList, videoShare } from '@/services/video'
+import {
+  videoGetDetail,
+  videoList,
+  videoListLike,
+  videoListSpace,
+  videoShare,
+} from '@/services/video'
 import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query'
+import { VideoListSpaceDTO } from '@mtobdvlb/shared-types'
 
 export const getVideoList = async () => {
   const { data } = await videoList(1, 9)
@@ -43,5 +50,29 @@ export const useVideoShare = () => {
   })
   return {
     shareVideo: mutateAsync,
+  }
+}
+
+export const useVideoLikeList = (userId: string) => {
+  const { data: videoLikeList } = useQuery({
+    queryKey: ['video', 'like', 'list', userId],
+    queryFn: () => videoListLike(userId),
+  })
+  return {
+    videoLikeList: videoLikeList?.data ?? [],
+  }
+}
+
+export const useVideoListSpace = (body: VideoListSpaceDTO) => {
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ['video', 'space', body],
+    queryFn: () => videoListSpace(body),
+  })
+
+  return {
+    videoSpaceList: data?.data?.list ?? [],
+    total: data?.data?.total ?? 0,
+    isLoading,
+    refetch,
   }
 }

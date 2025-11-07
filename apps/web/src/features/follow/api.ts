@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { followCreate, followDelete, followGet } from '@/services/follow'
+import { followCreate, followDelete, followGet, followList } from '@/services/follow'
+import { FollowListDTO } from '@mtobdvlb/shared-types'
 
 export const useFollow = (followingId: string) => {
   const queryClient = useQueryClient()
@@ -33,5 +34,16 @@ export const useFollowGet = (followingId: string) => {
   })
   return {
     isFollowing: !data?.code,
+  }
+}
+
+export const useFollowList = (params: FollowListDTO) => {
+  const { data } = useQuery({
+    queryFn: () => followList(params),
+    queryKey: ['followList', params],
+  })
+  return {
+    followList: data?.data?.list ?? [],
+    total: data?.data?.total ?? 0,
   }
 }

@@ -40,7 +40,9 @@ const MessageWhisperListItem = ({
     >
       <div className={'relative size-10 mr-2 shrink-0'}>
         <div className={'size-full rounded-full overflow-hidden'}>
-          <Image src={item.fromUser.avatar} alt={item.fromUser.name} width={40} height={40} />
+          {item.fromUser.avatar && (
+            <Image src={item.fromUser.avatar} alt={item.fromUser.name} width={40} height={40} />
+          )}
         </div>
       </div>
       <div className={'flex-1 overflow-hidden flex flex-col justify-center'}>

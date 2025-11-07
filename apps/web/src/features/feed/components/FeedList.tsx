@@ -5,7 +5,15 @@ import { useInfiniteScroll } from '@/hooks'
 import Image from 'next/image'
 import FeedListItem from '@/features/feed/components/FeedLisItem'
 
-const FeedList = ({ type, userId }: { type: FeedPropsType; userId: string }) => {
+const FeedList = ({
+  type,
+  userId,
+  border,
+}: {
+  type: FeedPropsType
+  userId: string
+  border?: boolean
+}) => {
   const { feedList, refetch, fetchNextPage, hasNextPage } = useFeedGetList({ type, userId })
 
   const { ref: fetchRef } = useInfiniteScroll(fetchNextPage)
@@ -14,7 +22,7 @@ const FeedList = ({ type, userId }: { type: FeedPropsType; userId: string }) => 
     <div className={'mt-2'}>
       <div>
         {feedList.map((item) => (
-          <FeedListItem key={item.id} feed={item} />
+          <FeedListItem border={border} key={item.id} feed={item} />
         ))}
       </div>
       {hasNextPage && (

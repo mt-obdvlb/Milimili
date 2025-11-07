@@ -13,6 +13,7 @@ import {
   VideoList,
   VideoListDTO,
   VideoListItem,
+  VideoListSpaceDTO,
   VideoShareDTO,
 } from '@mtobdvlb/shared-types'
 import { ParamsDictionary } from 'express-serve-static-core'
@@ -148,13 +149,25 @@ export const videoListLike: RequestHandler<ParamsDictionary, Result<VideoList>> 
   req,
   res
 ) => {
-  const userId = req.user?.id
+  const userId = req.params.userId
   if (!userId)
     return res.status(401).json({
       code: 400,
       message: MESSAGE.INVALID_PARAMS,
     })
   const data = await VideoService.listLike(userId)
+  return res.status(200).json({
+    code: 0,
+    data,
+  })
+}
+
+export const videoListSpace: RequestHandler<
+  ParamsDictionary,
+  Result<PageResult<VideoListItem>>,
+  VideoListSpaceDTO
+> = async (req, res) => {
+  const data = await VideoService.listSpace(req.body)
   return res.status(200).json({
     code: 0,
     data,

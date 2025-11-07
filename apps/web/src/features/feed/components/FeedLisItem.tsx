@@ -32,7 +32,7 @@ export const feedStyles = tv({
   },
 })
 
-const FeedListItem = ({ feed }: { feed: FeedListItemType }) => {
+const FeedListItem = ({ feed, border }: { feed: FeedListItemType; border?: boolean }) => {
   const { root, main, avatar, header, body, footer, panel } = feedStyles()
   const userStore = useUserStore((state) => state.user)
   const { deleteFeed } = useFeedDelete()
@@ -42,7 +42,7 @@ const FeedListItem = ({ feed }: { feed: FeedListItemType }) => {
   const [panelOpen, setPanelOpen] = useState<'comment' | 'transpont' | null>(null)
 
   return (
-    <div className={'mb-2'}>
+    <div className={cn('mb-2', border && 'border border-line_regular rounded-[6px]')}>
       <div className={root()}>
         <div className={main()}>
           <div onClick={() => openNewTab(`/space/${feed.user.id}`)} className={avatar()}>

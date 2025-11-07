@@ -3,6 +3,7 @@ import { getUserHomeInfo } from '@/features'
 
 const Space = async () => {
   const { userHomeInfo } = await getUserHomeInfo()
+  if (!userHomeInfo?.user.id) redirect('')
   redirect(`/space/${userHomeInfo?.user.id}`)
 }
 

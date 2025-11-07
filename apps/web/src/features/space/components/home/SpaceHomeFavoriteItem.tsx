@@ -23,17 +23,18 @@ const SpaceHomeFavoriteItem = ({
             <div
               className={'rounded-[6px] relative  pt-[56.25%] bg-graph_bg_thick overflow-hidden'}
             >
-              <div className={'size-full absolute top-0 left-0 rounded-[6px]'}>
+              <div className={'size-full absolute top-0 left-0 rounded-[6px] '}>
                 <Image
                   src={favoriteFolder.thumbnail ?? '/images/favorite-folder.png'}
-                  className={'size-full rounded-[6px] block object-cover object-center z-3 sticky'}
+                  className={'size-full rounded-[6px] block object-cover object-center  '}
                   alt={favoriteFolder.name}
-                  fill
+                  width={100}
+                  height={100}
                 />
               </div>
               <div
                 className={
-                  'absolute bottom-0 left-0 z-2 w-full border-b-[6px] bg-[linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.8)] text-white opacity-100 flex items-center justify-between pointer-events-none px-2 pt-[14px] pb-1 transition-all duration-200'
+                  'absolute bottom-0 left-0 z-2 w-full rounded-b-[6px] bg-[linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.8)] text-white opacity-100 flex items-center justify-between pointer-events-none px-2 pt-[14px] pb-1 transition-all duration-200'
                 }
               >
                 <div
@@ -41,7 +42,7 @@ const SpaceHomeFavoriteItem = ({
                     'flex items-center text-[13px] h-4.5 overflow-hidden flex-1 justify-end '
                   }
                 >
-                  <span className={'whitespace-nowrap text-ellipsis overflow-hidden'}>
+                  <span className={'whitespace-nowrap  text-ellipsis overflow-hidden'}>
                     {favoriteFolder.number}个视频
                   </span>
                 </div>
