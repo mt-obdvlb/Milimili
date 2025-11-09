@@ -76,3 +76,28 @@ export const useVideoListSpace = (body: VideoListSpaceDTO) => {
     refetch,
   }
 }
+
+export const useVideoPageList = (
+  params: Omit<VideoListSpaceDTO, 'userId'> & { userId?: string }
+) => {
+  const { data } = useQuery({
+    queryKey: ['video', 'list', params],
+    queryFn: () => videoListSpace(params as VideoListSpaceDTO),
+    enabled: !!params.userId,
+  })
+  return {
+    videoPageList: data?.data?.list ?? [],
+    total: data?.data?.total ?? 0,
+  }
+}
+
+export const useVideoDetail = (id: string) => {
+  const { data: videoDetail } = useQuery({
+    queryKey: ['video', 'detail', id],
+    queryFn: () => getVideoDetail(id),
+    enabled: !!id,
+  })
+  return {
+    videoDetail: videoDetail?.videoDetail,
+  }
+}

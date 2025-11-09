@@ -5,4 +5,5 @@ export type UserGetInfo = {
   avatar: string
   followings: number
   followers: number
+  createdAt: string
 }

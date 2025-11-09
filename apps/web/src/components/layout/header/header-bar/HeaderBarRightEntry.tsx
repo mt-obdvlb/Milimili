@@ -559,7 +559,7 @@ const HeaderBarRightEntry = ({
       </WithAuth>
       <HoverCard openDelay={150} closeDelay={150}>
         <WithAuth>
-          <HoverCardTrigger asChild onClick={() => openNewTab('/')}>
+          <HoverCardTrigger asChild onClick={() => openNewTab('/platform/upload')}>
             <div
               className={
                 'ml-[10px] flex h-[34px] w-[90px] min-w-[50px] cursor-pointer items-center justify-center rounded-[8px] bg-[#fb7299] text-white transition-colors duration-300 hover:bg-[#fc8bab]'
@@ -607,7 +607,7 @@ const HeaderBarRightEntry = ({
           {[
             {
               title: '视频投稿',
-              href: '/',
+              href: '/platform/upload',
               svg: (
                 <svg
                   width='26'
@@ -651,7 +651,7 @@ const HeaderBarRightEntry = ({
             },
             {
               title: '投稿管理',
-              href: '/',
+              href: '/platform/upload-manager',
               svg: (
                 <svg
                   width='26'

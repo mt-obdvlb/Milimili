@@ -11,6 +11,7 @@ import {
   userGetHomeInfo,
 } from '@/services/user'
 import { updateUser } from '@/services'
+import { useUserStore } from '@/stores'
 
 export const useUserGet = () => {
   const { data: user, error } = useQuery({
@@ -29,10 +30,12 @@ export const useUserLogin = () => {
 
 export const useUserLogout = () => {
   const queryClient = useQueryClient()
+  const logoutUserStore = useUserStore((state) => state.logoutUser)
   const { mutateAsync: logout, error } = useMutation({
     mutationFn: () => logoutUser(),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['user'] })
+      logoutUserStore()
     },
   })
   return { logout, error }

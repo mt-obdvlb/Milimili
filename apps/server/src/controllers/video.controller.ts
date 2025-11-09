@@ -48,7 +48,7 @@ export const videoCreate: RequestHandler<ParamsDictionary, Result, VideoCreateDT
       message: MESSAGE.AUTH_ERROR,
     })
   }
-  await VideoService.create(req.body, req.user!.id)
+  await VideoService.create(req.body, req.user!.id, req.params.videoId)
   return res.status(200).json({
     code: 0,
   })

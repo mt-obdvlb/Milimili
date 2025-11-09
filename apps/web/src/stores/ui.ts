@@ -1,4 +1,3 @@
-import 'client-only'
 import { create } from 'zustand/react'
 
 export interface UiState {
