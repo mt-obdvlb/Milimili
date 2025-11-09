@@ -20,5 +20,6 @@ export type VideoGetDetail = {
     danmakus: number
     shares: number
     url: string
+    categoryId: string
   }
 }

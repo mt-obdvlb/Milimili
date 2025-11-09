@@ -17,6 +17,9 @@ const ATTR_MAP: Record<string, string> = {
   'view-box': 'viewBox',
   'color-interpolation-filters': 'colorInterpolationFilters',
   'fill-opacity': 'fillOpacity',
+  'flood-opacity': 'floodOpacity',
+  'stop-opacity': 'stopOpacity',
+  'stop-color': 'stopColor',
 
   // 可以继续添加更多
 }

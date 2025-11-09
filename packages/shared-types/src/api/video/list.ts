@@ -5,6 +5,10 @@ export type VideoListItem = {
   time: number
   views: number
   danmakus: number
+  shares?: number
+  comments?: number
+  favorites?: number
+  likes?: number
   username: string
   publishedAt: string
   userId: string

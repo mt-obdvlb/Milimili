@@ -36,6 +36,12 @@ router.post(
   validatorMiddleware({ body: videoCreateDTO }),
   asyncHandler(videoCreate)
 )
+router.put(
+  '/:videoId',
+  authMiddleware,
+  validatorMiddleware({ body: videoCreateDTO }),
+  asyncHandler(videoCreate)
+)
 router.get(
   '/danmakus/:videoId',
   validatorMiddleware({ params: videoGetDanmakusDTO }),

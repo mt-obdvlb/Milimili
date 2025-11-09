@@ -9,6 +9,7 @@ type UserDB = UserBase & {
   _id: Types.ObjectId
   name: string
   avatar: string
+  createdAt: Date
 }
 export type IUser = UserDB & Document
 

@@ -77,7 +77,7 @@ export const UserService = {
       feeds,
     }
   },
-  getInfo: async (id: string) => {
+  getInfo: async (id: string): Promise<UserGetInfo> => {
     const user = await UserModel.findById(id)
     if (!user) throw new Error(MESSAGE.USER_NOT_FOUND)
     const followings = await FollowModel.countDocuments({ followerId: id })
@@ -89,6 +89,7 @@ export const UserService = {
       id: user._id.toString(),
       followers,
       followings,
+      createdAt: user.createdAt.toString(),
     }
   },
   getByEmail: async (email: string) => {
@@ -190,6 +191,7 @@ export const UserService = {
       email: user.email,
       followers,
       followings,
+      createdAt: user.createdAt.toString(),
     }
   },
 }

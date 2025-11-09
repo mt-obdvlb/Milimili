@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
         hostname: 'mtobdvlb-web.oss-cn-beijing.aliyuncs.com',
         pathname: '/**', // ** 表示匹配任意子路径
       },
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+        pathname: '/**', // ** 匹配任意子路径
+      },
     ],
   },
 }

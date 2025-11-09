@@ -68,12 +68,16 @@ export const VideoService = {
           title: 1,
           thumbnail: 1,
           time: 1,
-          views: '$videostat.views',
-          danmakus: '$videostat.danmakus',
+          views: { $ifNull: ['$videostat.viewsCount', 0] },
+          danmakus: { $ifNull: ['$videostat.danmakusCount', 0] },
           username: '$user.name',
           publishedAt: '$createdAt',
-          userId: '$user._id',
+          userId: { $toString: '$user._id' },
           url: 1,
+          likes: { $ifNull: ['$videostat.likesCount', 0] },
+          shares: { $ifNull: ['$videostat.sharesCount', 0] },
+          comments: { $ifNull: ['$videostat.commentsCount', 0] },
+          favorites: { $ifNull: ['$videostat.favoritesCount', 0] },
         },
       },
     ])
@@ -85,9 +89,25 @@ export const VideoService = {
       return allVideos[randomIndex]!
     })
   },
-  create: async (body: VideoCreateDTO, userId: string) => {
+  create: async (body: VideoCreateDTO, userId: string, videoId?: string) => {
     const user = await UserModel.findById(userId)
     if (!user) throw new Error(MESSAGE.USER_NOT_FOUND)
+    if (videoId) {
+      const video = await VideoModel.findById(videoId)
+      if (!video) throw new Error(MESSAGE.VIDEO_NOT_FOUND)
+      await VideoModel.updateOne(
+        { _id: video._id },
+        {
+          $set: {
+            title: body.title,
+            description: body.description,
+            thumbnail: body.thumbnail,
+            url: body.url,
+          },
+        }
+      )
+      return
+    }
     const res = await VideoModel.create({ ...body, userId })
     await VideoStatsModel.create({ videoId: res._id })
     const video = await FeedModel.create({
@@ -396,6 +416,7 @@ export const VideoService = {
       danmakus: stats.danmakusCount,
       shares: stats.sharesCount,
       url: videoDoc.url,
+      categoryId: videoDoc.categoryId.toString(),
     }
 
     return { user, tags, video }
@@ -457,6 +478,10 @@ export const VideoService = {
           publishedAt: '$createdAt',
           userId: { $toString: '$user._id' },
           url: 1,
+          likes: { $ifNull: ['$videostat.likesCount', 0] },
+          shares: { $ifNull: ['$videostat.sharesCount', 0] },
+          comments: { $ifNull: ['$videostat.commentsCount', 0] },
+          favorites: { $ifNull: ['$videostat.favoritesCount', 0] },
         },
       },
     ])
@@ -540,6 +565,11 @@ export const VideoService = {
                 publishedAt: '$createdAt',
                 userId: { $toString: '$user._id' },
                 url: 1,
+                categoryId: { $toString: '$categoryId' },
+                likes: { $ifNull: ['$videostat.likesCount', 0] },
+                shares: { $ifNull: ['$videostat.sharesCount', 0] },
+                comments: { $ifNull: ['$videostat.commentsCount', 0] },
+                favorites: { $ifNull: ['$videostat.favoritesCount', 0] },
               },
             },
           ],
