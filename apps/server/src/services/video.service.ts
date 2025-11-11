@@ -586,6 +586,11 @@ export const VideoService = {
     return { total, list }
   },
   delete: async (videoId: string, userId: string) => {
-    await VideoModel.deleteOne({ _id: videoId, userId })
+    const video = await VideoModel.findOneAndDelete({ _id: videoId, userId })
+    if (!video) throw new Error(MESSAGE.AUTH_ERROR)
+    await VideoStatsModel.deleteOne({ videoId })
+    await FeedModel.deleteMany({ videoId })
+    await FavoriteModel.deleteMany({ videoId })
+    await HistoryModel.deleteMany({ videoId })
   },
 }
