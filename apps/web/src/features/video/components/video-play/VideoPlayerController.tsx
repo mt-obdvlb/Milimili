@@ -9,6 +9,7 @@ import { HoverCard, HoverCardTrigger, Input, Label } from '@/components'
 import VideoPlayerControllerHoverContent from '@/features/video/components/video-play/VideoPlayerControllerHoverContent'
 import { Slider } from '@/components/ui/slider'
 import VideoPlayerControllerTop from '@/features/video/components/video-play/VideoPlayerControllerTop'
+import { VideoGetDetail } from '@mtobdvlb/shared-types'
 
 const parseTimeInput = (input: string): number | null => {
   input = input.trim()
@@ -55,6 +56,9 @@ const VideoPlayerController = ({
   isDragging: boolean
   setIsDragging: Dispatch<SetStateAction<boolean>>
   setCurrentTime: Dispatch<SetStateAction<number>>
+  videoDetail: VideoGetDetail
+  showDanmaku: boolean
+  setShowDanmaku: Dispatch<SetStateAction<boolean>>
 }) => {
   const [inputTime, setInputTime] = useState(false)
   const [inputValue, setInputValue] = useState('0:00')
@@ -379,7 +383,7 @@ const VideoPlayerController = ({
             </div>
           </Label>
         </div>
-        <div className={cn(isFullScreen && 'grow px-15 leading-[34px] h-[34px] flex-1')}></div>
+        <div></div>
         <div className={cn('flex justify-end', isFullScreen && 'min-w-[370px]')}>
           <HoverCard open={speedOpen} onOpenChange={setSpeedOpen} openDelay={50}>
             <HoverCardTrigger asChild>

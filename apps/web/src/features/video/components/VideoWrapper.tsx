@@ -117,7 +117,7 @@ const VideoWrapper = ({ videoDetail }: { videoDetail: VideoGetDetail }) => {
         </div>
       </div>
       <div className={'fixed right-1.5 z-6 bottom-[50px]'}>
-        <ToTopBtnWrapper y={600} />
+        <ToTopBtnWrapper y={500} />
       </div>
     </div>
   )

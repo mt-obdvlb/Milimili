@@ -8,25 +8,29 @@ import { createPortal } from 'react-dom'
 import { cn } from '@/lib'
 import { Input, Label } from '@/components'
 import VideoPlayerDanmakuPublish from '@/features/video/components/video-play/VideoPlayerDanmakuPublish'
+import { useShow } from '@/hooks'
 
 const VideoPlayerWrapper = ({ videoDetail }: { videoDetail: VideoGetDetail }) => {
   const dplayerRef = useRef<HTMLDivElement>(null)
-
   const dpRef = useRef<DPlayer | null>(null)
 
   const [mounted, setMounted] = useState(false)
-  const [isShowCursor, setIsShowCursor] = useState(true) // 鼠标显示状态
+  const [isShowCursor, setIsShowCursor] = useState(true)
   const [isWebFull, setIsWebFull] = useState(false)
   const [showDanmaku, setShowDanmaku] = useState(true)
+  const { isShow } = useShow(500)
+
+  /** 拖拽相关 */
+  const [position, setPosition] = useState({ x: 100, y: 100 }) // 默认位置
+  const [isDragging, setIsDragging] = useState(false)
+  const dragOffset = useRef({ x: 0, y: 0 })
 
   useEffect(() => {
     import('dplayer').then(({ default: DPlayer }) => {
       if (dplayerRef.current && !dpRef.current) {
         dpRef.current = new DPlayer({
           container: dplayerRef.current,
-          video: {
-            url: videoDetail.video.url,
-          },
+          video: { url: videoDetail.video.url },
           lang: 'zh-cn',
           autoplay: false,
           theme: '#1aad19',
@@ -47,6 +51,43 @@ const VideoPlayerWrapper = ({ videoDetail }: { videoDetail: VideoGetDetail }) =>
     }
   }, [videoDetail])
 
+  /** 拖拽逻辑 */
+  useEffect(() => {
+    if (!isShow || !dplayerRef.current) return
+
+    const el = dplayerRef.current
+
+    const handleMouseDown = (e: MouseEvent) => {
+      setIsDragging(true)
+      dragOffset.current = {
+        x: e.clientX - position.x,
+        y: e.clientY - position.y,
+      }
+    }
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return
+      setPosition({
+        x: e.clientX - dragOffset.current.x,
+        y: e.clientY - dragOffset.current.y,
+      })
+    }
+
+    const handleMouseUp = () => {
+      setIsDragging(false)
+    }
+
+    el.addEventListener('mousedown', handleMouseDown)
+    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mouseup', handleMouseUp)
+
+    return () => {
+      el.removeEventListener('mousedown', handleMouseDown)
+      window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('mouseup', handleMouseUp)
+    }
+  }, [isShow, isDragging, position])
+
   return (
     <div className={'h-[422px] relative'}>
       <div className={'w-[668px] h-[422px] '}>
@@ -59,8 +100,15 @@ const VideoPlayerWrapper = ({ videoDetail }: { videoDetail: VideoGetDetail }) =>
                 className={cn(
                   'flex-1 abp group/container dplayer relative overflow-hidden bg-[#000]',
                   !isShowCursor && 'cursor-none',
-                  isWebFull && 'dplayer-fulled'
+                  isWebFull && 'dplayer-fulled',
+                  isShow &&
+                    'fixed! z-100000 rounded-[4px] h-[180px] w-[320px] shadow-[0_0_8px_#e5e9ef]'
                 )}
+                style={
+                  isShow
+                    ? { left: `${position.x}px`, top: `${position.y}px` }
+                    : { left: '', top: '' }
+                }
               >
                 {dpRef.current && dplayerRef.current && mounted
                   ? createPortal(

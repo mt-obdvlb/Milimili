@@ -12,9 +12,11 @@ import {
   useState,
 } from 'react'
 import DPlayer from 'dplayer'
-import { useThrottle } from 'react-use'
 import Image from 'next/image'
-import { formatTime } from '@/utils'
+import { formatTime, useThrottle } from '@/utils'
+import { useDebounce } from '@/utils/debounce'
+
+// 🧩 新增：通用防抖与节流 hooks
 
 interface VideoPlayerControllerTopProps {
   progressTranslate: number
@@ -37,11 +39,11 @@ const VideoPlayerControllerTop = ({
   const [thumbTranslate, setThumbTranslate] = useState(0)
   const [moveIndicatorRaw, setMoveIndicatorRaw] = useState(0)
   const [isHover, setIsHover] = useState(false)
-  const [loaded, setLoaded] = useState(false)
+  const [hoverTime, setHoverTime] = useState<number>(isFinite(currentTime) ? currentTime : 0)
+  const [url, setUrl] = useState('')
   const [error, setError] = useState(false)
-  const [hoverTime, setHoverTime] = useState<number>(currentTime)
-
-  const moveIndicatorPosition = useThrottle(moveIndicatorRaw, 10)
+  const [loaded, setLoaded] = useState(false)
+  const frameVideoRef = useRef<HTMLVideoElement | null>(null)
 
   const controllerTopStyles = tv({
     slots: {
@@ -51,7 +53,7 @@ const VideoPlayerControllerTop = ({
       schedule: cn('size-full absolute'),
       thumb: cn('size-5 pointer-events-none'),
       moveIndicator: cn(
-        'w-2 h-4 -ml-1 opacity-0 overflow-hidden  absolute transition-opacity duration-100',
+        'w-2 h-4 -ml-1 opacity-0 overflow-hidden absolute transition-opacity duration-100',
         isHover && !isDragging && 'opacity-100'
       ),
       popup: cn(
@@ -65,62 +67,102 @@ const VideoPlayerControllerTop = ({
 
   const containerWidth = containerRef.current?.offsetWidth || 0
   const videoDuration = dpRef.current?.video?.duration || 1
-  const videoEl = dpRef.current?.video
+  const mainVideo = dpRef.current?.video
 
-  const captureFrame = () => {
-    const video = dpRef.current?.video
-    if (!video) return null
+  // 初始化隐藏的视频实例
+  useEffect(() => {
+    if (!mainVideo) return
+    const frameVideo = document.createElement('video')
+    frameVideo.src = mainVideo.src
+    frameVideo.crossOrigin = 'anonymous'
+    frameVideo.style.display = 'none'
+    frameVideo.preload = 'metadata'
+    document.body.appendChild(frameVideo)
+    frameVideoRef.current = frameVideo
 
-    const canvas = document.createElement('canvas')
-    canvas.width = video.videoWidth
-    canvas.height = video.videoHeight
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return null
+    return () => {
+      if (frameVideoRef.current) {
+        document.body.removeChild(frameVideoRef.current)
+        frameVideoRef.current = null
+      }
+    }
+  }, [mainVideo?.src, mainVideo])
 
-    // 将当前视频帧绘制到 canvas
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+  const captureFrame = useCallback(
+    async (targetTime: number) => {
+      const frameVideo = frameVideoRef.current
+      const mainVideo = dpRef.current?.video
+      if (!frameVideo || !mainVideo || mainVideo.duration <= 0) return null
+      const validTime = Math.max(0, Math.min(mainVideo.duration, targetTime))
+      if (!isFinite(validTime)) return null
 
-    // 输出 base64 图片
-    return canvas.toDataURL('image/png')
-  }
+      if (frameVideo.readyState < 2) {
+        await new Promise((resolve) =>
+          frameVideo.addEventListener('loadeddata', resolve, { once: true })
+        )
+      }
 
-  const url = captureFrame()
+      frameVideo.currentTime = validTime
+      await new Promise((resolve) => frameVideo.addEventListener('seeked', resolve, { once: true }))
 
-  // 非拖动时根据 progressTranslate 更新 thumb
+      const canvas = document.createElement('canvas')
+      canvas.width = frameVideo.videoWidth || 120
+      canvas.height = frameVideo.videoHeight || 90
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return null
+      ctx.drawImage(frameVideo, 0, 0, canvas.width, canvas.height)
+      return canvas.toDataURL('image/png')
+    },
+    [dpRef]
+  )
+
+  // 🧩 用防抖函数包裹帧捕获，减少频繁调用
+  const debouncedFetchFrame = useDebounce(async (time: number) => {
+    const frameUrl = await captureFrame(time)
+    if (frameUrl) {
+      setUrl(frameUrl)
+      setError(false)
+      setLoaded(false)
+    } else {
+      setError(true)
+      setLoaded(false)
+    }
+  }, 150) // 150ms防抖间隔，可根据体验调整
+
+  useEffect(() => {
+    if (!dpRef.current?.video || isDragging || !isFinite(hoverTime)) return
+    debouncedFetchFrame(hoverTime)
+  }, [hoverTime, debouncedFetchFrame, isDragging, dpRef])
+
   useEffect(() => {
     if (!isDragging) setThumbTranslate(containerWidth * progressTranslate)
   }, [progressTranslate, containerWidth, isDragging])
 
-  // 防抖更新 moveIndicatorPosition
-
   const updateVideoTime = useCallback(
     (x: number) => {
-      if (!videoEl) return
+      if (!mainVideo) return
       const clampedX = Math.max(0, Math.min(containerWidth, x))
       setThumbTranslate(clampedX)
       const ratio = clampedX / containerWidth
-      videoEl.currentTime = videoDuration * ratio
+      mainVideo.currentTime = videoDuration * ratio
       setCurrentTime(videoDuration * ratio)
     },
-    [containerWidth, setCurrentTime, videoDuration, videoEl]
+    [containerWidth, setCurrentTime, videoDuration, mainVideo]
   )
 
-  const handleMouseMove = useCallback(
+  // 🧩 包装 mousemove 为节流版
+  const handleMouseMove = useThrottle(
     (e: MouseEvent | React.MouseEvent) => {
-      if (!containerRef.current) return
+      if (!containerRef.current || videoDuration <= 0) return
       const rect = containerRef.current.getBoundingClientRect()
-      // 计算鼠标相对 container 左边缘的位置
       let x = e.clientX - rect.left
-      // 允许超出 container 范围
-      if (x < 0) x = 0
-      if (x > containerWidth) x = containerWidth
+      x = Math.max(0, Math.min(containerWidth, x))
       setMoveIndicatorRaw(x)
-      setHoverTime(videoDuration * (x / containerWidth))
-      if (isDragging) {
-        updateVideoTime(x)
-      }
+      const calculatedHoverTime = videoDuration * (x / containerWidth)
+      setHoverTime(isFinite(calculatedHoverTime) ? calculatedHoverTime : 0)
+      if (isDragging) updateVideoTime(x)
     },
-    [containerWidth, isDragging, updateVideoTime, videoDuration]
+    33 // 节流间隔约30fps
   )
 
   const handleMouseDown: MouseEventHandler<HTMLDivElement> = (e) => {
@@ -129,7 +171,7 @@ const VideoPlayerControllerTop = ({
   }
 
   const handleClick: MouseEventHandler<HTMLDivElement> = (e) => {
-    handleMouseMove(e) // 点击更新
+    handleMouseMove(e)
   }
 
   const handleMouseUp = useCallback(() => {
@@ -137,12 +179,8 @@ const VideoPlayerControllerTop = ({
     setIsDragging(false)
   }, [isDragging, setIsDragging])
 
-  const handleMouseLeave = () => {
-    setIsHover(false)
-    // 不结束拖拽，拖拽状态仍然生效
-  }
+  const handleMouseLeave = () => setIsHover(false)
 
-  // 全局监听鼠标移动和释放，实现拖拽不受 container 限制
   useEffect(() => {
     if (isDragging) {
       window.addEventListener('mousemove', handleMouseMove)
@@ -152,7 +190,7 @@ const VideoPlayerControllerTop = ({
         window.removeEventListener('mouseup', handleMouseUp)
       }
     }
-  }, [isDragging, containerWidth, videoDuration, videoEl, handleMouseMove, handleMouseUp])
+  }, [isDragging, handleMouseMove, handleMouseUp])
 
   return (
     <div
@@ -303,7 +341,7 @@ const VideoPlayerControllerTop = ({
             </div>
           </div>
         </div>
-        <div style={{ left: `${moveIndicatorPosition}px` }} className={cn(moveIndicator())}>
+        <div style={{ left: `${moveIndicatorRaw}px` }} className={cn(moveIndicator())}>
           <div
             className={
               'size-0 relative border-[4px_4px_0] border-[#00a1d6_transparent_transparent]'
@@ -319,14 +357,14 @@ const VideoPlayerControllerTop = ({
           <div
             style={{
               left: `${Math.min(
-                Math.max(moveIndicatorPosition - 80, 0),
+                Math.max(moveIndicatorRaw - 80, 0),
                 containerRef.current.getBoundingClientRect().width - 160
               )}px`,
             }}
             className={cn(popup())}
           >
             <div className={'h-[90px] w-40 relative'}>
-              {url && loaded && !error && (
+              {url && !loaded && !error && (
                 <Image
                   src={url}
                   alt={'cover'}
@@ -334,8 +372,6 @@ const VideoPlayerControllerTop = ({
                   className={
                     'size-full relative mx-auto transition-[filter_.3s_ease] align-[inherit] '
                   }
-                  onLoadingComplete={() => setLoaded(true)}
-                  onError={() => setError(true)}
                 />
               )}
               <div

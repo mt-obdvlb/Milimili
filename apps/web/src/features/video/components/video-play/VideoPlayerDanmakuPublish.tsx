@@ -10,10 +10,12 @@ const VideoPlayerDanmakuPublish = ({
   videoId,
   showDanmaku,
   dpRef,
+  containerClassName,
 }: {
   videoId: string
   showDanmaku: boolean
   dpRef: RefObject<DPlayer | null>
+  containerClassName?: string
 }) => {
   const { danmakuAdd } = useDanmakuAdd()
 
@@ -59,13 +61,14 @@ const VideoPlayerDanmakuPublish = ({
 
   return (
     <div
-      className={
-        'rounded-[8px] h-8 ml-10 min-w-[300px] w-[calc(100%-72px)] items-center flex relative bg-[#f4f4f4] text-[#999] grow'
-      }
+      className={cn(
+        'rounded-[8px] h-8 ml-10 min-w-[300px] w-[calc(100%-72px)] items-center flex relative bg-[#f4f4f4] text-[#999] grow box-border!',
+        containerClassName
+      )}
     >
       <div
         className={
-          'rounded-t-[8px] rounded-l-[8px] h-full flex-1 w-[200px] flex items-center relative'
+          'rounded-t-[8px] rounded-l-[8px] h-full flex-1 w-[200px] flex items-center relative box-border!'
         }
       >
         {showDanmaku && (
@@ -259,7 +262,7 @@ const VideoPlayerDanmakuPublish = ({
       </div>
       <div
         className={
-          'rounded-r-[8px] rounded-b-[8px] h-full  min-w-[62px] w-[62px] leading-[30px] z-13 cursor-pointer inline-flex items-center'
+          'rounded-r-[8px] rounded-b-[8px] h-full  min-w-[62px] w-[62px] leading-[30px] z-13 cursor-pointer inline-flex items-center box-border!'
         }
       >
         <Button

@@ -42,3 +42,5 @@ export const throttle = <Args extends unknown[], R>(
     }
   }
 }
+
+export const useThrottle = throttle
