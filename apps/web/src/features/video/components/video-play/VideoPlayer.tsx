@@ -1,6 +1,6 @@
 'use client'
 
-import { Dispatch, RefObject, SetStateAction, useEffect, useRef, useState } from 'react'
+import { Dispatch, RefObject, SetStateAction, useEffect, useMemo, useRef, useState } from 'react'
 import DPlayer from 'dplayer'
 import { useDanmakuManager } from '@/features/video/useDanmakuManager'
 import { VideoGetDetail } from '@mtobdvlb/shared-types'
@@ -9,6 +9,7 @@ import { tv } from 'tailwind-variants'
 import VideoPlayerController from '@/features/video/components/video-play/VideoPlayerController'
 import { formatTime } from '@/utils'
 import { useHistoryAdd } from '@/features'
+import { useShow } from '@/hooks'
 
 const VideoPlayer = ({
   dpRef,
@@ -18,6 +19,7 @@ const VideoPlayer = ({
   isWebFull,
   setIsWebFull,
   showDanmaku,
+  setShowDanmaku,
 }: {
   dpRef: RefObject<DPlayer | null>
   dpContainerRef: RefObject<HTMLDivElement | null>
@@ -39,6 +41,12 @@ const VideoPlayer = ({
   const [isFullScreen, setIsFullScreen] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
   const { historyAdd } = useHistoryAdd()
+  const { isShow } = useShow(500)
+
+  const progressTranslate = useMemo(
+    () => currentTime / (dpRef.current?.video.duration ?? currentTime),
+    [currentTime, dpRef]
+  )
 
   useEffect(() => {
     if (!dpRef.current) return
@@ -211,17 +219,23 @@ const VideoPlayer = ({
   const videoPlayerStyles = tv({
     slots: {
       dm: cn('absolute inset-0 z-2 pointer-events-none overflow-hidden'),
-      state: cn('absolute bottom-[62px] cursor-pointer pointer-events-none  right-[34px] z-48'),
+      state: cn(
+        'absolute bottom-[62px] cursor-pointer pointer-events-none  right-[34px] z-48',
+        isShow && 'hidden'
+      ),
       controller: cn(
         'absolute bottom-0 left-0 w-full z-75',
-        isFullScreen && 'h-[73px] leading-[73px]'
+        isFullScreen && 'h-[73px] leading-[73px]',
+        isShow && 'hidden'
       ),
       controllerMask: cn(
         "opacity-0  w-full -z-1 transition-opacity duration-200 ease-in-out absolute bottom-0 left-0 h-25 bg-[url('/images/video-controller-mask.png')_repeat-x_bottom]",
-        (isShowController || isDragging) && 'opacity-100'
+        (isShowController || isDragging) && 'opacity-100',
+        isShow && 'hidden'
       ),
       toast: cn(
-        'absolute select-none z-76 pointer-events-none leading-7 leaft-2.5 bottom-15 text-[14px]'
+        'absolute select-none z-76 pointer-events-none leading-7 leaft-2.5 bottom-15 text-[14px]',
+        isShow && 'hidden'
       ),
     },
   })
@@ -259,6 +273,9 @@ const VideoPlayer = ({
       <div ref={controllerRef} className={controller()}>
         <div className={controllerMask()}></div>
         <VideoPlayerController
+          videoDetail={videoDetail}
+          setShowDanmaku={setShowDanmaku}
+          showDanmaku={showDanmaku}
           setCurrentTime={setCurrentTime}
           isDragging={isDragging}
           setIsDragging={setIsDragging}
@@ -309,6 +326,48 @@ const VideoPlayer = ({
               </span>
             </div>
           )}
+        </div>
+      </div>
+      <div className={cn('group cursor-move absolute z-12 inset-0', !isShow && 'hidden')}>
+        {/*<div*/}
+        {/*  className={*/}
+        {/*    'opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out cursor-pointer fill-white! float-right h-[26px] mr-2 mt-2 w-[26px]'*/}
+        {/*  }*/}
+        {/*>*/}
+        {/*  <svg*/}
+        {/*    xmlns='http://www.w3.org/2000/svg'*/}
+        {/*    data-pointer='none'*/}
+        {/*    viewBox='0 0 16 16'*/}
+        {/*  >*/}
+        {/*    <path d='m8 6.939 3.182-3.182a.75.75 0 1 1 1.061 1.061L9.061 8l3.182 3.182a.75.75 0 1 1-1.061 1.061L8 9.061l-3.182 3.182a.75.75 0 1 1-1.061-1.061L6.939 8 3.757 4.818a.75.75 0 1 1 1.061-1.061L8 6.939z'></path>*/}
+        {/*  </svg>*/}
+        {/*</div>*/}
+        <div
+          className={
+            'size-25 left-1/2 top-1/2 -mt-[50px] -ml-[50px] cursor-pointer opacity-0 absolute group-hover:opacity-100 transition-opacity duration-200 ease-in-out'
+          }
+          onClick={() => dpRef.current?.toggle()}
+        >
+          <div
+            className={'inset-0 absolute bg-[size:80px_80px] bg-no-repeat bg-center'}
+            style={{
+              backgroundImage: `url('${paused ? '/svgs/play.svg' : '/svgs/pause.svg'}')`,
+            }}
+          ></div>
+        </div>
+        <div
+          className={
+            'bg-[hsla(0,0%,100%,.2)] rounded-[1.5px] bottom-0 inset-x-0 h-[3px] pointer-events-none absolute overflow-hidden'
+          }
+        >
+          <div
+            style={{ transform: `scaleX(${Math.min(progressTranslate + 0.05, 1)})` }}
+            className={'bg-[hsla(0,0%,100%,.3)] inset-0 absolute origin-[0_0]'}
+          ></div>
+          <div
+            style={{ transform: `scaleX(${progressTranslate})` }}
+            className={'bg-[#00a1d6] inset-0 absolute origin-[0_0]'}
+          ></div>
         </div>
       </div>
     </>
