@@ -2,6 +2,7 @@ import request from '@/lib/request'
 import {
   PageResult,
   Result,
+  VideoCreateDTO,
   VideoGetDetail,
   VideoGetWaterLaterList,
   VideoList,
@@ -20,6 +21,9 @@ export const API = {
   share: '/share',
   listLike: '/list-like',
   listSpace: '/list-space',
+  create: '/',
+  update: '/',
+  delete: '/',
 } as const
 
 export const videoList = (page: number, pageSize: number, userId?: string) =>
@@ -49,3 +53,11 @@ export const videoListSpace = (params: VideoListSpaceDTO) =>
   request.get<Result<PageResult<VideoListItem>>>(`${baseURL}${API.listSpace}`, {
     params,
   })
+
+export const videoCreate = (body: Partial<VideoCreateDTO>) =>
+  request.post<Result>(`${baseURL}${API.create}`, body)
+
+export const videoUpdate = (id: string, body: Partial<VideoCreateDTO>) =>
+  request.put<Result>(`${baseURL}${API.update}${id}`, body)
+
+export const videoDelete = (id: string) => request.delete<Result>(`${baseURL}${API.delete}${id}`)

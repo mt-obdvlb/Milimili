@@ -15,7 +15,7 @@ function SelectGroup({ ...props }: React.ComponentProps<typeof SelectPrimitive.G
 }
 
 function SelectValue({ ...props }: React.ComponentProps<typeof SelectPrimitive.Value>) {
-  return <SelectPrimitive.Value className={'size-full block'} data-slot='select-value' {...props} />
+  return <SelectPrimitive.Value data-slot='select-value' {...props}></SelectPrimitive.Value>
 }
 
 function SelectTrigger({
@@ -54,6 +54,7 @@ function SelectContent({
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
+        autoFocus={false}
         data-slot='select-content'
         className={cn(
           ' data-[state=open]:animate-in w-[164px] data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative   origin-(--radix-select-content-transform-origin)  z-1001 rounded-[4px] shadow-[0_2px_12px_0_rgba(0,0,0,.1)] py-1.5 bg-white',

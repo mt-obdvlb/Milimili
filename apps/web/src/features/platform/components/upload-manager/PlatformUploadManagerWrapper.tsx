@@ -1,6 +1,6 @@
 'use client'
 
-import { useVideoPageList } from '@/features'
+import { useVideoDelete, useVideoPageList } from '@/features'
 import { useState } from 'react'
 import { VideoListSort } from '@mtobdvlb/shared-types'
 import { useUserStore } from '@/stores'
@@ -15,13 +15,17 @@ import SpaceCommonPagination from '@/features/space/components/common/SpaceCommo
 import Link from 'next/link'
 import Image from 'next/image'
 import { formatTime, formatWatchAt } from '@/utils'
-import { SquarePen } from 'lucide-react'
+import { SquarePen, Trash2 } from 'lucide-react'
+import { Button } from '@/components'
+import CommonDialog from '@/components/layout/models/common/CommonDialog'
+import { toast } from '@/lib'
 
 const PlatformUploadManagerWrapper = () => {
   const [sort, setSort] = useState<VideoListSort>('publishedAt')
   const [page, setPage] = useState(1)
   const user = useUserStore((state) => state.user)
   const { total, videoPageList } = useVideoPageList({ page, sort, pageSize: 10, userId: user?.id })
+  const { deleteVideo } = useVideoDelete()
 
   return (
     <div className={'w-full'}>
@@ -119,6 +123,24 @@ const PlatformUploadManagerWrapper = () => {
                       <SquarePen className={'text-[16px] mr-[7px] size-4'} />
                       编辑
                     </Link>
+                    <CommonDialog
+                      handleConfirm={async () => {
+                        const { code } = await deleteVideo(item.id)
+                        if (code) return
+                        toast('已删除')
+                      }}
+                      title={'您确定要删除稿件吗'}
+                      trigger={
+                        <Button
+                          className={
+                            'hover:text-brand_blue ml-3 hover:border-brand_blue justify-center border w-21 h-[32px] flex items-center border-[rgb(231,231,231)] rounded-[2px] text-sm text-center cursor-pointer text-[rgb(80,80,80)] leading-4.5 '
+                          }
+                        >
+                          <Trash2 className={'text-[16px] mr-[7px] size-4'} />
+                          删除
+                        </Button>
+                      }
+                    />
                   </div>
                 </div>
                 <div className={'relative text-xs flex'}>

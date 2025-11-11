@@ -585,4 +585,7 @@ export const VideoService = {
 
     return { total, list }
   },
+  delete: async (videoId: string, userId: string) => {
+    await VideoModel.deleteOne({ _id: videoId, userId })
+  },
 }

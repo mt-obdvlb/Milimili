@@ -1,12 +1,15 @@
 import {
+  videoCreate,
+  videoDelete,
   videoGetDetail,
   videoList,
   videoListLike,
   videoListSpace,
   videoShare,
+  videoUpdate,
 } from '@/services/video'
-import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query'
-import { VideoListSpaceDTO } from '@mtobdvlb/shared-types'
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { VideoCreateDTO, VideoListSpaceDTO } from '@mtobdvlb/shared-types'
 
 export const getVideoList = async () => {
   const { data } = await videoList(1, 9)
@@ -99,5 +102,38 @@ export const useVideoDetail = (id: string) => {
   })
   return {
     videoDetail: videoDetail?.videoDetail,
+  }
+}
+
+export const useVideoCreateUpdate = (body: Partial<VideoCreateDTO>, userId?: string) => {
+  const queryClient = useQueryClient()
+
+  const { mutateAsync } = useMutation({
+    mutationFn: () => (userId ? videoUpdate(userId, body) : videoCreate(body)),
+    mutationKey: ['video', userId ? 'update' : 'create'],
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['video', 'list'] })
+      await queryClient.invalidateQueries({ queryKey: ['video', 'space'] })
+      await queryClient.invalidateQueries({ queryKey: ['video', 'detail'] })
+    },
+  })
+  return {
+    createUpdateVideo: mutateAsync,
+  }
+}
+
+export const useVideoDelete = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync } = useMutation({
+    mutationFn: videoDelete,
+    mutationKey: ['video', 'delete'],
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['video', 'list'] })
+      await queryClient.invalidateQueries({ queryKey: ['video', 'space'] })
+      await queryClient.invalidateQueries({ queryKey: ['video', 'detail'] })
+    },
+  })
+  return {
+    deleteVideo: mutateAsync,
   }
 }
