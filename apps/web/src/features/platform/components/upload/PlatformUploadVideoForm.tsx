@@ -5,7 +5,7 @@ import { VideoCreateDTO, videoCreateDTO } from '@mtobdvlb/shared-types'
 import { useCategoryList, useUploadFile, useVideoCreateUpdate } from '@/features'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Dispatch, SetStateAction, useEffect, useRef } from 'react'
+import { Dispatch, SetStateAction, useRef } from 'react'
 import { tv } from 'tailwind-variants'
 import { cn } from '@/lib'
 import {
@@ -36,13 +36,6 @@ const PlatformUploadVideoForm = ({
 }) => {
   const atTextareaRef = useRef<AtTextareaRef>(null)
 
-  useEffect(() => {
-    const editor = atTextareaRef.current?.getEditor()
-    if (editor && video?.description !== undefined) {
-      editor.commands.setContent(video.description ?? '')
-    }
-  }, [video?.description, atTextareaRef])
-
   const form = useForm({
     resolver: zodResolver(formSchema),
   })
@@ -54,7 +47,7 @@ const PlatformUploadVideoForm = ({
   )
   const { uploadFile } = useUploadFile()
   const { categoryList } = useCategoryList()
-
+  const initialDescription = useRef<string>(video.description ?? '')
   const [coverList, { push }] = useList<string>(video.thumbnail ? [video.thumbnail] : [])
   const [tags, { push: tagsPush, filter: tagsFilter }] = useList<string>([])
 
@@ -421,7 +414,7 @@ const PlatformUploadVideoForm = ({
                             description: atTextareaRef.current?.getEditor()?.getText(),
                           }))
                         }}
-                        content={video.description}
+                        initialContent={initialDescription.current ?? ''}
                       />
                       <AtTextareaPlaceholder
                         className={'top-3 left-[15px] leading-[1.42]'}

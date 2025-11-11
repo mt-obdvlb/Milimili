@@ -1,3 +1,4 @@
+'use client'
 import { RefObject, useEffect, useRef } from 'react'
 import { VideoGetDanmakusItem } from '@mtobdvlb/shared-types'
 import { useDanmakuGet } from '@/features/danmaku/api'

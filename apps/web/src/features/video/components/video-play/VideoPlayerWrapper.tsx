@@ -155,6 +155,7 @@ const VideoPlayerWrapper = ({ videoDetail }: { videoDetail: VideoGetDetail }) =>
                       </Label>
                     </div>
                     <VideoPlayerDanmakuPublish
+                      dpRef={dpRef}
                       videoId={videoDetail.video.id}
                       showDanmaku={showDanmaku}
                     />

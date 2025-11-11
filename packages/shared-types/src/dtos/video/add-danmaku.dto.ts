@@ -1,7 +1,7 @@
 import { z } from 'zod/v4'
 
 export const videoAddDanmakuDTO = z.object({
-  userId: z.string(),
+  userId: z.string().optional(),
   videoId: z.string(),
   content: z.string(),
   position: z.enum(['top', 'bottom', 'scroll']),

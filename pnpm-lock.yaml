@@ -324,6 +324,9 @@ importers:
       motion:
         specifier: ^12.23.9
         version: 12.23.13(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      mp4box:
+        specifier: ^2.2.0
+        version: 2.2.0
       next:
         specifier: 15.4.7
         version: 15.4.7(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -4195,6 +4198,10 @@ packages:
         optional: true
       react-dom:
         optional: true
+
+  mp4box@2.2.0:
+    resolution: {integrity: sha512-tE+L7wdhSuwBKZGjUzj03Qzj4lWyOw8pHSPyLnvHTKx92NJGkJls0pcEusUHWEh5gWVBlhdu79STJh4Bubz9mQ==}
+    engines: {node: '>=20.8.1'}
 
   mpath@0.9.0:
     resolution: {integrity: sha512-ikJRQTk8hw5DEoFVxHG1Gn9T/xcjtdnOKIU1JTmGjZZlg9LST2mBLmcX3/ICIbgJydT2GOc15RnNy5mHmzfSew==}
@@ -9812,6 +9819,8 @@ snapshots:
     optionalDependencies:
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
+
+  mp4box@2.2.0: {}
 
   mpath@0.9.0: {}
 
