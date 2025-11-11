@@ -173,3 +173,17 @@ export const videoListSpace: RequestHandler<
     data,
   })
 }
+
+export const videoDelete: RequestHandler<ParamsDictionary, Result> = async (req, res) => {
+  const videoId = req.params.videoId
+  const userId = req.user?.id
+  if (!videoId || !userId)
+    return res.status(401).json({
+      code: 400,
+      message: MESSAGE.INVALID_PARAMS,
+    })
+  await VideoService.delete(videoId, userId)
+  return res.status(200).json({
+    code: 0,
+  })
+}

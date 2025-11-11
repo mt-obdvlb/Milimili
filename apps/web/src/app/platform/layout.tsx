@@ -19,7 +19,7 @@ const PlatformLayout = ({ children }: { children: ReactNode }) => {
         <div className={'h-full ml-50 pt-15 min-w-[1124px] flow-root min-h-full'}>
           <div
             className={
-              'overflow-visible h-auto min-h-[calc(100vh-76px)] pl-[calc(100vw-100%-200px)] bg-[#fafafa] text-[#999] text-[16px]'
+              'overflow-visible h-auto min-h-[calc(100vh-76px)] pl-[calc(100vw-100%-200px)] bg-[#fafafa] py-10 text-[#999] text-[16px]'
             }
           >
             {children}

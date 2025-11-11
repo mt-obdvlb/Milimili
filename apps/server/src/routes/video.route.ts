@@ -2,6 +2,7 @@ import { Router } from 'express'
 import {
   videoAddDanmaku,
   videoCreate,
+  videoDelete,
   videoGetDanmakus,
   videoGetDetail,
   videoGetWatchLater,
@@ -67,5 +68,6 @@ router.post(
   asyncHandler(videoShare)
 )
 router.get('/list-like/:userId', asyncHandler(videoListLike))
+router.delete('/:videoId', authMiddleware, asyncHandler(videoDelete))
 
 export default router
