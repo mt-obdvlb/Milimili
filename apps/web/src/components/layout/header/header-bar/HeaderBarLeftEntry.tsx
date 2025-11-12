@@ -8,11 +8,13 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { cn, toastBuilding } from '@/lib'
 import Link from 'next/link'
 import Image from 'next/image'
 import HeaderBarLinkItemWithBounce from '@/components/layout/header/header-bar/item/HeaderBarLinkItemWithBounce'
+import { useCategoryGetBy } from '@/features'
+import { useRouter } from 'next/navigation'
 
 const headerBarLeftLinks = ['番剧', '直播', '游戏中心', '会员购', '漫画', '赛事']
 
@@ -36,6 +38,16 @@ const categories = [
 ]
 
 const HeaderBarLeftEntry = ({ type }: { type: 'first' | 'second' }) => {
+  const [categoryName, setCategoryName] = useState('')
+  const { category } = useCategoryGetBy(undefined, categoryName)
+  const router = useRouter()
+
+  // 当 categoryName 更新并且 category 有 id 时触发路由跳转
+  useEffect(() => {
+    if (categoryName && category?.id) {
+      router.push(`/category/${category.id}`)
+    }
+  }, [categoryName, category?.id, router])
   return (
     <NavigationMenu
       delayDuration={150}
@@ -47,8 +59,8 @@ const HeaderBarLeftEntry = ({ type }: { type: 'first' | 'second' }) => {
           <NavigationMenuItem>
             <NavigationMenuLink
               type={type}
+              href={'/'}
               className={'items-center data-[state=active]:text-white'}
-              href='/'
             >
               <svg
                 width='18'
@@ -113,8 +125,11 @@ const HeaderBarLeftEntry = ({ type }: { type: 'first' | 'second' }) => {
                       {col.map((item, index2) => (
                         <Link
                           key={item}
-                          onClick={toastBuilding}
                           href={''}
+                          onClick={async (e) => {
+                            e.preventDefault()
+                            setCategoryName(item)
+                          }}
                           className={
                             'text-text1 hover:bg-graph_bg_thick my-[3px] flex h-[32px] cursor-pointer items-center rounded-[4px] p-[6px] text-sm leading-[20px] font-normal transition-colors duration-300'
                           }
