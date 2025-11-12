@@ -19,7 +19,6 @@ export const historyList: RequestHandler<
   HistoryListDTO
 > = async (req, res) => {
   const userId = req.user?.id
-  const { page, pageSize } = req.body
   if (!userId)
     return res.status(401).json({
       code: 401,
@@ -28,8 +27,7 @@ export const historyList: RequestHandler<
 
   const data = await HistoryService.list({
     userId,
-    page,
-    pageSize,
+    ...req.body,
   })
   return res.status(200).json({
     code: 0,

@@ -2,7 +2,6 @@ import { Router } from 'express'
 import { authMiddleware, validatorMiddleware } from '@/middlewares'
 import { asyncHandler } from '@/utils'
 import {
-  favoriteAdd,
   favoriteAddBatch,
   favoriteCleanWatchLater,
   favoriteDeleteBatch,
@@ -16,7 +15,6 @@ import {
 } from '@/controllers/favorite.controller'
 import {
   favoriteAddBatchDTO,
-  favoriteAddDTO,
   favoriteDeleteBatchDTO,
   favoriteFolderAddDTO,
   favoriteListDTO,
@@ -26,7 +24,7 @@ import {
 const router = Router()
 
 router.get('/folder', authMiddleware, asyncHandler(favoriteFolderList))
-router.get('/folder/:id', asyncHandler(favoriteFolderList))
+router.get('/folder/:userId', asyncHandler(favoriteFolderList))
 router.get(
   '/',
   authMiddleware,
@@ -35,12 +33,7 @@ router.get(
 )
 router.get('/recent', authMiddleware, asyncHandler(favoriteRecent))
 router.get('/detail/:folderId', asyncHandler(favoriteDetailGetByFolderId))
-router.post(
-  '/',
-  authMiddleware,
-  validatorMiddleware({ body: favoriteAddDTO }),
-  asyncHandler(favoriteAdd)
-)
+
 router.post(
   '/batch',
   authMiddleware,

@@ -21,13 +21,13 @@ export const messageStatistics: RequestHandler<
   ParamsDictionary,
   Result<MessageStatisticsList>
 > = async (req, res) => {
-  const id = req.user?.id
-  if (!id)
+  const userId = req.user?.id
+  if (!userId)
     return res.status(401).json({
       message: MESSAGE.INVALID_TOKEN,
       code: 1,
     })
-  const data = await MessageService.statistics(id)
+  const data = await MessageService.statistics(userId)
   return res.status(200).json({
     code: 0,
     data,
@@ -39,14 +39,14 @@ export const messageSendWhisper: RequestHandler<
   Result,
   MessageSendWhisperDTO
 > = async (req, res) => {
-  const id = req.user?.id
-  if (!id)
+  const userId = req.user?.id
+  if (!userId)
     return res.status(401).json({
       message: MESSAGE.INVALID_TOKEN,
       code: 1,
     })
   const { toId, content } = req.body
-  await MessageService.sendWhisper({ id, toId, content })
+  await MessageService.sendWhisper({ id: userId, toId, content })
   return res.status(200).json({
     code: 0,
   })
@@ -57,13 +57,13 @@ export const messageList: RequestHandler<
   Result<PageResult<MessageListItem>>,
   MessageListDTO
 > = async (req, res) => {
-  const id = req.user?.id
-  if (!id)
+  const userId = req.user?.id
+  if (!userId)
     return res.status(401).json({
       message: MESSAGE.INVALID_TOKEN,
       code: 1,
     })
-  const { total, list } = await MessageService.getList(id, req.body)
+  const { total, list } = await MessageService.getList(userId, req.body)
   return res.status(200).json({
     code: 0,
     data: {
