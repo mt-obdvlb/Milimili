@@ -12,7 +12,7 @@ const HomeMainRollBtn = () => {
   const handleClick = async () => {
     rotate()
 
-    await queryClient.invalidateQueries({ queryKey: ['video', 'recommend'] })
+    await queryClient.invalidateQueries({ queryKey: ['video', 'list'] })
   }
   return (
     <div className={'absolute top-0 left-[100%] z-2 translate-x-2.5'}>

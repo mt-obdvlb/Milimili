@@ -25,7 +25,7 @@ export const useVideoList = (pageSize: number = 11) => {
   })
 
   const { data: videoRandomList, fetchNextPage } = useInfiniteQuery({
-    queryKey: ['video'],
+    queryKey: ['video', 'list'],
     queryFn: ({ pageParam = 1 }) => videoList(pageParam as number, 10),
     getNextPageParam: (_lastPage, allPages) => allPages.length + 1,
     initialPageParam: 1,
