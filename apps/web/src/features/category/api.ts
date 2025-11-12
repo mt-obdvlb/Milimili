@@ -1,4 +1,4 @@
-import { categoryGet, categoryGetById } from '@/services/category'
+import { categoryGet, categoryGetById, categoryGetByName } from '@/services/category'
 import { useQuery } from '@tanstack/react-query'
 
 export const getCategoryList = async () => {
@@ -25,12 +25,19 @@ export const useCategoryList = () => {
   }
 }
 
-export const useCategoryName = (id: string) => {
-  const { data } = useQuery({
+export const useCategoryGetBy = (id?: string, name?: string) => {
+  const { data: byId } = useQuery({
     queryKey: ['category', 'name', id],
-    queryFn: () => getCategoryName(id),
+    queryFn: () => categoryGetById(id!),
+    enabled: !!id,
   })
+  const { data: byName } = useQuery({
+    queryKey: ['category', 'name', name],
+    queryFn: () => categoryGetByName({ name: name! }),
+    enabled: !!name,
+  })
+
   return {
-    categoryName: data?.categoryName,
+    category: byId?.data ?? byName?.data,
   }
 }

@@ -14,7 +14,7 @@ const ToTopBtn = ({
   isShow: boolean
 }) => {
   return (
-    <div className={className}>
+    <div className={cn('', className)}>
       <Button
         variant={'primary'}
         className={cn(

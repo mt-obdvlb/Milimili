@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
 import { useState } from 'react'
-import { cn, toastBuilding } from '@/lib'
+import { cn } from '@/lib'
 import { CategoryGetAllList } from '@mtobdvlb/shared-types'
 import { usePathname } from 'next/navigation'
 
@@ -237,7 +237,6 @@ const HeaderChannel = ({
   const pathname = usePathname()
 
   const categoryMoreList = categoryList?.slice(21) ?? []
-  console.log(categoryMoreList)
   return (
     <nav
       className={
@@ -325,7 +324,7 @@ const HeaderChannel = ({
               {categoryMoreList.map((item) => (
                 <div key={item.id}>
                   <Link
-                    href={`/${item.id} `}
+                    href={`/category/${item.id} `}
                     className={
                       'text-text1 hover:bg-graph_bg_thick block h-8 min-w-[64px] cursor-pointer rounded-[4px] px-[6px] py-0 text-left text-[13px] leading-8 whitespace-nowrap transition-colors duration-300'
                     }
@@ -342,13 +341,14 @@ const HeaderChannel = ({
         >
           {headerChannelRightLinks.map((item) => (
             <Link
-              className={
-                'text-text2 hover:text-brand_blue inline-flex h-[28px] items-center justify-end text-sm transition duration-300 ' +
-                cn({ 'tracking-[2px]': item.title.length < 4 })
-              }
-              href={''}
+              className={cn(
+                'text-text2 hover:text-brand_blue inline-flex h-[28px] items-center justify-end text-sm transition duration-300 ',
+                item.title.length < 4 && 'tracking-[2px]',
+                item.title === categoryName && ' text-brand_blue  hover:text-brand_blue'
+              )}
+              target={pathname.includes('category') ? '_self' : '_blank'}
+              href={`/category/${categoryList?.find((c) => c.name === item.title)?.id ?? ''}`}
               key={item.title}
-              onClick={toastBuilding}
             >
               {item.icon}
               <span>{item.title}</span>

@@ -4,6 +4,7 @@ import {
   CategoryCreateDTO,
   CategoryGetAllItem,
   CategoryGetAllList,
+  CategoryGetByNameDTO,
   CategoryGetDTO,
   Result,
 } from '@mtobdvlb/shared-types'
@@ -34,5 +35,15 @@ export const categoryGetById: RequestHandler<
   console.log(req.body, req.params)
   const { id } = req.body
   const data = await CategoryService.getById(id)
+  return res.status(200).json({ data, code: 0 })
+}
+
+export const categoryGetByName: RequestHandler<
+  ParamsDictionary,
+  Result<CategoryGetAllItem>,
+  CategoryGetByNameDTO
+> = async (req, res) => {
+  const { name } = req.body
+  const data = await CategoryService.getByName(name)
   return res.status(200).json({ data, code: 0 })
 }

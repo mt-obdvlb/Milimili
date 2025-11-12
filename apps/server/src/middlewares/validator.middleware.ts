@@ -16,7 +16,7 @@ export const validatorMiddleware =
       if (!bodyResult.success) {
         return res.status(400).json({
           code: 1,
-          message: MESSAGE.INVALID_PARAMS,
+          message: bodyResult.error?.message ?? MESSAGE.INVALID_PARAMS,
         })
       }
       req.body = bodyResult.data
@@ -28,7 +28,7 @@ export const validatorMiddleware =
       if (!queryResult.success) {
         return res.status(400).json({
           code: 1,
-          message: MESSAGE.INVALID_PARAMS,
+          message: queryResult.error?.message ?? MESSAGE.INVALID_PARAMS,
         })
       }
       req.body = queryResult.data
@@ -39,7 +39,7 @@ export const validatorMiddleware =
       if (!paramsResult.success) {
         return res.status(400).json({
           code: 1,
-          message: MESSAGE.INVALID_PARAMS,
+          message: paramsResult.error?.message ?? MESSAGE.INVALID_PARAMS,
         })
       }
       req.body = paramsResult.data

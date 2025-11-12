@@ -18,4 +18,11 @@ export const CategoryService = {
       name: res?.name ?? '',
     }
   },
+  getByName: async (name: string) => {
+    const res = await CategoryModel.findOne({ name }).lean()
+    return {
+      id: res?._id.toString() ?? '',
+      name: res?.name ?? '',
+    }
+  },
 }
