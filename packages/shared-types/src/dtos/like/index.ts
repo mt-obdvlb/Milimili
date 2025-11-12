@@ -1,3 +1,3 @@
 export * from './get.dto'
 export * from './like.dto'
-export * from './unlikeDTO'
+export * from './unlike.dto'
