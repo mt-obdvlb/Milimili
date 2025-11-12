@@ -1,7 +1,11 @@
 import { z } from 'zod/v4'
 
 export const videoGetDanmakusDTO = z.object({
-  videoId: z.string(),
+  videoId: z
+    .string({ message: '视频 ID 必须是字符串类型' })
+    .trim()
+    .min(1, { message: '视频 ID 不能为空' })
+    .regex(/^[a-f\d]{24}$/i, { message: '视频 ID 格式不正确，必须是有效的 MongoDB ObjectId' }),
 })
 
 export type VideoGetDanmakusDTO = z.infer<typeof videoGetDanmakusDTO>
