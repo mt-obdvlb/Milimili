@@ -1,6 +1,22 @@
-# Ignore artifacts:
-node_modules
-.env
-.idea
-.vscode
+# Dependencies
+node_modules/
+
+# Build / output
+dist/
+.next/
+build/
+.turbo/
+
+# IDE / editor
+.idea/
+.vscode/
+
+# Public libraries
 /apps/web/public/comment-core-library/
+
+# Environment files
+**/.env
+
+# Misc / logs
+*.log
+*.pem
