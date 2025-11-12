@@ -179,7 +179,7 @@ const RecommendedSwiper = ({
                 </div>
                 <div
                   className={
-                    'w-[calc(100%-100px)] absolute bottom-[42px] left-[15px] z-2 flex items-center'
+                    'w-[calc(100%-120px)] absolute bottom-[42px] left-[15px] z-2 flex items-center'
                   }
                 >
                   <Link
@@ -189,7 +189,11 @@ const RecommendedSwiper = ({
                     }
                     target={'_blank'}
                   >
-                    <span className={'block overflow-hidden text-lg leading-[25px] text-white'}>
+                    <span
+                      className={
+                        'block overflow-hidden text-ellipsis line-clamp-1 whitespace-nowrap break-all text-lg leading-[25px] text-white'
+                      }
+                    >
                       {activeVideo?.title}
                     </span>
                   </Link>

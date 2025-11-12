@@ -213,7 +213,7 @@ const TinyVideoItem = ({
       >
         <h3
           className={
-            'text-text1 h-[calc(2 * 22px)] items-start overflow-hidden pr-[30px] text-[15px] leading-[22px] break-words overflow-ellipsis'
+            'text-text1 h-[calc(2 * 22px)] line-clamp-2 items-start overflow-hidden pr-[30px] text-[15px] leading-[22px] break-words overflow-ellipsis'
           }
         >
           {!hiddenTitle && (

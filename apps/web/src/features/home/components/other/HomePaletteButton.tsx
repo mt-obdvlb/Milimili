@@ -16,7 +16,7 @@ const HomePaletteButton = () => {
       roll: cn(
         'relative size-10 flex items-center justify-end mt-1.5 cursor-pointer pointer-events-auto '
       ),
-      top: 'block text-center',
+      top: 'block text-center ',
     },
   })
   const { rotate, style } = useRotation()
@@ -38,7 +38,7 @@ const HomePaletteButton = () => {
             <div
               className={cn(
                 'bg-brand_blue group flex h-10 shrink-0 items-center justify-end rounded-[6px] px-2 text-sm font-normal text-white transition-opacity duration-300 hover:bg-[#40C5F1]',
-                isShow ? 'opacity-100' : 'opacity-0'
+                isShow ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
               )}
               onClick={handleRoll}
             >
@@ -70,7 +70,7 @@ const HomePaletteButton = () => {
               </div>
             </div>
           </div>
-          <ToTopBtn className={top()} isShow={isShow} />
+          <ToTopBtn inlineClassName={'bg-white'} className={top()} isShow={isShow} />
         </div>
       </div>
     </div>
