@@ -22,42 +22,34 @@ export const userLogin: RequestHandler<ParamsDictionary, Result, UserLoginDTO> =
   res
 ) => {
   const { email, password, code } = req.body
-  try {
-    let accessToken, refreshToken
-    if (password) {
-      const result = await UserService.loginByPassword(email, password)
-      accessToken = result.accessToken
-      refreshToken = result.refreshToken
-    } else if (code) {
-      const result = await UserService.loginByCode(email, code)
-      accessToken = result.accessToken
-      refreshToken = result.refreshToken
-    } else {
-      return res.status(401).json({
-        code: 1,
-        message: MESSAGE.LOGIN_ERROR,
-      })
-    }
-    res.cookie('refresh_token', refreshToken, {
-      httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-      sameSite: 'strict',
-      secure: true,
-    })
-    res.cookie('access_token', accessToken, {
-      httpOnly: true,
-      maxAge: 1000 * 60 * 15,
-      sameSite: 'strict',
-      secure: true,
-    })
-    return res.status(200).json({ code: 0 })
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : MESSAGE.LOGIN_ERROR
-    return res.status(500).json({
-      message: errorMessage,
+  let accessToken, refreshToken
+  if (password) {
+    const result = await UserService.loginByPassword(email, password)
+    accessToken = result.accessToken
+    refreshToken = result.refreshToken
+  } else if (code) {
+    const result = await UserService.loginByCode(email, code)
+    accessToken = result.accessToken
+    refreshToken = result.refreshToken
+  } else {
+    return res.status(401).json({
       code: 1,
+      message: MESSAGE.LOGIN_ERROR,
     })
   }
+  res.cookie('refresh_token', refreshToken, {
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+    sameSite: 'strict',
+    secure: true,
+  })
+  res.cookie('access_token', accessToken, {
+    httpOnly: true,
+    maxAge: 1000 * 60 * 15,
+    sameSite: 'strict',
+    secure: true,
+  })
+  return res.status(200).json({ code: 0 })
 }
 
 export const userLogout: RequestHandler<ParamsDictionary, Result, void> = async (_, res) => {

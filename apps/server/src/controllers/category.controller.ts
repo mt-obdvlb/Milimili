@@ -11,7 +11,7 @@ import {
 import { ParamsDictionary } from 'express-serve-static-core'
 
 export const categoryGetAll: RequestHandler<ParamsDictionary, Result<CategoryGetAllList>> = async (
-  req,
+  _,
   res
 ) => {
   const data = await CategoryService.getAll()
@@ -22,7 +22,7 @@ export const categoryCreate: RequestHandler<ParamsDictionary, Result, CategoryCr
   req,
   res
 ) => {
-  const { name } = req.body as CategoryCreateDTO
+  const { name } = req.body
   await CategoryService.create(name)
   return res.status(200).json({ code: 0 })
 }
@@ -32,7 +32,6 @@ export const categoryGetById: RequestHandler<
   Result<CategoryGetAllItem>,
   CategoryGetDTO
 > = async (req, res) => {
-  console.log(req.body, req.params)
   const { id } = req.body
   const data = await CategoryService.getById(id)
   return res.status(200).json({ data, code: 0 })

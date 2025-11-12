@@ -1,8 +1,3 @@
-// export const feedList: RequestHandler<
-//   ParamsDictionary,
-//   Result<PageResult<FeedListItem>, FeedListDTO>
-// > = async (req, res) => {}
-
 import { RequestHandler } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import {

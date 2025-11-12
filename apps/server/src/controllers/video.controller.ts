@@ -24,11 +24,7 @@ export const videoList: RequestHandler<
   Result<PageResult<VideoListItem>>,
   VideoListDTO
 > = async (req, res) => {
-  const { page, pageSize } = req.body
-  const list = await VideoService.list({
-    page: Number(page),
-    pageSize: Number(pageSize),
-  })
+  const list = await VideoService.list(req.body)
   return res.status(200).json({
     code: 0,
     data: {

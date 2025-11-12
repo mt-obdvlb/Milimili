@@ -2,7 +2,6 @@ import { RequestHandler } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import {
   FavoriteAddBatchDTO,
-  FavoriteAddDTO,
   FavoriteDeleteBatchDTO,
   FavoriteFolderAddDTO,
   FavoriteFolderList,
@@ -21,7 +20,7 @@ export const favoriteFolderList: RequestHandler<
   ParamsDictionary,
   Result<FavoriteFolderList>
 > = async (req, res) => {
-  const userId = req.params.id || req.user?.id
+  const userId = req.params.userId || req.user?.id
   if (!userId)
     return res.status(401).json({
       code: 401,
@@ -74,28 +73,19 @@ export const favoriteRecent: RequestHandler<ParamsDictionary, Result<FavoriteRec
   })
 }
 
-export const favoriteAdd: RequestHandler<ParamsDictionary, Result, FavoriteAddDTO> = async (
-  req,
-  res
-) => {
-  if (!req.user?.id)
-    return res.status(401).json({
-      code: 401,
-      message: MESSAGE.AUTH_ERROR,
-    })
-  req.body.userId = req.user.id
-  await FavoriteService.add(req.body)
-  return res.status(200).json({
-    code: 0,
-  })
-}
-
 export const favoriteDeleteBatch: RequestHandler<
   ParamsDictionary,
   Result,
   FavoriteDeleteBatchDTO
 > = async (req, res) => {
-  await FavoriteService.deleteBatch(req.body)
+  const userId = req.user?.id
+  if (!userId) {
+    return res.status(401).json({
+      code: 401,
+      message: MESSAGE.AUTH_ERROR,
+    })
+  }
+  await FavoriteService.deleteBatch(req.body, userId)
   return res.status(200).json({
     code: 0,
   })
@@ -137,7 +127,14 @@ export const favoriteMoveBatch: RequestHandler<
   Result,
   FavoriteMoveBatchDTO
 > = async (req, res) => {
-  await FavoriteService.moveBatch(req.body)
+  const userId = req.user?.id
+  if (!userId) {
+    return res.status(401).json({
+      code: 401,
+      message: MESSAGE.AUTH_ERROR,
+    })
+  }
+  await FavoriteService.moveBatch(req.body, userId)
   return res.status(200).json({
     code: 0,
   })
