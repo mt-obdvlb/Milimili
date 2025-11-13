@@ -7,7 +7,8 @@ type SearchLogItem = {
 
 export const SearchLogService = {
   add: async ({ keyword }: { keyword: string }) => {
-    await SearchLogModel.create({ keyword })
+    if (!keyword?.trim()) return
+    await SearchLogModel.create({ keyword: keyword.trim() })
   },
   getTop10: async () => {
     const res = await SearchLogModel.aggregate<SearchLogItem>([

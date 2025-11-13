@@ -11,7 +11,7 @@ const WatchLaterSelectFilterBtnWrapper = ({ ids }: { ids: string[] }) => {
     <>
       <CommonDialog
         handleConfirm={async () => {
-          const { code } = await historyDelete({ ids })
+          const { code } = await historyDelete({ videoIds: ids })
           if (code) return
           toast('已删除')
         }}

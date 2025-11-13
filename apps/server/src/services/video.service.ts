@@ -89,7 +89,7 @@ export const VideoService = {
       return allVideos[randomIndex]!
     })
   },
-  create: async (body: VideoCreateDTO, userId: string, videoId?: string) => {
+  createOrUpdate: async (body: VideoCreateDTO, userId: string, videoId?: string) => {
     const user = await UserModel.findById(userId)
     if (!user) throw new Error(MESSAGE.USER_NOT_FOUND)
     if (videoId) {
@@ -114,10 +114,11 @@ export const VideoService = {
       type: 'video',
       videoId: res._id,
       userId,
-      content: res.title,
+      content: res.description?.length ? res.description : res.title,
       publishedAt: res.publishedAt,
       isOpen: res.isOpen,
       commentsDisabled: res.commentsDisabled,
+      title: res.description?.length ? res.title : undefined,
     })
     await MessageService.atMessage(userId, 'video', video._id, body.description)
   },
@@ -163,7 +164,7 @@ export const VideoService = {
   },
   addDanmaku: async (body: VideoAddDanmakuDTO) => {
     const video = await VideoModel.findById(body.videoId)
-    if (!video) throw new HttpError(404, MESSAGE.VIDEO_NOT_FOUND)
+    if (!video) throw new HttpError(400, MESSAGE.VIDEO_NOT_FOUND)
     await DanmakuModel.create(body)
     await VideoStatsModel.updateOne(
       { videoId: body.videoId },

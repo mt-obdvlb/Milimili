@@ -86,7 +86,7 @@ export const historyDeleteBatch: RequestHandler<
   }
   await HistoryService.deleteBatch({
     userId: req.user.id,
-    ids: req.body.ids,
+    videoIds: req.body.videoIds,
   })
   return res.status(200).json({
     code: 0,

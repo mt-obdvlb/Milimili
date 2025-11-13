@@ -7,7 +7,7 @@ import Image from 'next/image'
 import SpaceCommonPagination from '@/features/space/components/common/SpaceCommonPagination'
 import TinyVideoItem from '@/components/layout/video/TinyVideoItem'
 
-const SpaceFavoriteWrapper = ({ userId }: { userId: string }) => {
+const SpaceFavoriteWrapper = () => {
   const searchParams = useSearchParams()
   const folderId = searchParams.get('folderId')
   const [page, setPage] = useState(1)
@@ -15,7 +15,6 @@ const SpaceFavoriteWrapper = ({ userId }: { userId: string }) => {
   const { favoriteList, total } = useFavoriteList({
     page,
     pageSize: 50,
-    userId,
     favoriteFolderId: folderId ?? '',
   })
   const { favoriteDetail } = useFavoriteDetail(folderId ?? '')

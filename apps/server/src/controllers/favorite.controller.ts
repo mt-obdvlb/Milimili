@@ -6,6 +6,7 @@ import {
   FavoriteFolderAddDTO,
   FavoriteFolderList,
   FavoriteFolderListItem,
+  FavoriteFolderUpdateDTO,
   FavoriteListDTO,
   FavoriteListItem,
   FavoriteMoveBatchDTO,
@@ -38,14 +39,6 @@ export const favoriteList: RequestHandler<
   Result<PageResult<FavoriteListItem>>,
   FavoriteListDTO
 > = async (req, res) => {
-  const userId = req.body.userId || req.user?.id
-
-  if (!userId)
-    return res.status(401).json({
-      code: 401,
-      message: MESSAGE.AUTH_ERROR,
-    })
-  req.body.userId = userId
   const { total, list } = await FavoriteService.list(req.body)
   return res.status(200).json({
     code: 0,
@@ -187,5 +180,37 @@ export const favoriteDetailGetByFolderId: RequestHandler<
   return res.status(200).json({
     code: 0,
     data,
+  })
+}
+
+export const favoriteFolderDelete: RequestHandler<ParamsDictionary, Result> = async (req, res) => {
+  const folderId = req.params.folderId
+  const userId = req.user?.id
+  if (!folderId || !userId)
+    return res.status(401).json({
+      code: 400,
+      message: MESSAGE.INVALID_PARAMS,
+    })
+  await FavoriteService.folderDelete(userId, folderId)
+  return res.status(200).json({
+    code: 0,
+  })
+}
+
+export const favoriteFolderUpdate: RequestHandler<
+  ParamsDictionary,
+  Result,
+  FavoriteFolderUpdateDTO
+> = async (req, res) => {
+  const folderId = req.params.folderId
+  const userId = req.user?.id
+  if (!folderId || !userId)
+    return res.status(401).json({
+      code: 400,
+      message: MESSAGE.INVALID_PARAMS,
+    })
+  await FavoriteService.folderUpdate(userId, folderId, req.body)
+  return res.status(200).json({
+    code: 0,
   })
 }

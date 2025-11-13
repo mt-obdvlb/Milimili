@@ -1,5 +1,5 @@
 import { FollowModel, UserModel, VideoModel } from '@/models'
-import { FilterQuery } from 'mongoose'
+import { FilterQuery, Types } from 'mongoose'
 import {
   SearchGetDTO,
   SearchGetItem,
@@ -38,10 +38,10 @@ export const SearchService = {
       },
     }
     const videoQuery: FilterQuery<typeof VideoModel> = {
-      title: {
-        $regex: kw,
-        $options: 'i',
-      },
+      $or: [
+        { title: { $regex: kw, $options: 'i' } },
+        { description: { $regex: kw, $options: 'i' } },
+      ],
     }
 
     if (time !== 'all') {
@@ -68,7 +68,8 @@ export const SearchService = {
       if (publishedAt === 'halfYear') start = new Date(now.getTime() - 183 * 24 * 3600 * 1000)
       if (publishedAt === 'customer' && from) start = from
       if (start) {
-        videoQuery.publishedAt = { $gte: start }
+        videoQuery.publishedAt = {}
+        if (start) videoQuery.publishedAt.$gte = start
         if (to) videoQuery.publishedAt.$lte = to
       }
     }
@@ -76,9 +77,9 @@ export const SearchService = {
     const sortStage: Record<SearchGetDTO['sort'], Record<string, 1 | -1>> = {
       all: { publishedAt: -1 },
       publishedAt: { publishedAt: -1 },
-      view: { 'stats.views': -1 },
-      danmaku: { 'stats.danmakus': -1 },
-      favorite: { 'stats.favorite': -1 },
+      view: { 'stats.viewsCount': -1 },
+      danmaku: { 'stats.danmakusCount': -1 },
+      favorite: { 'stats.favoritesCount': -1 },
     }
 
     // ===== 视频聚合 =====
@@ -126,8 +127,8 @@ export const SearchService = {
           userId: 1,
           userName: '$user.name',
           userAvatar: '$user.avatar',
-          views: '$stats.views',
-          danmakus: '$stats.danmakus',
+          views: '$stats.viewsCount',
+          danmakus: '$stats.danmakusCount',
         },
       },
     ])
@@ -159,7 +160,7 @@ export const SearchService = {
     const followerMap = new Map(followCounts.map((f) => [f._id, f.count]))
 
     const videoCounts = await VideoModel.aggregate<VideoCountAgg>([
-      { $match: { userId: { $in: userIds } } },
+      { $match: { userId: { $in: userIds.map((id) => new Types.ObjectId(id)) } } },
       { $group: { _id: '$userId', count: { $sum: 1 } } },
     ])
     const videoCountMap = new Map(videoCounts.map((v) => [v._id, v.count]))
@@ -267,10 +268,15 @@ export const SearchService = {
               time: 1,
               publishedAt: 1,
               url: 1,
-              views: '$stats.views',
-              danmakus: '$stats.danmakus',
+              views: '$stats.viewsCount',
+              danmakus: '$stats.danmakusCount',
             },
           },
+        ])
+
+        const [videoCount, followerCount] = await Promise.all([
+          VideoModel.countDocuments({ userId: randUser._id }),
+          FollowModel.countDocuments({ followingId: randUser._id }),
         ])
 
         recommendUser = {
@@ -278,8 +284,8 @@ export const SearchService = {
             id: randUser._id.toString(),
             name: randUser.name,
             avatar: randUser.avatar,
-            videos: videoCountMap.get(randUser._id.toString()) ?? 0,
-            followers: followerMap.get(randUser._id.toString()) ?? 0,
+            videos: videoCount ?? 0,
+            followers: followerCount ?? 0,
           },
           video: randVideos.map((v) => ({
             id: v._id.toString(),
@@ -289,7 +295,7 @@ export const SearchService = {
             views: v.views ?? 0,
             time: v.time,
             publishedAt: v.publishedAt.toISOString(),
-            url: `/video/${v._id}`,
+            url: v.url,
           })),
         }
       }

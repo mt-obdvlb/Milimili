@@ -2,12 +2,14 @@ import {
   favoriteAddBatch,
   favoriteAddFolder,
   favoriteDeleteBatch,
+  favoriteDeleteFolder,
   favoriteGetByVideoId,
   favoriteGetDetail,
   favoriteGetFolderList,
   favoriteGetRecent,
   favoriteList,
   favoriteMoveBatch,
+  favoriteUpdateFolder,
 } from '@/services/favorite'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { FavoriteListDTO } from '@mtobdvlb/shared-types'
@@ -61,7 +63,8 @@ export const useFavoriteDeleteBatch = () => {
   const { mutateAsync: favoriteDelete } = useMutation({
     mutationFn: favoriteDeleteBatch,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['video', 'watchLater'] })
+      void queryClient.invalidateQueries({ queryKey: ['video', 'list'] })
+      void queryClient.invalidateQueries({ queryKey: ['favorite', 'list'] })
     },
   })
   return { favoriteDelete }
@@ -113,4 +116,32 @@ export const useFavoriteDetail = (folderId: string) => {
   return {
     favoriteDetail: data?.data,
   }
+}
+
+export const useFavoriteFolderUpdate = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync } = useMutation({
+    mutationFn: favoriteUpdateFolder,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ['favorite', 'list', 'folder'],
+        exact: false,
+      })
+    },
+  })
+  return { favoriteFolderUpdate: mutateAsync }
+}
+
+export const useFavoriteFolderDelete = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync } = useMutation({
+    mutationFn: favoriteDeleteFolder,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ['favorite', 'list', 'folder'],
+        exact: false,
+      })
+    },
+  })
+  return { favoriteFolderDelete: mutateAsync }
 }

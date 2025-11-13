@@ -62,19 +62,16 @@ const HistoryTimeLineItem: React.FC<Props> = ({
   const labelRef = useRef<HTMLDivElement | null>(null)
 
   const [isFixed, setIsFixed] = useState(false)
-  const [type, setType] = useState<'top' | 'bottom' | 'normal'>('normal') // 'top' => pin to top (top: upperBound), 'bottom' => pin to bottom (bottom: lowerBound)
+  const [type, setType] = useState<'top' | 'bottom' | 'normal'>('normal')
 
-  // your bounds (unchanged)
   const upperBound = 94 + 36 * index
   const lowerBound = 72 + (total - 1 - index) * 32
 
-  // cached values to avoid layout thrashing
-  const labelOffsetRef = useRef<number | null>(null) // label top offset relative to section.top in normal flow
+  const labelOffsetRef = useRef<number | null>(null)
   const labelHeightRef = useRef<number>(0)
   const fixedModeRef = useRef<'top' | 'bottom' | null>(null)
   const rafRef = useRef<number | null>(null)
 
-  // compute labelOffset & labelHeight after render / when list changes
   useEffect(() => {
     const compute = () => {
       const s = sectionRef.current
@@ -86,17 +83,16 @@ const HistoryTimeLineItem: React.FC<Props> = ({
       labelHeightRef.current = lRect.height || l.offsetHeight || 0
     }
 
-    // compute once in RAF to ensure layout stable
     const id = requestAnimationFrame(compute)
     window.addEventListener('resize', compute)
     return () => {
       cancelAnimationFrame(id)
       window.removeEventListener('resize', compute)
     }
-  }, [historyList.length]) // recalc when items change
+  }, [historyList.length])
 
   useEffect(() => {
-    const HYST = 6 // hysteresis to avoid flicker
+    const HYST = 6
 
     const update = () => {
       rafRef.current = null
@@ -107,34 +103,21 @@ const HistoryTimeLineItem: React.FC<Props> = ({
       const rect = s.getBoundingClientRect()
       const viewportH = window.innerHeight
 
-      // inView: any part of section visible
-
-      // natural label top in viewport coordinates if in normal flow:
-      // section.top + labelOffset
       const offset = labelOffsetRef.current ?? l.getBoundingClientRect().top - rect.top
       const naturalTop = rect.top + (offset ?? 0)
       const labelHeight = labelHeightRef.current || l.getBoundingClientRect().height
 
-      // natural bottom
       const naturalBottom = naturalTop + labelHeight
 
-      // Decide new fixed mode (null | 'top' | 'bottom')
       let newFixedMode: 'top' | 'bottom' | null
 
-      // only attempt pinning while section has any visibility
-      // If label would be above allowed top zone -> pin to top
-      // naturalTop <= upperBound  => pin to top (down scroll)
-      // add hysteresis when switching off
       if (fixedModeRef.current === 'top') {
-        // remain top-pinned until it moves back sufficiently
         if (naturalTop <= upperBound + HYST) newFixedMode = 'top'
         else newFixedMode = null
       } else if (fixedModeRef.current === 'bottom') {
-        // remain bottom-pinned until moves back sufficiently
         if (naturalBottom >= viewportH - lowerBound - HYST) newFixedMode = 'bottom'
         else newFixedMode = null
       } else {
-        // not pinned currently: test enter conditions
         if (naturalTop <= upperBound - HYST) {
           newFixedMode = 'top'
         } else if (naturalBottom >= viewportH - lowerBound + HYST) {
@@ -148,7 +131,6 @@ const HistoryTimeLineItem: React.FC<Props> = ({
       const typeNew =
         newFixedMode === 'top' ? 'top' : newFixedMode === 'bottom' ? 'bottom' : 'normal'
 
-      // update refs + state only when changed (reduce re-renders)
       if (fixedModeRef.current !== newFixedMode) fixedModeRef.current = newFixedMode
       if (isFixedNew !== isFixed) setIsFixed(isFixedNew)
       if (typeNew !== type) setType(typeNew)
@@ -159,7 +141,6 @@ const HistoryTimeLineItem: React.FC<Props> = ({
       rafRef.current = requestAnimationFrame(update)
     }
 
-    // initial run
     onScroll()
 
     window.addEventListener('scroll', onScroll, { passive: true })
@@ -169,12 +150,8 @@ const HistoryTimeLineItem: React.FC<Props> = ({
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onScroll)
     }
-    // include historyList.length so offset recompute triggers effect stability if needed
   }, [upperBound, lowerBound, historyList.length, isFixed, type])
 
-  // map to your exact requested inline style:
-  // - 当往下滑触发时 (pin top) => top: upperBound px
-  // - 当往上滑触发时 (pin bottom) => bottom: lowerBound px
   const styleProps: React.CSSProperties = {
     top: isFixed && type === 'top' ? `${upperBound}px` : undefined,
     bottom: isFixed && type === 'bottom' ? `${lowerBound}px` : undefined,
@@ -248,7 +225,7 @@ const HistoryTimeLineItem: React.FC<Props> = ({
                   hiddenTitle={isDetail}
                   hiddenUser={isDetail}
                   deleteFn={async () => {
-                    const { code } = await historyDelete({ ids: [item.videoId] })
+                    const { code } = await historyDelete({ videoIds: [item.videoId] })
                     if (code === 1) return
                     toast('已删除')
                   }}
@@ -273,7 +250,7 @@ const HistoryTimeLineItem: React.FC<Props> = ({
                       )}
                       <div
                         onClick={async () => {
-                          const { code } = await historyDelete({ ids: [item.videoId] })
+                          const { code } = await historyDelete({ videoIds: [item.videoId] })
                           if (code === 1) return
                           toast('已删除')
                         }}

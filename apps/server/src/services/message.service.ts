@@ -280,11 +280,14 @@ export const MessageService = {
       // myContent
       if ((m.type === 'reply' || m.type === 'like') && m.sourceId && m.sourceType) {
         const sid = m.sourceId.toString()
-        if (m.sourceType === 'video')
-          item.myContent = videoMap.get(sid)?.thumbnail ?? videoMap.get(sid)?.title
-        else if (m.sourceType === 'comment') item.myContent = commentMap.get(sid)?.content
-        else if (m.sourceType === 'feed')
-          item.myContent = feedMap.get(sid)?.mediaUrls?.[0] ?? feedMap.get(sid)?.content
+        item.myContent =
+          m.sourceType === 'video'
+            ? (videoMap.get(sid)?.thumbnail ?? videoMap.get(sid)?.title ?? '[视频已删除]')
+            : m.sourceType === 'comment'
+              ? (commentMap.get(sid)?.content ?? '[评论已删除]')
+              : m.sourceType === 'feed'
+                ? (feedMap.get(sid)?.mediaUrls?.[0] ?? feedMap.get(sid)?.content ?? '[动态已删除]')
+                : undefined
       }
 
       list.push(item)
@@ -412,7 +415,7 @@ export const MessageService = {
   },
   read: async (userId: string, type: string, toUserId: string) => {
     if (type === 'whisper') {
-      await MessageModel.updateOne(
+      await MessageModel.updateMany(
         {
           userId: new Types.ObjectId(userId),
           type: 'whisper',
@@ -441,7 +444,7 @@ export const MessageService = {
     content?: string
   ) => {
     if (!content) return
-    const mentions = content.match(/@([a-zA-Z0-9_-]+)/g)
+    const mentions = content.match(/@([\w\u4e00-\u9fa5_-]+)/g)
     if (!mentions) return
 
     // 去重并提取用户名

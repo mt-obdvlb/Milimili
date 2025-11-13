@@ -97,9 +97,10 @@ export const userGetByEmail: RequestHandler<
 > = async (req, res) => {
   const { email } = req.body
 
-  await UserService.getByEmail(email)
+  const data = await UserService.getByEmail(email)
   return res.status(200).json({
     code: 0,
+    data,
   })
 }
 
