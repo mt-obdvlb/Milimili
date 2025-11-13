@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import {
   videoAddDanmaku,
-  videoCreate,
+  videoCreateOrUpdate,
   videoDelete,
   videoGetDanmakus,
   videoGetDetail,
@@ -35,13 +35,13 @@ router.post(
   '/',
   authMiddleware,
   validatorMiddleware({ body: videoCreateDTO }),
-  asyncHandler(videoCreate)
+  asyncHandler(videoCreateOrUpdate)
 )
 router.put(
   '/:videoId',
   authMiddleware,
   validatorMiddleware({ body: videoCreateDTO }),
-  asyncHandler(videoCreate)
+  asyncHandler(videoCreateOrUpdate)
 )
 router.get(
   '/danmakus/:videoId',

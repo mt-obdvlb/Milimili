@@ -25,7 +25,7 @@ const favoriteFolderSchema = new Schema<IFavoriteFolder>(
     description: { type: String, default: '', trim: true },
     type: {
       type: String,
-      enum: ['default', 'watch-later', 'normal'],
+      enum: ['default', 'watch_later', 'normal'],
       required: true,
       default: 'normal',
     },

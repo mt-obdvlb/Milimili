@@ -32,7 +32,9 @@ interface CommentAggResult {
 
 export const FeedService = {
   recent: async (userId: string): Promise<FeedRecentList> => {
-    const follows = await FollowModel.find({ followrId: userId }).select('followingId').lean()
+    const follows = await FollowModel.find({ followerId: new Types.ObjectId(userId) })
+      .select('followingId')
+      .lean()
     const followIds = follows.map((f) => new Types.ObjectId(f.followingId))
     followIds.push(new Types.ObjectId(userId))
     if (followIds.length === 0) return []
@@ -69,7 +71,9 @@ export const FeedService = {
   },
   followingList: async (userId: string) => {
     // 1. 找到关注的人
-    const followings = await FollowModel.find({ followerId: userId }).select('followingId')
+    const followings = await FollowModel.find({ followerId: new Types.ObjectId(userId) }).select(
+      'followingId'
+    )
     const followingIds = followings.map((f) => f.followingId)
 
     if (followingIds.length === 0) return []
@@ -290,7 +294,7 @@ export const FeedService = {
   },
   delete: async (userId: string, { id }: FeedDeleteDTO) => {
     const feed = await FeedModel.findOne({ _id: id, userId })
-    if (!feed) throw new Error(MESSAGE.NOT_PERMISSION)
+    if (!feed) throw new Error(MESSAGE.FEED_NOT_FOUND)
 
     await FeedModel.deleteOne({ _id: id })
   },

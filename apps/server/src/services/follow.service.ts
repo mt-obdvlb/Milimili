@@ -6,8 +6,8 @@ import { Types } from 'mongoose'
 export const FollowService = {
   get: async ({ userId, followingId }: { userId: string; followingId: string }) => {
     const follow = await FollowModel.findOne({
-      followerId: userId,
-      followingId,
+      followerId: new Types.ObjectId(userId),
+      followingId: new Types.ObjectId(followingId),
     })
     return {
       code: follow ? 0 : 1,
@@ -25,18 +25,19 @@ export const FollowService = {
       throw new HttpError(400, '已关注')
     }
     await FollowModel.create({
-      followerId: userId,
-      followingId,
+      followerId: new Types.ObjectId(userId),
+      followingId: new Types.ObjectId(followingId),
     })
   },
   delete: async ({ userId, followingId }: { userId: string; followingId: string }) => {
     if (userId === followingId) {
       throw new HttpError(400, '不能取消关注自己')
     }
-    await FollowModel.deleteOne({
-      followerId: userId,
-      followingId,
+    const res = await FollowModel.deleteOne({
+      followerId: new Types.ObjectId(userId),
+      followingId: new Types.ObjectId(followingId),
     })
+    if (res.deletedCount === 0) throw new HttpError(400, '未关注')
   },
   list: async ({
     pageSize,

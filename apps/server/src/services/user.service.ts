@@ -39,7 +39,7 @@ export const UserService = {
       })
       await FavoriteFolderModel.create({
         userId: user!._id,
-        type: 'watch-later',
+        type: 'watch_later',
         name: '稍后再看',
       })
       await MessageModel.create({
@@ -92,9 +92,20 @@ export const UserService = {
       createdAt: user.createdAt.toString(),
     }
   },
-  getByEmail: async (email: string) => {
+  getByEmail: async (email: string): Promise<UserGetInfo> => {
     const user = await UserModel.findOne({ email })
     if (!user) throw new HttpError(400, MESSAGE.USER_NOT_FOUND)
+    const followers = await FollowModel.countDocuments({ followedId: user._id })
+    const followings = await FollowModel.countDocuments({ followerId: user._id })
+    return {
+      id: user._id.toString(),
+      name: user.name,
+      avatar: user.avatar,
+      email: user.email,
+      createdAt: user.createdAt.toString(),
+      followers,
+      followings,
+    }
   },
   findPassword: async (body: UserFindPasswordDTO) => {
     const user = await UserModel.findOne({ email: body.email })
@@ -119,7 +130,10 @@ export const UserService = {
       followings,
     }
   },
-  getAtList: async (userId: string, { page, pageSize, keyword }: UserAtDTO) => {
+  getAtList: async (
+    userId: string,
+    { page, pageSize, keyword }: UserAtDTO
+  ): Promise<{ list: UserAtList; total: number }> => {
     const skip = (page - 1) * pageSize
 
     // 查询条件
@@ -142,8 +156,8 @@ export const UserService = {
 
     // 每个用户的 followings 数量
     const followingCounts = await FollowModel.aggregate<{ _id: Types.ObjectId; count: number }>([
-      { $match: { followerId: { $in: userIds } } },
-      { $group: { _id: '$followerId', count: { $sum: 1 } } },
+      { $match: { followingId: { $in: userIds } } },
+      { $group: { _id: 'followingId', count: { $sum: 1 } } },
     ])
 
     const followingCountMap = new Map<string, number>(

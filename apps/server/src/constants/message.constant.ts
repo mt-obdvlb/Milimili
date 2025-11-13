@@ -18,4 +18,5 @@ export const MESSAGE = {
   FEED_NOT_FOUND: '动态不存在',
   COMMENT_NOT_FOUND: '评论不存在',
   CONVERSATION_NOT_FOUND: '会话不存在',
+  LIKE_EXIST: '已点赞',
 }

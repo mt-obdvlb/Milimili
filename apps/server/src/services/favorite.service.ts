@@ -8,11 +8,11 @@ import {
 import { Types } from 'mongoose'
 import {
   FavoriteAddBatchDTO,
-  FavoriteAddDTO,
   FavoriteDeleteBatchDTO,
   FavoriteFolderAddDTO,
   FavoriteFolderList,
   FavoriteFolderListItem,
+  FavoriteFolderUpdateDTO,
   FavoriteList,
   FavoriteListDTO,
   FavoriteListItem,
@@ -42,10 +42,12 @@ export const FavoriteService = {
 
     return result
   },
-  list: async ({ userId, pageSize, page, favoriteFolderId }: FavoriteListDTO) => {
-    const match: Record<string, unknown> = {
-      userId: new Types.ObjectId(userId),
-    }
+  list: async ({
+    pageSize,
+    page,
+    favoriteFolderId,
+  }: FavoriteListDTO): Promise<{ list: FavoriteList; total: number }> => {
+    const match: Record<string, unknown> = {}
     if (favoriteFolderId) {
       match.folderId = new Types.ObjectId(favoriteFolderId)
     }
@@ -114,7 +116,7 @@ export const FavoriteService = {
                   thumbnail: { $ifNull: ['$video.thumbnail', ''] },
                   url: { $ifNull: ['$video.url', ''] },
                   views: { $ifNull: ['$videostat.viewsCount', 0] },
-                  danmakus: { $ifNull: ['$video.danmakus', 0] },
+                  danmakus: { $ifNull: ['$video.danmakusCount', 0] },
                   publishedAt: { $ifNull: ['$video.publishedAt', 0] },
                 },
                 user: {
@@ -156,7 +158,6 @@ export const FavoriteService = {
     return Promise.all(
       folders.map(async (folder) => {
         const { list } = await FavoriteService.list({
-          userId,
           favoriteFolderId: folder._id.toString(),
           page: 1,
           pageSize: 20,
@@ -171,28 +172,18 @@ export const FavoriteService = {
       })
     )
   },
-  add: async ({ userId, videoId, folderId }: FavoriteAddDTO) => {
-    const video = await VideoModel.findById(videoId)
-    const folder = await FavoriteFolderModel.findById(folderId)
-    if (!video) throw new HttpError(400, MESSAGE.VIDEO_NOT_FOUND)
-    if (!folder) throw new HttpError(400, MESSAGE.FAVORITE_FOLDER_NOT_FOUND)
-    const favorite = await FavoriteModel.findOne({
-      videoId,
-      folderId,
-    })
-    if (favorite) throw new HttpError(400, MESSAGE.FAVORITE_EXIST)
-    await FavoriteModel.create({
-      userId,
-      videoId,
-      folderId,
-    })
-    await VideoStatsModel.updateOne({ videoId }, { $inc: { favoritesCount: 1 } })
-  },
-  deleteBatch: async ({ ids }: FavoriteDeleteBatchDTO) => {
+  deleteBatch: async ({ ids }: FavoriteDeleteBatchDTO, userId: string) => {
     if (!ids.length) return
-    await FavoriteModel.deleteMany({
+    const deletedCount = await FavoriteModel.deleteMany({
       _id: { $in: ids.map((id) => new Types.ObjectId(id)) },
+      userId: new Types.ObjectId(userId),
     })
+    if (deletedCount.deletedCount > 0) {
+      await VideoStatsModel.updateMany(
+        { videoId: { $in: ids.map((id) => new Types.ObjectId(id)) } },
+        { $inc: { favoritesCount: -1 } }
+      )
+    }
   },
   cleanWatchLater: async (userId: string) => {
     const folder = await FavoriteFolderModel.findOne({
@@ -240,9 +231,16 @@ export const FavoriteService = {
       folderId: folder._id,
       videoId: { $in: finishedVideoIds },
     })
+    await VideoStatsModel.updateMany(
+      { videoId: { $in: finishedVideoIds } },
+      { $inc: { favoritesCount: -1 } }
+    )
   },
   addBatch: async ({ videoIds, folderId }: FavoriteAddBatchDTO, userId: string) => {
-    const folder = await FavoriteFolderModel.findById(folderId)
+    const folder = await FavoriteFolderModel.findOne({
+      _id: new Types.ObjectId(folderId),
+      userId: new Types.ObjectId(userId),
+    })
     if (!folder) throw new HttpError(400, MESSAGE.FAVORITE_FOLDER_NOT_FOUND)
 
     const existingFavorites = await FavoriteModel.find({
@@ -262,11 +260,7 @@ export const FavoriteService = {
 
     if (toInsert.length) {
       await FavoriteModel.insertMany(toInsert)
-      await VideoStatsModel.updateOne(
-        { videoId: { $in: videoIds.map((id) => new Types.ObjectId(id)) } },
-        { $set: { favoritesCount: 0 } },
-        { upsert: true }
-      )
+
       await VideoStatsModel.updateMany(
         { videoId: { $in: videoIds.map((id) => new Types.ObjectId(id)) } },
 
@@ -274,12 +268,18 @@ export const FavoriteService = {
       )
     }
   },
-  moveBatch: async ({ ids, targetFolderId }: FavoriteMoveBatchDTO) => {
-    const targetFolder = await FavoriteFolderModel.findById(targetFolderId)
+  moveBatch: async ({ ids, targetFolderId }: FavoriteMoveBatchDTO, userId: string) => {
+    const targetFolder = await FavoriteFolderModel.findOne({
+      _id: new Types.ObjectId(targetFolderId),
+      userId: new Types.ObjectId(userId),
+    })
     if (!targetFolder) throw new HttpError(400, MESSAGE.FAVORITE_FOLDER_NOT_FOUND)
-
+    const favorites = await FavoriteModel.find({
+      _id: { $in: ids.map((id) => new Types.ObjectId(id)) },
+      userId: new Types.ObjectId(userId),
+    }).lean()
     await FavoriteModel.updateMany(
-      { _id: { $in: ids.map((id) => new Types.ObjectId(id)) } },
+      { _id: { $in: favorites.map((f) => f._id) } },
       { $set: { folderId: new Types.ObjectId(targetFolderId) } }
     )
   },
@@ -316,5 +316,55 @@ export const FavoriteService = {
       type: folder.type,
       number: count,
     }
+  },
+  folderDelete: async (userId: string, folderId: string) => {
+    const folder = await FavoriteFolderModel.findOne({
+      _id: new Types.ObjectId(folderId),
+      userId: new Types.ObjectId(userId),
+    })
+    if (!folder) throw new HttpError(400, MESSAGE.FAVORITE_FOLDER_NOT_FOUND)
+    if (folder.type === 'watch_later') throw new HttpError(400, '稍后再看文件夹不能删除')
+    if (folder.type === 'default') throw new HttpError(400, '默认收藏夹不能删除')
+
+    // 获取该文件夹下的收藏
+    const favorites = await FavoriteModel.find({ folderId: folder._id }).lean()
+    const videoIds = favorites.map((f) => f.videoId).filter(Boolean)
+
+    // 删除收藏记录
+    await FavoriteModel.deleteMany({ folderId: folder._id })
+
+    // 更新视频收藏数
+    if (videoIds.length > 0) {
+      await VideoStatsModel.updateMany(
+        { videoId: { $in: videoIds } },
+        { $inc: { favoritesCount: -1 } }
+      )
+    }
+
+    // 删除收藏夹
+    await FavoriteFolderModel.deleteOne({ _id: folder._id })
+  },
+
+  // 更新收藏夹
+  folderUpdate: async (
+    userId: string,
+    folderId: string,
+    { name, thumbnail, description }: FavoriteFolderUpdateDTO
+  ) => {
+    const folder = await FavoriteFolderModel.findOne({
+      _id: new Types.ObjectId(folderId),
+      userId: new Types.ObjectId(userId),
+    })
+    if (!folder) throw new HttpError(400, MESSAGE.FAVORITE_FOLDER_NOT_FOUND)
+    if (folder.type === 'watch_later') throw new HttpError(400, '稍后再看文件夹不能修改')
+
+    const updateData: Partial<FavoriteFolderAddDTO> = {}
+    if (name !== undefined) updateData.name = name.trim()
+    if (thumbnail !== undefined) updateData.thumbnail = thumbnail
+    if (description !== undefined) updateData.description = description
+
+    if (Object.keys(updateData).length === 0) return // 没有更新字段直接返回
+
+    await FavoriteFolderModel.updateOne({ _id: folder._id }, { $set: updateData })
   },
 }

@@ -1,6 +1,7 @@
 import {
   FavoriteFolderList,
   FavoriteFolderListItem,
+  FavoriteFolderUpdateDTO,
   FavoriteListDTO,
   FavoriteListItem,
   FavoriteRecentList,
@@ -28,6 +29,8 @@ const API = {
   videoId: '/videoId',
   detail: '/detail',
   list: '',
+  deleteFolder: '/folder',
+  updateFolder: '/folder',
 } as const
 
 export const favoriteGetRecent = () =>
@@ -59,3 +62,9 @@ export const favoriteGetDetail = (id: string) =>
 
 export const favoriteList = (params: FavoriteListDTO) =>
   request.get<Result<PageResult<FavoriteListItem>>>(`${baseURL}${API.list}`, { params })
+
+export const favoriteDeleteFolder = (id: string) =>
+  request.delete<Result>(`${baseURL}${API.deleteFolder}/${id}`)
+
+export const favoriteUpdateFolder = ({ id, body }: { id: string; body: FavoriteFolderUpdateDTO }) =>
+  request.put<Result>(`${baseURL}${API.updateFolder}/${id}`, body)

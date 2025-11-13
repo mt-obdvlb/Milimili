@@ -1,11 +1,6 @@
 import { z } from 'zod/v4'
 
 export const favoriteListDTO = z.object({
-  userId: z
-    .string({ message: '用户 ID 必须是字符串类型' })
-    .trim()
-    .regex(/^[a-f\d]{24}$/i, { message: '用户 ID 格式不正确，必须是有效的 MongoDB ObjectId' })
-    .optional(),
   page: z.coerce.number().min(1, { message: '页码不能小于 1' }).default(1),
   pageSize: z.coerce
     .number()

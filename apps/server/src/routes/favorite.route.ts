@@ -7,7 +7,9 @@ import {
   favoriteDeleteBatch,
   favoriteDetailGetByFolderId,
   favoriteFolderAdd,
+  favoriteFolderDelete,
   favoriteFolderList,
+  favoriteFolderUpdate,
   favoriteGetByVideoId,
   favoriteList,
   favoriteMoveBatch,
@@ -17,6 +19,7 @@ import {
   favoriteAddBatchDTO,
   favoriteDeleteBatchDTO,
   favoriteFolderAddDTO,
+  favoriteFolderUpdateDTO,
   favoriteListDTO,
   favoriteMoveBatchDTO,
 } from '@mtobdvlb/shared-types'
@@ -25,12 +28,7 @@ const router = Router()
 
 router.get('/folder', authMiddleware, asyncHandler(favoriteFolderList))
 router.get('/folder/:userId', asyncHandler(favoriteFolderList))
-router.get(
-  '/',
-  authMiddleware,
-  validatorMiddleware({ query: favoriteListDTO }),
-  asyncHandler(favoriteList)
-)
+router.get('/', validatorMiddleware({ query: favoriteListDTO }), asyncHandler(favoriteList))
 router.get('/recent', authMiddleware, asyncHandler(favoriteRecent))
 router.get('/detail/:folderId', asyncHandler(favoriteDetailGetByFolderId))
 
@@ -60,5 +58,12 @@ router.post(
   asyncHandler(favoriteFolderAdd)
 )
 router.get('/videoId/:videoId', authMiddleware, asyncHandler(favoriteGetByVideoId))
+router.delete('/folder/:folderId', authMiddleware, asyncHandler(favoriteFolderDelete))
+router.put(
+  '/folder/:folderId',
+  authMiddleware,
+  validatorMiddleware({ body: favoriteFolderUpdateDTO }),
+  asyncHandler(favoriteFolderUpdate)
+)
 
 export default router

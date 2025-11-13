@@ -10,11 +10,14 @@ import { CommentModel, FeedModel, MessageModel, VideoModel, VideoStatsModel } fr
 import { MESSAGE } from '@/constants'
 import { MessageService } from '@/services/message.service'
 
-const resolveTarget = async (dto: {
-  videoId?: string
-  feedId?: string
-  commentId?: string
-}): Promise<{
+const resolveTarget = async (
+  dto: {
+    videoId?: string
+    feedId?: string
+    commentId?: string
+  },
+  add?: number
+): Promise<{
   targetId: Types.ObjectId
   targetType: CommentTargetType
   targetUserId: Types.ObjectId
@@ -23,10 +26,7 @@ const resolveTarget = async (dto: {
   if (dto.videoId) {
     const video = await VideoModel.findById(dto.videoId).lean()
     if (!video) throw new Error(MESSAGE.VIDEO_NOT_FOUND)
-    await VideoStatsModel.updateOne(
-      { videoId: new Types.ObjectId(dto.videoId) },
-      { $inc: { commentsCount: 1 } }
-    )
+    if (add) await VideoStatsModel.updateOne({ _id: video._id }, { $inc: { commentsCount: add } })
     return {
       targetId: new Types.ObjectId(dto.videoId),
       targetType: 'video',
@@ -38,6 +38,7 @@ const resolveTarget = async (dto: {
   if (dto.feedId) {
     const feed = await FeedModel.findById(dto.feedId).lean()
     if (!feed) throw new Error(MESSAGE.FEED_NOT_FOUND)
+    if (add) await FeedModel.updateOne({ _id: feed._id }, { $inc: { commentsCount: add } })
     return {
       targetId: new Types.ObjectId(dto.feedId),
       targetType: 'feed',
@@ -153,26 +154,38 @@ export const CommentService = {
     if (!trimmed) throw new Error(MESSAGE.INVALID_PARAMS)
 
     // 解析 target
-    const { targetId, targetType, targetUserId } = await resolveTarget({
-      commentId,
-      videoId,
-      feedId,
-    })
-
-    if (targetType === 'video') {
-      await VideoStatsModel.updateOne({ _id: targetId }, { $inc: { commentsCount: 1 } })
-    }
+    const { targetId, targetType, targetUserId } = await resolveTarget(
+      {
+        commentId,
+        videoId,
+        feedId,
+      },
+      1
+    )
 
     if (commentId) {
       const comment = await CommentModel.findById(commentId)
       if (!comment) throw new Error(MESSAGE.COMMENT_NOT_FOUND)
       if (comment.targetType === 'comment') {
-        await CommentModel.create({
+        const message = await CommentModel.create({
           userId: new Types.ObjectId(userId),
           targetId: comment.targetId,
           targetType: 'comment',
           content: trimmed,
         })
+        await MessageService.atMessage(userId, 'comment', message._id, trimmed)
+        await MessageModel.create({
+          userId: targetUserId,
+          sourceType: targetType,
+          fromUserId: userId,
+          type: 'reply',
+          content: trimmed,
+          sourceId: targetId,
+        })
+        if (message.targetType === 'video')
+          await VideoStatsModel.updateOne({ _id: message.targetId }, { $inc: { commentsCount: 1 } })
+        if (message.targetType === 'feed')
+          await FeedModel.updateOne({ _id: message.targetId }, { $inc: { commentsCount: 1 } })
         return
       }
     }
@@ -194,15 +207,29 @@ export const CommentService = {
       sourceId: targetId,
     })
   },
-  delete: async (userId: string, { id }: CommentDeleteDTO) => {
+  delete: async (userId: string, { id }: CommentDeleteDTO): Promise<void> => {
+    // 查找评论，确保是本人
     const comment = await CommentModel.findOne({ _id: id, userId })
     if (!comment) throw new Error(MESSAGE.COMMENT_NOT_FOUND)
+
+    // 删除主评论
     await CommentModel.deleteOne({ _id: id })
+
+    // 更新目标计数
     if (comment.targetType === 'video') {
       await VideoStatsModel.updateOne({ _id: comment.targetId }, { $inc: { commentsCount: -1 } })
-    }
-    if (comment.targetType === 'feed') {
+    } else if (comment.targetType === 'feed') {
       await FeedModel.updateOne({ _id: comment.targetId }, { $inc: { commentsCount: -1 } })
     }
+
+    // 查找所有子评论（回复当前评论的）
+    const subComments = await CommentModel.find({ targetType: 'comment', targetId: comment._id })
+
+    // 递归删除子评论（这里直接引用 CommentService.delete 避免 this 丢失）
+    await Promise.all(
+      subComments.map((cm) =>
+        CommentService.delete(cm.userId.toString(), { id: cm._id.toString() })
+      )
+    )
   },
 }

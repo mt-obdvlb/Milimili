@@ -32,9 +32,13 @@ export const HistoryService = {
       .lean<PopulatedHistory[]>()
 
     const now = new Date()
-    const today = now.toDateString()
-    const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000).toDateString()
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    const startOfYesterday = new Date(startOfToday.getTime() - 24 * 60 * 60 * 1000)
     const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+
+    const isToday = (d: Date) => d >= startOfToday
+    const isYesterday = (d: Date) => d >= startOfYesterday && d < startOfToday
+    const isLastWeek = (d: Date) => d >= weekAgo && d < startOfYesterday
 
     const result: HistoryList = {
       todayList: [],
@@ -62,10 +66,9 @@ export const HistoryService = {
         },
       }
 
-      const watchDay = new Date(h.watchedAt).toDateString()
-      if (watchDay === today) result.todayList.push(item)
-      else if (watchDay === yesterday) result.yesterdayList.push(item)
-      else if (new Date(h.watchedAt) >= weekAgo) result.lastWeekList.push(item)
+      if (isToday(h.watchedAt)) result.todayList.push(item)
+      else if (isYesterday(h.watchedAt)) result.yesterdayList.push(item)
+      else if (isLastWeek(h.watchedAt)) result.lastWeekList.push(item)
       else result.olderList.push(item)
     })
 
@@ -81,11 +84,11 @@ export const HistoryService = {
       { upsert: true }
     )
   },
-  deleteBatch: async ({ userId, ids }: { userId: string; ids: string[] }) => {
-    if (ids.length === 0) return
+  deleteBatch: async ({ userId, videoIds }: { userId: string; videoIds: string[] }) => {
+    if (videoIds.length === 0) return
     await HistoryModel.deleteMany({
       userId,
-      videoId: { $in: ids.map((id) => new Types.ObjectId(id)) },
+      videoId: { $in: videoIds.map((id) => new Types.ObjectId(id)) },
     })
   },
 
@@ -141,7 +144,7 @@ export const HistoryService = {
 
     // ---------- kw 正则（转义） ----------
     const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    const kwRegex = kw ? new RegExp(escapeRegex(kw), 'i') : undefined
+    const kwRegex = kw ? new RegExp(escapeRegex(kw).replace(/\s+/g, '\\s*'), 'i') : undefined
 
     // ---------- 聚合管线 ----------
     // 使用模型的 collection.name 来保证正确的 collection 名称
