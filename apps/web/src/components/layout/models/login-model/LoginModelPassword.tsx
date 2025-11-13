@@ -33,7 +33,7 @@ const LoginModelPassword = ({
   setTabsValue: Dispatch<SetStateAction<'password' | 'code'>>
   isPasswordOpen: boolean
   setIsPasswordOpen: Dispatch<SetStateAction<boolean>>
-  setPasswordFocus: Dispatch<SetStateAction<boolean>>
+  setPasswordFocus?: Dispatch<SetStateAction<boolean>>
 }) => {
   const { input, btnOther, btnPrimary, btnWrap, label, item } = formStyles
 
@@ -104,8 +104,8 @@ const LoginModelPassword = ({
                     className={input()}
                     type={isPasswordOpen ? 'text' : 'password'}
                     placeholder='请输入密码'
-                    onFocus={() => setPasswordFocus(true)}
-                    onBlur={() => setPasswordFocus(false)}
+                    onFocus={() => setPasswordFocus?.(true)}
+                    onBlur={() => setPasswordFocus?.(false)}
                   />
                 </FormControl>
 

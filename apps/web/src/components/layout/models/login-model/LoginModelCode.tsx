@@ -25,7 +25,7 @@ const LoginModelCode = ({
   setPasswordFocus,
 }: {
   formStyles: LoginModelFormStyles
-  setPasswordFocus: Dispatch<SetStateAction<boolean>>
+  setPasswordFocus?: Dispatch<SetStateAction<boolean>>
 }) => {
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -106,8 +106,8 @@ const LoginModelCode = ({
                     {...field}
                     className={input()}
                     placeholder='请输入验证码'
-                    onBlur={() => setPasswordFocus(false)}
-                    onFocus={() => setPasswordFocus(true)}
+                    onBlur={() => setPasswordFocus?.(false)}
+                    onFocus={() => setPasswordFocus?.(true)}
                   />
                 </FormControl>
               </FormItem>

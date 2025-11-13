@@ -10,7 +10,7 @@ import { useState } from 'react'
 import LoginModelCode from '@/components/layout/models/login-model/LoginModelCode'
 import LoginModelPassword from '@/components/layout/models/login-model/LoginModelPassword'
 
-const form = tv({
+const loginFormStyles = tv({
   slots: {
     item: 'relative flex justify-start items-center w-full h-11 py-3 px-5',
     label: 'flex-nowrap whitespace-nowrap block shrink-0 m-0 p-0 font-normal',
@@ -23,7 +23,7 @@ const form = tv({
   },
 })
 
-export type LoginModelFormStyles = ReturnType<typeof form>
+export type LoginModelFormStyles = ReturnType<typeof loginFormStyles>
 
 const LoginModel = () => {
   const uiState = useUiStore((state) => state)
@@ -32,7 +32,7 @@ const LoginModel = () => {
 
   const [tabsValue, setTabsValue] = useState<'password' | 'code'>('password')
 
-  const formStyles = form()
+  const formStyles = loginFormStyles()
 
   return (
     <Dialog open={uiState.loginModel}>
