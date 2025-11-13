@@ -21,6 +21,7 @@ coverage/
 # ========================
 # Environment variables
 # ========================
+# 忽略所有层级的真实环境变量
 .env
 **/.env
 .env.local
@@ -28,6 +29,7 @@ coverage/
 .env.test.local
 .env.production.local
 **/.env.*
+
 # ========================
 # Logs
 # ========================
