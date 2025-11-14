@@ -124,7 +124,7 @@ const HomeHeaderChannelFixed = ({ categoryList }: { categoryList?: CategoryGetAl
             }
           >
             {categoryList?.map((item) => (
-              <Link href={`/category/${item.id}`} key={item.id}>
+              <Link href={`/apps/web/src/app/category/${item.id}`} key={item.id}>
                 <div
                   className={cn(
                     'border-line_light bg-graph_bg_thin hover:bg-graph_bg_thick text-text2 h-7 cursor-pointer rounded-[6px] border text-center text-sm leading-7 font-normal',

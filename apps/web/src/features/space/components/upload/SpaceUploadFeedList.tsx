@@ -100,7 +100,7 @@ const SpaceUploadFeedList = ({ userId }: { userId: string }) => {
             <Link
               target={'_blank'}
               className={'relative w-full rounded-[6px]'}
-              href={`/feed/${item.id}`}
+              href={`/apps/web/src/app/(with-auth)/feed/${item.id}`}
             >
               <div className={'rounded-[6px] size-full'}>
                 <Image
@@ -132,7 +132,7 @@ const SpaceUploadFeedList = ({ userId }: { userId: string }) => {
             </Link>
             <Link
               target={'_blank'}
-              href={`/feed/${item.id}`}
+              href={`/apps/web/src/app/(with-auth)/feed/${item.id}`}
               className='line-clamp-2 text-ellipsis block text-sm py-1.5 text-text1 transition-all duration-300 hover:text-brand_blue'
             >
               {item.content}

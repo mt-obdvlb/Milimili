@@ -10,11 +10,7 @@ export const feedListDTO = z.object({
   type: z
     .enum(['all', 'video', 'image-text'], { message: '动态类型必须是 all、video 或 image-text' })
     .default('all'),
-  userId: z
-    .string({ message: '用户 ID 必须是字符串类型' })
-    .trim()
-    .regex(/^[a-f\d]{24}$/i, { message: '用户 ID 格式不正确，必须是有效的 MongoDB ObjectId' })
-    .optional(),
+  userId: z.string({ message: '用户 ID 必须是字符串类型' }).trim().optional(),
 })
 
 export type FeedListDTO = z.infer<typeof feedListDTO>

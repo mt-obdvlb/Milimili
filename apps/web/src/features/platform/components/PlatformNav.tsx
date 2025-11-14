@@ -12,7 +12,7 @@ const PlatformNav = () => {
     <div>
       <div className={'mt-6 w-[136px] mb-[17px] mx-auto '}>
         <Link
-          href={`/platform/upload`}
+          href={`/apps/web/src/app/(with-auth)/platform/upload`}
           className={
             'rounded-[2px] text-[16px]  text-white block text-center leading-10 bg-brand_blue cursor-pointer hover:opacity-90'
           }
@@ -24,7 +24,7 @@ const PlatformNav = () => {
       <div className={'relative text-[16px] leading-6 cursor-pointer'}>
         <div className={'h-[46px] flex items-center cursor-pointer'}>
           <Link
-            href={'/platform/upload-manager'}
+            href={'/apps/web/src/app/(with-auth)/platform/upload-manager'}
             className={cn(
               'text-text1 pl-8 pr-6 size-full flex items-center hover:bg-graph_bg_thin',
               pathname === '/platform/upload-manager' ? 'text-brand_blue' : ''

@@ -9,6 +9,7 @@ import {
   favoriteGetRecent,
   favoriteList,
   favoriteMoveBatch,
+  favoriteToggleWatchLater,
   favoriteUpdateFolder,
 } from '@/services/favorite'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -38,8 +39,8 @@ export const useFavoriteAddBatch = () => {
   const queryClient = useQueryClient()
   const { mutateAsync: favoriteAdd } = useMutation({
     mutationFn: favoriteAddBatch,
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['favorite', 'list'] })
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['favorite'] })
     },
   })
   return {
@@ -64,7 +65,7 @@ export const useFavoriteDeleteBatch = () => {
     mutationFn: favoriteDeleteBatch,
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['video', 'list'] })
-      void queryClient.invalidateQueries({ queryKey: ['favorite', 'list'] })
+      void queryClient.invalidateQueries({ queryKey: ['favorite'] })
     },
   })
   return { favoriteDelete }
@@ -144,4 +145,17 @@ export const useFavoriteFolderDelete = () => {
     },
   })
   return { favoriteFolderDelete: mutateAsync }
+}
+
+export const useFavoriteWatchLaterToggle = (videoId: string) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: favoriteWatchLaterToggle } = useMutation({
+    mutationFn: () => favoriteToggleWatchLater(videoId),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ['favorite', videoId],
+      })
+    },
+  })
+  return { favoriteWatchLaterToggle }
 }

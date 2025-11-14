@@ -30,7 +30,7 @@ const HeaderBarRightEntryFavoriteVideoItem = ({ favorite }: { favorite: Favorite
     favoriteStyles()
 
   return (
-    <Link href={`/video/${favorite.video.id}`} className={base()}>
+    <Link href={`/apps/web/src/app/(with-auth)/video/${favorite.video.id}`} className={base()}>
       <div className={image()}>
         <picture className={image()}>
           <img className={img()} src={favorite.video.thumbnail} alt={favorite.video.title} />

@@ -14,9 +14,10 @@ export const validatorMiddleware =
     if (schemas.body) {
       const bodyResult = schemas.body.safeParse(req.body)
       if (!bodyResult.success) {
+        const message = bodyResult.error.issues.map((issue) => issue.message).join('\n')
         return res.status(400).json({
           code: 1,
-          message: bodyResult.error?.message ?? MESSAGE.INVALID_PARAMS,
+          message: message || MESSAGE.INVALID_PARAMS,
         })
       }
       req.body = bodyResult.data
@@ -24,11 +25,12 @@ export const validatorMiddleware =
 
     if (schemas.query) {
       const queryResult = schemas.query.safeParse(req.query)
-      console.log(queryResult.error?.message)
       if (!queryResult.success) {
+        const message = queryResult.error.issues.map((issue) => issue.message).join('\n')
+
         return res.status(400).json({
           code: 1,
-          message: queryResult.error?.message ?? MESSAGE.INVALID_PARAMS,
+          message: message || MESSAGE.INVALID_PARAMS,
         })
       }
       req.body = queryResult.data
@@ -37,9 +39,10 @@ export const validatorMiddleware =
     if (schemas.params) {
       const paramsResult = schemas.params.safeParse(req.params)
       if (!paramsResult.success) {
+        const message = paramsResult.error.issues.map((issue) => issue.message).join('\n')
         return res.status(400).json({
           code: 1,
-          message: paramsResult.error?.message ?? MESSAGE.INVALID_PARAMS,
+          message: message || MESSAGE.INVALID_PARAMS,
         })
       }
       req.body = paramsResult.data

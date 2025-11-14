@@ -79,7 +79,7 @@ const PlatformHeader = () => {
                     className={
                       'h-10 cursor-pointer justify-center flex  items-center hover:bg-[#fafafa]'
                     }
-                    href={'/platform/upload-manager'}
+                    href={'/apps/web/src/app/(with-auth)/platform/upload-manager'}
                   >
                     投稿管理
                   </Link>
@@ -205,7 +205,7 @@ const PlatformHeader = () => {
                       'text-text2 hover:bg-graph_bg_thick relative flex cursor-pointer items-center py-2.5 pl-[27px] text-left text-sm transition-colors duration-300'
                     }
                     target={'_blank'}
-                    href={`/message/${item.url}`}
+                    href={`/apps/web/src/app/(with-auth)/message/${item.url}`}
                   >
                     {item.name}
                     {!!item.number && (

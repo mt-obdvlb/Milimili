@@ -19,7 +19,7 @@ const VideoTinyItemTypeTwo = ({ video }: { video: VideoListItem }) => {
       </div>
       <div className={'ml-2.5 flex-1 text-[13px] leading-[15px] w-[calc(100%-151px)]'}>
         <Link
-          href={`/video/${video.id}`}
+          href={`/apps/web/src/app/(with-auth)/video/${video.id}`}
           className={
             'text-[15px] font-medium leading-[19px] transition-colors duration-300 line-clamp-2 overflow-hidden text-ellipsis break-all  hover:text-brand_blue'
           }
@@ -27,7 +27,7 @@ const VideoTinyItemTypeTwo = ({ video }: { video: VideoListItem }) => {
           {video.title}
         </Link>
         <Link
-          href={`/space/${video.id}`}
+          href={`/apps/web/src/app/(with-auth)/space/${video.id}`}
           className={
             'text-text3 transition-colors duration-300 inline-flex items-center size-full cursor-pointer my-[2px] h-5 hover:text-brand_blue'
           }

@@ -164,7 +164,7 @@ const FeedDetailMainWrapper = ({ feed }: { feed: FeedGetById }) => {
                   <div className={'flex items-center h-[22px] mt-[1px] mb-0.5 max-w-fit'}>
                     <UserHoverAvatar user={feed.user}>
                       <Link
-                        href={`/space/${feed.user.id}`}
+                        href={`/apps/web/src/app/(with-auth)/space/${feed.user.id}`}
                         target={'_blank'}
                         className={
                           'text-[17px] leading-8 text-text1 cursor-pointer font-semibold transition-all duration-200'

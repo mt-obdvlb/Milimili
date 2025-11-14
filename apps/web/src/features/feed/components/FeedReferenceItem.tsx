@@ -18,7 +18,7 @@ const FeedReferenceItem = ({ feedId, isExpand }: { feedId: string; isExpand?: bo
           <div className={'flex flex-1 items-center'}>
             <UserHoverAvatar user={feed.user}>
               <Link
-                href={`/space/${feed.user.id}`}
+                href={`/apps/web/src/app/(with-auth)/space/${feed.user.id}`}
                 className={'cursor-pointer size-5 mr-1 inline-block '}
               >
                 <UserAvatar avatar={feed.user.avatar} h={20} w={20} />
@@ -27,7 +27,7 @@ const FeedReferenceItem = ({ feedId, isExpand }: { feedId: string; isExpand?: bo
 
             <UserHoverAvatar user={feed.user}>
               <Link
-                href={`/space/${feed.user.id}`}
+                href={`/apps/web/src/app/(with-auth)/space/${feed.user.id}`}
                 className={'cursor-pointer text-[15px] leading-[25px] text-text2 inline-block'}
               >
                 {feed.user.name}
@@ -41,7 +41,7 @@ const FeedReferenceItem = ({ feedId, isExpand }: { feedId: string; isExpand?: bo
       </div>
       {feed.title && (
         <Link
-          href={`/feed/${feed.id}`}
+          href={`/apps/web/src/app/(with-auth)/feed/${feed.id}`}
           className={
             'line-clamp-2 cursor-pointer block text-[15px] font-bold leading-[25px] my-1 break-all break-words text-ellipsis'
           }

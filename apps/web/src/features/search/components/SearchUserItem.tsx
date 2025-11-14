@@ -8,7 +8,7 @@ const SearchUserItem = ({ user }: { user?: SearchUserItem }) => {
   return (
     <div className={'relative mb-15 w-full max-w-1/2 flex-[0_0_50%] px-[calc(16px*0.5)]'}>
       <div className={'flex items-center justify-start'}>
-        <Link className={'mr-[15px]'} href={`/space/${user?.id}`}>
+        <Link className={'mr-[15px]'} href={`/apps/web/src/app/(with-auth)/space/${user?.id}`}>
           <div className={'relative w-[86px] min-w-[86px] cursor-pointer'}>
             <div className={'relative h-[86px] w-full scale-80'}>
               <div

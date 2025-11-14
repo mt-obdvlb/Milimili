@@ -65,7 +65,7 @@ const HeaderBarHoverCardWithBounce = ({
           >
             {Svg}
           </motion.div>
-          <span className={'text-[13px]'}>{title}</span>
+          <span className={'text-[13px] whitespace-nowrap'}>{title}</span>
 
           {badge && (
             <Badge

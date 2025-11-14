@@ -33,7 +33,7 @@ const CommentReplyItem = ({
                 user={{ avatar: comment.user.avatar, id: comment.user.id, name: comment.user.name }}
               >
                 <Link
-                  href={`/space/${comment.user.id}`}
+                  href={`/apps/web/src/app/(with-auth)/space/${comment.user.id}`}
                   target={'_blank'}
                   className={' mr-1 cursor-pointer inline-block text-text2 text-[13px] font-medium'}
                 >
@@ -46,7 +46,7 @@ const CommentReplyItem = ({
                 <Link
                   target={'_blank'}
                   className={'absolute left-0  size-6'}
-                  href={`/space/${comment.user.id}`}
+                  href={`/apps/web/src/app/(with-auth)/space/${comment.user.id}`}
                 >
                   <UserAvatar avatar={comment.user.avatar} h={24} w={24} />
                 </Link>

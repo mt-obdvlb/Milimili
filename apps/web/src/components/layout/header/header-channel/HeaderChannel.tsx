@@ -240,7 +240,7 @@ const HeaderChannel = ({
   return (
     <nav
       className={
-        'max-w-[calc(1980px + 2 * 60px)] bg-bg1 relative flex h-[110px] items-center px-[60px]'
+        'max-w-[calc(1980px + 2 * 60px)] min-w-[1300px] bg-bg1 relative flex h-[110px] items-center px-[60px]'
       }
     >
       <div className={'mr-[8px] flex items-center'}>

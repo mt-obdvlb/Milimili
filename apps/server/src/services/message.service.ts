@@ -49,6 +49,7 @@ export const MessageService = {
     }))
   },
   sendWhisper: async ({ toId, id, content }: { id: string; toId: string; content: string }) => {
+    if (id === toId) throw new HttpError(400, MESSAGE.CANNOT_SEND_MESSAGE_TO_YOURSELF)
     const senderId = new Types.ObjectId(id)
     const receiverId = new Types.ObjectId(toId)
     await Promise.all([

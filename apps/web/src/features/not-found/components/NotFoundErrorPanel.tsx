@@ -2,8 +2,10 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 const NotFoundErrorPanel = () => {
+  const router = useRouter()
   return (
     <div className={'overflow-hidden'}>
       <Image src={'/images/very_sorry.png'} width={980} height={211} alt={'very_sorry'} />
@@ -15,7 +17,11 @@ const NotFoundErrorPanel = () => {
           href={''}
           onClick={(e) => {
             e.preventDefault()
-            window.history.back()
+            if (window.history.length > 1) {
+              router.back()
+            } else {
+              router.push('/')
+            }
           }}
         >
           返回上一页

@@ -4,8 +4,10 @@ import { Separator, Tabs, TabsContent, TabsList, TabsTrigger } from '@/component
 import { cn } from '@/lib'
 import LoginModelPassword from '@/components/layout/models/login-model/LoginModelPassword'
 import LoginModelCode from '@/components/layout/models/login-model/LoginModelCode'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { tv } from 'tailwind-variants'
+import { useUserStore } from '@/stores'
+import { useRouter } from 'next/navigation'
 
 const loginFormStyles = tv({
   slots: {
@@ -21,11 +23,25 @@ const loginFormStyles = tv({
 })
 
 const LoginWrapper = () => {
+  const user = useUserStore((state) => state.user)
+  const router = useRouter()
+
   const [isPasswordOpen, setIsPasswordOpen] = useState(false)
 
   const formStyles = loginFormStyles()
 
   const [tabsValue, setTabsValue] = useState<'password' | 'code'>('password')
+
+  useEffect(() => {
+    if (!user?.id) return
+    // history.length > 1 才能正常返回
+    if (window.history.length > 1) {
+      router.back()
+    } else {
+      router.push('/')
+    }
+  }, [user?.id, router])
+
   return (
     <Tabs className={'flex flex-col justify-center items-center w-full'} value={tabsValue}>
       <TabsList

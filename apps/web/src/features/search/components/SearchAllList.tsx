@@ -44,7 +44,7 @@ const SearchAllList = ({
             <div className={userContainer()}>
               <div className={'mx-auto w-full max-w-[2200px] px-16'}>
                 <div className={'relative flex h-[68px] items-center justify-start'}>
-                  <Link href={`/space/${searchUser?.user.id}`}>
+                  <Link href={`/apps/web/src/app/(with-auth)/space/${searchUser?.user.id}`}>
                     <div
                       className={
                         'relative -mt-[9px] mr-[7px] mb-auto -ml-[9px] w-[86px] min-w-[86px] cursor-pointer'
@@ -72,7 +72,7 @@ const SearchAllList = ({
                   <div className={'w-[calc(100%-68px-15px)]'}>
                     <h2 className={'text-text1 mt-0 mb-[5px] text-[18px] leading-[1.25] font-bold'}>
                       <Link
-                        href={`/space/${searchUser.user.id}`}
+                        href={`/apps/web/src/app/(with-auth)/space/${searchUser.user.id}`}
                         className={
                           'hover:text-brand_blue inline-block max-w-full cursor-pointer overflow-hidden align-middle text-[18px] font-semibold text-ellipsis whitespace-nowrap transition-colors duration-200'
                         }

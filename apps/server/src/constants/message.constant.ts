@@ -19,4 +19,5 @@ export const MESSAGE = {
   COMMENT_NOT_FOUND: '评论不存在',
   CONVERSATION_NOT_FOUND: '会话不存在',
   LIKE_EXIST: '已点赞',
+  CANNOT_SEND_MESSAGE_TO_YOURSELF: '不能给自己发消息',
 }

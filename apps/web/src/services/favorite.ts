@@ -31,6 +31,7 @@ const API = {
   list: '',
   deleteFolder: '/folder',
   updateFolder: '/folder',
+  watchLaterToggle: '/watch-later',
 } as const
 
 export const favoriteGetRecent = () =>
@@ -68,3 +69,6 @@ export const favoriteDeleteFolder = (id: string) =>
 
 export const favoriteUpdateFolder = ({ id, body }: { id: string; body: FavoriteFolderUpdateDTO }) =>
   request.put<Result>(`${baseURL}${API.updateFolder}/${id}`, body)
+
+export const favoriteToggleWatchLater = (videoId: string) =>
+  request.put<Result>(`${baseURL}${API.watchLaterToggle}/${videoId}`)

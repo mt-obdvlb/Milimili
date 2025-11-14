@@ -36,7 +36,10 @@ const LoginModel = () => {
 
   return (
     <Dialog open={uiState.loginModel}>
-      <DialogContent showCloseButton={false} className={'m-0 h-auto min-h-auto w-auto p-0'}>
+      <DialogContent
+        showCloseButton={false}
+        className={'m-0 h-auto outline-none min-h-auto w-auto p-0'}
+      >
         <DialogTitle hidden></DialogTitle>
 
         <div

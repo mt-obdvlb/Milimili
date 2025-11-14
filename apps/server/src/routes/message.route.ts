@@ -61,6 +61,13 @@ router.put(
   validatorMiddleware({ body: messageReadDTO }),
   asyncHandler(messageRead)
 )
+router.put(
+  '/read/:id',
+  authMiddleware,
+  validatorMiddleware({ body: messageReadDTO }),
+  asyncHandler(messageRead)
+)
+
 router.delete(
   '/:id',
   authMiddleware,

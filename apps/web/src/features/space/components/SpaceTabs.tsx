@@ -74,7 +74,7 @@ const SpaceTabs = ({ user }: { user: UserGetInfo }) => {
                   >
                     <Link
                       prefetch={'auto'}
-                      href={`/space/${user.id}/${item.href || item.value}`}
+                      href={`/apps/web/src/app/(with-auth)/space/${user.id}/${item.href || item.value}`}
                       className='flex items-center justify-center pointer-events-auto size-full  relative'
                     >
                       <i
@@ -120,7 +120,7 @@ const SpaceTabs = ({ user }: { user: UserGetInfo }) => {
                   'cursor-pointer not-first-of-type:ml-4 group flex flex-col items-center min-w-[52px]'
                 }
                 key={item.value}
-                href={`/space/${user.id}/relation/${item.value}`}
+                href={`/apps/web/src/app/(with-auth)/space/${user.id}/relation/${item.value}`}
                 onClick={() => {
                   router.push(`/space/${user.id}/relation/${item.value}`)
                 }}

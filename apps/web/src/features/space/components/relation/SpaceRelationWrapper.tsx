@@ -29,7 +29,10 @@ const SapceRelationWrapper = ({
             key={item.user.id}
           >
             <UserHoverAvatar user={item.user}>
-              <Link className={'size-20 cursor-pointer'} href={`/space/${item.user.id}`}>
+              <Link
+                className={'size-20 cursor-pointer'}
+                href={`/apps/web/src/app/(with-auth)/space/${item.user.id}`}
+              >
                 <UserAvatar avatar={item.user.avatar} h={80} w={80} />
               </Link>
             </UserHoverAvatar>

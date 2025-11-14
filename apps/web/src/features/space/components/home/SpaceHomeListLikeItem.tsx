@@ -15,7 +15,7 @@ const SpaceHomeListLikeItem = ({ video }: { video: VideoListItem }) => {
           }
         >
           <Link
-            href={`/video/${video.id}`}
+            href={`/apps/web/src/app/(with-auth)/video/${video.id}`}
             target={'_blank'}
             className={'cursor-pointer transition-colors duration-200 '}
           >
@@ -23,7 +23,7 @@ const SpaceHomeListLikeItem = ({ video }: { video: VideoListItem }) => {
           </Link>
         </div>
         <div className={'mt-1 text-[13px] leading-4.5 h-4.5 text-text3 items-center flex'}>
-          <Link href={`/space/${video.userId}`} target={'_blank'}>
+          <Link href={`/apps/web/src/app/(with-auth)/space/${video.userId}`} target={'_blank'}>
             <i className={'sic-BDC-uploader_name_square_line'}></i>
             <div className={'ml-0.5'}>{video.username}</div>
           </Link>

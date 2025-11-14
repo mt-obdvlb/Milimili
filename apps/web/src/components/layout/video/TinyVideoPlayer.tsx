@@ -88,6 +88,7 @@ const TinyVideoPlayer = ({
             loop
             playsInline
             preload='metadata'
+            className={'size-full object-contain bg-black'}
           />
         </div>
       </div>

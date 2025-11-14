@@ -24,7 +24,7 @@ const HomePaletteButton = () => {
 
   const handleRoll = async () => {
     rotate()
-    await queryClient.invalidateQueries({ queryKey: ['video', 'recommend'] })
+    await queryClient.invalidateQueries({ queryKey: ['video', 'list'] })
   }
 
   const { isShow } = useShow()

@@ -56,7 +56,7 @@ const FeedListItem = ({ feed, border }: { feed: FeedListItemType; border?: boole
             <div className={'flex items-center h-[22px] mt-[1px] mb-0.5 max-w-fit'}>
               <UserHoverAvatar user={feed.user}>
                 <Link
-                  href={`/space/${feed.user.id}`}
+                  href={`/apps/web/src/app/(with-auth)/space/${feed.user.id}`}
                   target={'_blank'}
                   className={
                     'text-[17px] leading-8 text-text1 cursor-pointer font-semibold transition-all duration-200'
@@ -156,7 +156,7 @@ const FeedListItem = ({ feed, border }: { feed: FeedListItemType; border?: boole
               <div className={'-mt-1'}>
                 {feed.title && (
                   <Link
-                    href={`/feed/${feed.id}`}
+                    href={`/apps/web/src/app/(with-auth)/feed/${feed.id}`}
                     className={
                       'line-clamp-2 cursor-pointer block text-[15px] font-bold leading-[25px] my-1 break-all break-words text-ellipsis'
                     }

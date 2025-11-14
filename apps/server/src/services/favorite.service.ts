@@ -367,4 +367,33 @@ export const FavoriteService = {
 
     await FavoriteFolderModel.updateOne({ _id: folder._id }, { $set: updateData })
   },
+  watchLaterAddOrDelete: async (userId: string, videoId: string) => {
+    const folder = await FavoriteFolderModel.findOne({
+      userId,
+      type: 'watch_later',
+    })
+    if (!folder) throw new HttpError(400, MESSAGE.FAVORITE_FOLDER_NOT_FOUND)
+    const favorite = await FavoriteModel.findOne({
+      videoId,
+      userId,
+      folderId: folder._id,
+    })
+    if (favorite) {
+      await FavoriteModel.deleteOne({ _id: favorite._id })
+      await VideoStatsModel.updateOne(
+        { videoId: new Types.ObjectId(videoId) },
+        { $inc: { favoritesCount: -1 } }
+      )
+    } else {
+      await FavoriteModel.create({
+        userId: new Types.ObjectId(userId),
+        folderId: folder._id,
+        videoId: new Types.ObjectId(videoId),
+      })
+      await VideoStatsModel.updateOne(
+        { videoId: new Types.ObjectId(videoId) },
+        { $inc: { favoritesCount: 1 } }
+      )
+    }
+  },
 }

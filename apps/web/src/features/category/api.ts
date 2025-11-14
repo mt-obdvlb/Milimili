@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 export const getCategoryList = async () => {
   const { data: categoryList } = await categoryGet()
   return {
-    categoryList,
+    categoryList: categoryList,
   }
 }
 

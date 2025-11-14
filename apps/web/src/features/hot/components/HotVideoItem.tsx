@@ -17,7 +17,11 @@ const HotVideoItem = ({ video }: { video: VideoListItem }) => {
   return (
     <div className={card()}>
       <div className={content()}>
-        <Link href={`/video/${video.id}`} className={'peer'} target={'_blank'}>
+        <Link
+          href={`/apps/web/src/app/(with-auth)/video/${video.id}`}
+          className={'peer'}
+          target={'_blank'}
+        >
           <Image
             src={video.thumbnail}
             alt={video.title}

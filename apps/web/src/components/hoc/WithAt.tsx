@@ -9,7 +9,11 @@ const AtItem = ({ name }: { name: string }) => {
   const { data } = useUserGetByName(username)
   if (data?.id) {
     return (
-      <Link href={`/space/${data.id}`} target={'_blank'} className='text-brand_blue '>
+      <Link
+        href={`/apps/web/src/app/(with-auth)/space/${data.id}`}
+        target={'_blank'}
+        className='text-brand_blue '
+      >
         {name}
       </Link>
     )

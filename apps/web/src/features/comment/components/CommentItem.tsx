@@ -41,7 +41,7 @@ const CommentItem = ({
           <Link
             target={'_blank'}
             className={'absolute left-5 top-5.5 size-10 origin-[left_top]'}
-            href={`/space/${id}`}
+            href={`/apps/web/src/app/(with-auth)/space/${id}`}
           >
             <UserAvatar avatar={avatar} h={40} w={40} />
           </Link>
@@ -49,7 +49,7 @@ const CommentItem = ({
         <div className={'w-full'}>
           <UserHoverAvatar user={{ avatar, id, name }}>
             <Link
-              href={`/space/${id}`}
+              href={`/apps/web/src/app/(with-auth)/space/${id}`}
               target={'_blank'}
               className={'mb-1 cursor-pointer  text-text2 text-[13px] font-medium'}
             >

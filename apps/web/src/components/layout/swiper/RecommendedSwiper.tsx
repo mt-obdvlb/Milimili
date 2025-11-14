@@ -7,6 +7,7 @@ import { useMemo, useRef, useState } from 'react'
 import { cn } from '@/lib'
 import Link from 'next/link'
 import { VideoList } from '@mtobdvlb/shared-types'
+import WithAuth from '@/components/hoc/WithAuth'
 
 const RecommendedSwiper = ({
   videoSwiperList,
@@ -95,23 +96,25 @@ const RecommendedSwiper = ({
                             'text-text4 bg-graph_bg_regular absolute top-0 left-0 block w-full cursor-none rounded-[6px] size-full whitespace-nowrap'
                           }
                         ></div>
-                        <Link
-                          target={'_blank'}
-                          href={`/video/${item.id}`}
-                          className={'bg-graph_bg_regular  absolute inset-0 block size-full'}
-                        >
-                          <picture
-                            className={
-                              'bg-graph_bg_regular relative inline-block size-full align-middle'
-                            }
+                        <WithAuth>
+                          <Link
+                            target={'_blank'}
+                            href={`/video/${item.id}`}
+                            className={'bg-graph_bg_regular  absolute inset-0 block size-full'}
                           >
-                            <img
-                              className={'  object-fit size-full block'}
-                              src={item.thumbnail}
-                              alt={item.title}
-                            />
-                          </picture>
-                        </Link>
+                            <picture
+                              className={
+                                'bg-graph_bg_regular relative inline-block size-full align-middle'
+                              }
+                            >
+                              <img
+                                className={'  object-fit size-full block'}
+                                src={item.thumbnail}
+                                alt={item.title}
+                              />
+                            </picture>
+                          </Link>
+                        </WithAuth>
                       </div>
                     </SwiperSlide>
                   ))}
@@ -182,21 +185,23 @@ const RecommendedSwiper = ({
                     'w-[calc(100%-120px)] absolute bottom-[42px] left-[15px] z-2 flex items-center'
                   }
                 >
-                  <Link
-                    href={`/video/${activeVideo?.id}`}
-                    className={
-                      'flex flex-1 items-center justify-start overflow-hidden overflow-ellipsis whitespace-normal'
-                    }
-                    target={'_blank'}
-                  >
-                    <span
+                  <WithAuth>
+                    <Link
+                      href={`/video/${activeVideo?.id}`}
                       className={
-                        'block overflow-hidden text-ellipsis line-clamp-1 whitespace-nowrap break-all text-lg leading-[25px] text-white'
+                        'flex flex-1 items-center justify-start overflow-hidden overflow-ellipsis whitespace-normal'
                       }
+                      target={'_blank'}
                     >
-                      {activeVideo?.title}
-                    </span>
-                  </Link>
+                      <span
+                        className={
+                          'block overflow-hidden text-ellipsis line-clamp-1 whitespace-nowrap break-all text-lg leading-[25px] text-white'
+                        }
+                      >
+                        {activeVideo?.title}
+                      </span>
+                    </Link>
+                  </WithAuth>
                 </div>
               </div>
             </div>

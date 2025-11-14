@@ -7,16 +7,32 @@ import { cn } from '@/lib/utils'
 
 function Tabs({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Root>) {
   return (
-    <TabsPrimitive.Root data-slot='tabs' className={cn('flex flex-col', className)} {...props} />
+    <TabsPrimitive.Root
+      data-slot='tabs'
+      className={cn('flex flex-col outline-none', className)}
+      {...props}
+    />
   )
 }
 
 function TabsList({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.List>) {
-  return <TabsPrimitive.List data-slot='tabs-list' className={cn('', className)} {...props} />
+  return (
+    <TabsPrimitive.List
+      data-slot='tabs-list'
+      className={cn('outline-none', className)}
+      {...props}
+    />
+  )
 }
 
 function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
-  return <TabsPrimitive.Trigger data-slot='tabs-trigger' className={cn('', className)} {...props} />
+  return (
+    <TabsPrimitive.Trigger
+      data-slot='tabs-trigger'
+      className={cn('outline-none', className)}
+      {...props}
+    />
+  )
 }
 
 function TabsContent({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Content>) {

@@ -46,14 +46,17 @@ export const UserHoverAvatar = ({
             "bg-[url('/images/user-profile-bg.avif')] bg-center bg-no-repeat bg-cover rounded-[8px] rounded-b-[0px] h-[85px] left-0 top-0 w-[366px] absolute overflow-hidden"
           }
         ></div>
-        <Link className={'size-12 absolute top-[95px] left-2.5'} href={`/space/${id}`}>
+        <Link
+          className={'size-12 absolute top-[95px] left-2.5'}
+          href={`/apps/web/src/app/(with-auth)/space/${id}`}
+        >
           {<UserAvatar avatar={avatar} h={48} w={48} />}
         </Link>
         <div className={'pt-[97px] pr-5 pb-4 pl-[70px]'}>
           <div className={'flex items-center h-[21px] pb-2.5 box-content '}>
             <Link
               target={'_blank'}
-              href={`/space/${id}`}
+              href={`/apps/web/src/app/(with-auth)/space/${id}`}
               className={'text-text1 font-bold text-sm cursor-pointer'}
             >
               {name}
@@ -62,11 +65,19 @@ export const UserHoverAvatar = ({
 
           <div>
             <div className={'flex items-center pb-2.5 text-xs '}>
-              <Link target={'_blank'} className={'text-text3 pr-[18px] '} href={`/space/${id}`}>
+              <Link
+                target={'_blank'}
+                className={'text-text3 pr-[18px] '}
+                href={`/apps/web/src/app/(with-auth)/space/${id}`}
+              >
                 <span className={'text-text1 inline-block mr-[3px]'}>{data?.followers}</span>
                 粉丝
               </Link>
-              <Link target={'_blank'} href={`/space/${id}`} className={'text-text3 pr-[18px] '}>
+              <Link
+                target={'_blank'}
+                href={`/apps/web/src/app/(with-auth)/space/${id}`}
+                className={'text-text3 pr-[18px] '}
+              >
                 <span className={'text-text1 inline-block mr-[3px]'}>{data?.followings}</span>
                 关注
               </Link>

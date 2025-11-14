@@ -214,3 +214,21 @@ export const favoriteFolderUpdate: RequestHandler<
     code: 0,
   })
 }
+
+export const favoriteWatchLaterAddOrDelete: RequestHandler<
+  ParamsDictionary,
+  Result,
+  { videoId: string }
+> = async (req, res) => {
+  const userId = req.user?.id
+  const videoId = req.params.videoId
+  if (!userId || !videoId)
+    return res.status(401).json({
+      code: 401,
+      message: MESSAGE.INVALID_PARAMS,
+    })
+  await FavoriteService.watchLaterAddOrDelete(userId, videoId)
+  return res.status(200).json({
+    code: 0,
+  })
+}

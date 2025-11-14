@@ -45,7 +45,7 @@ const MessageReplyListItem = ({
           <Link
             onClick={(e) => e.stopPropagation()}
             target={'_blank'}
-            href={`/space/${item.fromUser.id}`}
+            href={`/apps/web/src/app/(with-auth)/space/${item.fromUser.id}`}
             className={'font-bold decoration-0 hover:text-brand_blue text-text1'}
           >
             {item.fromUser.name}

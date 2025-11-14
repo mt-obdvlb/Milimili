@@ -14,6 +14,7 @@ import {
   favoriteList,
   favoriteMoveBatch,
   favoriteRecent,
+  favoriteWatchLaterAddOrDelete,
 } from '@/controllers/favorite.controller'
 import {
   favoriteAddBatchDTO,
@@ -65,5 +66,6 @@ router.put(
   validatorMiddleware({ body: favoriteFolderUpdateDTO }),
   asyncHandler(favoriteFolderUpdate)
 )
+router.put('/watch-later/:videoId', authMiddleware, asyncHandler(favoriteWatchLaterAddOrDelete))
 
 export default router

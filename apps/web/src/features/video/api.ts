@@ -20,7 +20,7 @@ export const getVideoList = async () => {
 
 export const useVideoList = (pageSize: number = 11) => {
   const { data: videoRecommendList } = useQuery({
-    queryKey: ['video', 'recommend', pageSize],
+    queryKey: ['video', 'list', 'recommend', pageSize],
     queryFn: () => videoList(1, pageSize),
   })
 

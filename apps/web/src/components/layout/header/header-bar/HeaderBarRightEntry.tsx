@@ -149,7 +149,7 @@ const HeaderBarRightEntry = ({
                       'text-text2 hover:bg-graph_bg_thick relative flex cursor-pointer items-center py-2.5 pl-[27px] text-left text-sm transition-colors duration-300'
                     }
                     target={'_blank'}
-                    href={`/message/${item.url}`}
+                    href={`/apps/web/src/app/(with-auth)/message/${item.url}`}
                   >
                     {item.name}
                     {!!item.number && (
@@ -375,7 +375,7 @@ const HeaderBarRightEntry = ({
                           href={
                             item.folderName === '稍后再看'
                               ? '/watch-later'
-                              : `/space/favorite/${item.folderId}`
+                              : `/apps/web/src/app/(with-auth)/space/favorite/${item.folderId}`
                           }
                           target={'_blank'}
                           className={
@@ -678,6 +678,7 @@ const HeaderBarRightEntry = ({
                 className={
                   'flex h-[63px] w-[62px] cursor-pointer flex-col items-center justify-center rounded-[8px] text-center leading-[63px] no-underline transition-colors duration-300 hover:bg-[#E3E5E7]'
                 }
+                target={'_blank'}
               >
                 {item.svg}
                 <span className={'text-text2 text-xs leading-[17px]'}>{item.title}</span>
