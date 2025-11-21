@@ -2,12 +2,12 @@
 
 import Link from 'next/link'
 import { Badge, HoverCard, HoverCardContent, HoverCardTrigger, Separator } from '@/components'
-import Image from 'next/image'
 import { useUserStore } from '@/stores'
 import { useMessageStatistics, useUserLogout } from '@/features'
 import dayjs from 'dayjs'
 import { cn } from '@/lib'
 import React from 'react'
+import CoverImage from '@/components/ui/CoverImage'
 
 const PlatformHeader = () => {
   const user = useUserStore((state) => state.user)
@@ -50,7 +50,7 @@ const PlatformHeader = () => {
           <HoverCard openDelay={10} closeDelay={50}>
             <HoverCardTrigger asChild>
               <Link href={`/space`} target={'_blank'} className={' cursor-pointer flex'}>
-                <Image
+                <CoverImage
                   src={user!.avatar}
                   alt={user!.name}
                   width={28}
@@ -71,6 +71,7 @@ const PlatformHeader = () => {
                     className={
                       'h-10 cursor-pointer justify-center flex  items-center hover:bg-[#fafafa]'
                     }
+                    target={'_blank'}
                     href={'/account'}
                   >
                     个人中心
@@ -79,7 +80,8 @@ const PlatformHeader = () => {
                     className={
                       'h-10 cursor-pointer justify-center flex  items-center hover:bg-[#fafafa]'
                     }
-                    href={'/apps/web/src/app/(with-auth)/platform/upload-manager'}
+                    target={'_blank'}
+                    href={'/platform/upload-manager'}
                   >
                     投稿管理
                   </Link>
@@ -93,7 +95,7 @@ const PlatformHeader = () => {
                     className={
                       'h-10 cursor-pointer justify-center flex  items-center hover:bg-[#fafafa]'
                     }
-                    href={'/'}
+                    href={'/login'}
                     onClick={() => logout()}
                   >
                     退出登录
@@ -205,7 +207,7 @@ const PlatformHeader = () => {
                       'text-text2 hover:bg-graph_bg_thick relative flex cursor-pointer items-center py-2.5 pl-[27px] text-left text-sm transition-colors duration-300'
                     }
                     target={'_blank'}
-                    href={`/apps/web/src/app/(with-auth)/message/${item.url}`}
+                    href={`/message/${item.url}`}
                   >
                     {item.name}
                     {!!item.number && (

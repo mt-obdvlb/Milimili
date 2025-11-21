@@ -68,7 +68,7 @@ const PlatformUploadManagerWrapper = () => {
               key={item.id}
             >
               <Link
-                href={`/apps/web/src/app/(with-auth)/video/${item.id}`}
+                href={`/video/${item.id}`}
                 className={
                   'self-center w-[154px] h-[87px] mr-6 relative rounded-[4px] overflow-hidden '
                 }
@@ -94,7 +94,7 @@ const PlatformUploadManagerWrapper = () => {
               <div className={'w-[calc(100%-178px)] relative'}>
                 <div className={'h-6 leading-6'}>
                   <Link
-                    href={`/apps/web/src/app/(with-auth)/video/${item.id}`}
+                    href={`/video/${item.id}`}
                     target={'_blank'}
                     className={
                       'cursor-pointer hover:text-brand_blue text-[16px] text-text1 leading-5 align-middle inline-block max-w-[420px] overflow-hidden line-clamp-1 text-ellipsis'
@@ -118,7 +118,7 @@ const PlatformUploadManagerWrapper = () => {
                       className={
                         'hover:text-brand_blue hover:border-brand_blue justify-center border w-21 h-[32px] flex items-center border-[rgb(231,231,231)] rounded-[2px] text-sm text-center cursor-pointer text-[rgb(80,80,80)] leading-4.5 '
                       }
-                      href={`/apps/web/src/app/(with-auth)/platform/upload?videoId=${item.id}`}
+                      href={`/platform/upload?videoId=${item.id}`}
                     >
                       <SquarePen className={'text-[16px] mr-[7px] size-4'} />
                       编辑
