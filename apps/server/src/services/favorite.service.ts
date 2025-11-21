@@ -362,10 +362,9 @@ export const FavoriteService = {
       userId: new Types.ObjectId(userId),
     })
     if (!folder) throw new HttpError(400, MESSAGE.FAVORITE_FOLDER_NOT_FOUND)
-    if (folder.type === 'watch_later') throw new HttpError(400, '稍后再看文件夹不能修改')
 
     const updateData: Partial<FavoriteFolderAddDTO> = {}
-    if (name !== undefined) updateData.name = name.trim()
+    if (name !== undefined && folder.type === 'normal') updateData.name = name.trim()
     if (thumbnail !== undefined) updateData.thumbnail = thumbnail
     if (description !== undefined) updateData.description = description
 
