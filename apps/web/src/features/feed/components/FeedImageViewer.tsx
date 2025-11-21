@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { cn } from '@/lib'
 import { motion } from 'motion/react'
 import Lightbox from 'yet-another-react-lightbox'
@@ -48,12 +48,8 @@ const FeedImagesViewer = ({ images, isExpand }: FeedImagesViewerProps) => {
   }
 
   // 使用 hook
-  const { translateX, canScrollLeft, canScrollRight, moveLeft, moveRight } = useHorizontalScroll(
-    containerRef,
-    images.length,
-    58,
-    handleIndexAfterMove
-  )
+  const { translateX, canScrollLeft, canScrollRight, moveLeft, moveRight, scrollToIndex } =
+    useHorizontalScroll(containerRef, images.length, 58, handleIndexAfterMove)
 
   useLayoutEffect(() => {
     if (index === null || !containerRef.current) return
@@ -68,6 +64,10 @@ const FeedImagesViewer = ({ images, isExpand }: FeedImagesViewerProps) => {
       })
     }
   }, [index, images, translateX])
+
+  useEffect(() => {
+    if (index !== null) scrollToIndex(index)
+  }, [index, scrollToIndex])
 
   return (
     <>
@@ -419,6 +419,7 @@ const FeedImagesViewer = ({ images, isExpand }: FeedImagesViewerProps) => {
           ),
           buttonClose: () => (
             <Button
+              key={'close'}
               className={cn(
                 'mr-4 mt-4   hover:text-brand_pink opacity-100 transition-opacity duration-333 ease-[cubic-bezier(0.4,_0,_0.22,1)]' +
                   ' z-10 flex items-center justify-center size-[42px] rounded-full bg-[rgba(0,0,0,.58)] cursor-pointer outline-none border-none ' +

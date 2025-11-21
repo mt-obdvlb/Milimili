@@ -10,9 +10,10 @@ const AtItem = ({ name }: { name: string }) => {
   if (data?.id) {
     return (
       <Link
-        href={`/apps/web/src/app/(with-auth)/space/${data.id}`}
+        href={`/space/${data.id}`}
+        onClick={(e) => e.stopPropagation()}
         target={'_blank'}
-        className='text-brand_blue '
+        className='text-brand_blue z-1'
       >
         {name}
       </Link>

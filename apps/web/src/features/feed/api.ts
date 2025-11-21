@@ -21,7 +21,7 @@ export const useFeedGetRecent = () => {
 
 export const useFeedGetFollowingList = () => {
   const { data: followingList } = useQuery({
-    queryKey: ['feed', 'following'],
+    queryKey: ['feed', 'list', 'following'],
     queryFn: () => feedGetFollowing(),
   })
   return {

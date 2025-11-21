@@ -1,4 +1,5 @@
 import { FeedDetailTabsType } from '@/features/feed/components/detail/FeedDetailMainWrapper'
+
 import { Dispatch, SetStateAction } from 'react'
 import { TabsList, TabsTrigger } from '@/components'
 import { LayoutGroup, motion } from 'motion/react'
@@ -19,7 +20,7 @@ const FeedDetailTabs = ({
         <LayoutGroup>
           {[
             { label: `评论 ${feed.comments}`, value: 'comment' },
-            { label: `赞与评论 ${feed.likes + feed.references}`, value: 'likeTranspont' },
+            { label: `赞与转发 ${feed.likes + feed.references}`, value: 'likeTranspont' },
           ].map((item) => (
             <TabsTrigger
               onClick={() => setType(item.value as FeedDetailTabsType)}

@@ -153,18 +153,18 @@ const FeedDetailMainWrapper = ({ feed }: { feed: FeedGetById }) => {
               </div>
             ) : (
               <>
-                <div onClick={() => openNewTab(`/space/${feed.user.id}`)} className={avatar()}>
-                  <UserHoverAvatar user={feed.user}>
+                <UserHoverAvatar user={feed.user}>
+                  <div onClick={() => openNewTab(`/space/${feed.user.id}`)} className={avatar()}>
                     <div className={'size-12 rounded-full relative overflow-hidden'}>
                       <Image fill src={feed.user.avatar} alt={feed.user.name} />
                     </div>
-                  </UserHoverAvatar>
-                </div>
+                  </div>
+                </UserHoverAvatar>
                 <div className={header()}>
                   <div className={'flex items-center h-[22px] mt-[1px] mb-0.5 max-w-fit'}>
                     <UserHoverAvatar user={feed.user}>
                       <Link
-                        href={`/apps/web/src/app/(with-auth)/space/${feed.user.id}`}
+                        href={`/space/${feed.user.id}`}
                         target={'_blank'}
                         className={
                           'text-[17px] leading-8 text-text1 cursor-pointer font-semibold transition-all duration-200'

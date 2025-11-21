@@ -6,6 +6,11 @@ import FeedAsideTop10List from '@/features/feed/components/FeedAsideTop10List'
 import Link from 'next/link'
 import FeedMainWrapper from '@/features/feed/components/FeedMainWrapper'
 import CoverImage from '@/components/ui/CoverImage'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: '动态首页-咪哩咪哩',
+}
 
 const Feed = async () => {
   const [{ searchLogTop10List }, { userHomeInfo }] = await Promise.all([

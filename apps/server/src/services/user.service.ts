@@ -159,13 +159,12 @@ export const UserService = {
     // 每个用户的 followings 数量
     const followingCounts = await FollowModel.aggregate<{ _id: Types.ObjectId; count: number }>([
       { $match: { followingId: { $in: userIds } } },
-      { $group: { _id: 'followingId', count: { $sum: 1 } } },
+      { $group: { _id: '$followingId', count: { $sum: 1 } } },
     ])
 
     const followingCountMap = new Map<string, number>(
       followingCounts.map((fc) => [fc._id.toString(), fc.count])
     )
-
     // 当前用户是否已关注这些人
     const followRelations = await FollowModel.find({
       followerId: new Types.ObjectId(userId),

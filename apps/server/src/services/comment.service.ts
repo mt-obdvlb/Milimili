@@ -164,30 +164,34 @@ export const CommentService = {
     )
 
     if (commentId) {
-      const comment = await CommentModel.findById(commentId)
+      let comment = await CommentModel.findById(commentId)
+      console.log('target comment', comment)
       if (!comment) throw new Error(MESSAGE.COMMENT_NOT_FOUND)
       if (comment.targetType === 'comment') {
-        const message = await CommentModel.create({
-          userId: new Types.ObjectId(userId),
-          targetId: comment.targetId,
-          targetType: 'comment',
-          content: trimmed,
-        })
-        await MessageService.atMessage(userId, 'comment', message._id, trimmed)
-        await MessageModel.create({
-          userId: targetUserId,
-          sourceType: targetType,
-          fromUserId: userId,
-          type: 'reply',
-          content: trimmed,
-          sourceId: targetId,
-        })
-        if (message.targetType === 'video')
-          await VideoStatsModel.updateOne({ _id: message.targetId }, { $inc: { commentsCount: 1 } })
-        if (message.targetType === 'feed')
-          await FeedModel.updateOne({ _id: message.targetId }, { $inc: { commentsCount: 1 } })
-        return
+        comment = await CommentModel.findById(comment.targetId)
       }
+      if (!comment) throw new Error(MESSAGE.COMMENT_NOT_FOUND)
+      console.log('new commment', comment)
+      const message = await CommentModel.create({
+        userId: new Types.ObjectId(userId),
+        targetId: comment._id,
+        targetType: 'comment',
+        content: trimmed,
+      })
+      await MessageService.atMessage(userId, 'comment', message._id, trimmed)
+      await MessageModel.create({
+        userId: targetUserId,
+        sourceType: targetType,
+        fromUserId: userId,
+        type: 'reply',
+        content: trimmed,
+        sourceId: targetId,
+      })
+      if (comment.targetType === 'video')
+        await VideoStatsModel.updateOne({ _id: comment.targetId }, { $inc: { commentsCount: 1 } })
+      if (comment.targetType === 'feed')
+        await FeedModel.updateOne({ _id: comment.targetId }, { $inc: { commentsCount: 1 } })
+      return
     }
 
     // 创建评论

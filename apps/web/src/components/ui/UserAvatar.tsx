@@ -40,6 +40,7 @@ export const UserHoverAvatar = ({
         className={
           'z-1018 bg-bg1_float w-[366px] rounded-[8px] text-text3 text-xs antialiased shadow-[rgba(0,0,0,.1)_0px_0px_30px_2px]'
         }
+        onClick={(e) => e.stopPropagation()}
       >
         <div
           className={
@@ -48,7 +49,8 @@ export const UserHoverAvatar = ({
         ></div>
         <Link
           className={'size-12 absolute top-[95px] left-2.5'}
-          href={`/apps/web/src/app/(with-auth)/space/${id}`}
+          target={'_blank'}
+          href={`/space/${id}/feed`}
         >
           {<UserAvatar avatar={avatar} h={48} w={48} />}
         </Link>
@@ -56,7 +58,7 @@ export const UserHoverAvatar = ({
           <div className={'flex items-center h-[21px] pb-2.5 box-content '}>
             <Link
               target={'_blank'}
-              href={`/apps/web/src/app/(with-auth)/space/${id}`}
+              href={`/space/${id}`}
               className={'text-text1 font-bold text-sm cursor-pointer'}
             >
               {name}
@@ -68,14 +70,14 @@ export const UserHoverAvatar = ({
               <Link
                 target={'_blank'}
                 className={'text-text3 pr-[18px] '}
-                href={`/apps/web/src/app/(with-auth)/space/${id}`}
+                href={`/space/${id}/relation/fans`}
               >
                 <span className={'text-text1 inline-block mr-[3px]'}>{data?.followers}</span>
                 粉丝
               </Link>
               <Link
                 target={'_blank'}
-                href={`/apps/web/src/app/(with-auth)/space/${id}`}
+                href={`/space/${id}/relation/follow`}
                 className={'text-text3 pr-[18px] '}
               >
                 <span className={'text-text1 inline-block mr-[3px]'}>{data?.followings}</span>
@@ -96,7 +98,7 @@ export const UserHoverAvatar = ({
                 openNewTab(`/message/whisper/${id}`)
               }}
               className={
-                'items-center rounded-[3px] border cursor-pointer flex text-sm h-[30px] justify-center transition duration-300 w-25 ml-2 text-text2 border-text3 bg-transparent'
+                'items-center hover:border-brand_blue rounded-[3px] border cursor-pointer flex text-sm h-[30px] justify-center transition duration-300 w-25 ml-2 text-text2 border-text3 bg-transparent'
               }
             >
               发消息
