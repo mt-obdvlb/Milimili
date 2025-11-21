@@ -128,12 +128,16 @@ const WatchLaterFilterWrapper = ({
       <div className={'h-0'} ref={sentialRef}></div>
       <div
         className={cn(
-          'bg-bg1 sticky top-0 mx-auto w-full max-w-[calc(1080px+2*100px)] px-25',
-          isDetail && 'max-w-[calc(890px+2*100px)]',
-          !inView && 'z-1000'
+          'bg-bg1 sticky top-0  w-full  ',
+          !inView && 'z-1000 shadow-[0px_2px_4px] shadow-black/8'
         )}
       >
-        <div className={'mt-[10px] py-[20px]'}>
+        <div
+          className={cn(
+            'mt-[10px] py-[20px] mx-auto w-full max-w-[1280px] px-25',
+            isDetail && 'max-w-[calc(890px+2*100px)]'
+          )}
+        >
           <div className={'flex items-center'}>
             <div className={'flex w-full items-center gap-2'}>
               {isSelect ? (
