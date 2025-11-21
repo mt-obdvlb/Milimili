@@ -53,7 +53,8 @@ export const useFavoriteMoveBatch = () => {
   const { mutateAsync: favoriteMove } = useMutation({
     mutationFn: favoriteMoveBatch,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['favorite', 'list'] })
+      void queryClient.invalidateQueries({ queryKey: ['favorite'] })
+      void queryClient.invalidateQueries({ queryKey: ['video', 'list'] })
     },
   })
   return { favoriteMove }
@@ -89,6 +90,7 @@ export const useFavoriteGetByVideoId = (videoId: string) => {
   const { data } = useQuery({
     queryKey: ['favorite', videoId],
     queryFn: () => favoriteGetByVideoId(videoId),
+    enabled: !!videoId,
   })
   return {
     isFavorite: !data?.code,

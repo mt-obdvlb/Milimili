@@ -5,7 +5,7 @@ import CommonDialog from '@/components/layout/models/common/CommonDialog'
 import { toast } from '@/lib'
 import HistoryFilterBtn from '@/features/history/components/HistoryFilterBtn'
 
-const WatchLaterSelectFilterBtnWrapper = ({ ids }: { ids: string[] }) => {
+const HistorySelectFilterBtnWrapper = ({ ids }: { ids: string[] }) => {
   const { historyDelete } = useHistoryDeleteBatch()
   return (
     <>
@@ -60,4 +60,4 @@ const WatchLaterSelectFilterBtnWrapper = ({ ids }: { ids: string[] }) => {
   )
 }
 
-export default WatchLaterSelectFilterBtnWrapper
+export default HistorySelectFilterBtnWrapper

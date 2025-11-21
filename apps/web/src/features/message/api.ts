@@ -96,8 +96,9 @@ export const useMessageConversation = () => {
 
 export const useMessageConversationDetail = (userId: string) => {
   const { data: conversation } = useQuery({
-    queryKey: ['messages', 'conversation', userId],
+    queryKey: ['conversation', userId],
     queryFn: () => messageGetConversation(userId),
+    enabled: !!userId,
   })
   return {
     conversation: conversation?.data,
@@ -109,7 +110,7 @@ export const useMessageSend = (userId: string) => {
   const { mutateAsync: sendMessage } = useMutation({
     mutationFn: messageSendWhisper,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['messages', 'conversation', userId] })
+      await queryClient.invalidateQueries({ queryKey: ['conversation', userId] })
     },
   })
   return {

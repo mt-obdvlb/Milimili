@@ -14,11 +14,13 @@ const DatePickerWrapper = ({
   range,
   setRange,
   className,
+  onComplete,
 }: {
   resetKey: number
   range?: DateRange
   setRange: Dispatch<SetStateAction<DateRange | undefined>>
   className?: string
+  onComplete: () => void
 }) => {
   const [open, setOpen] = useState(false)
   const [selectMode, setSelectMode] = useState<DatePickerSelectMode>('normal')
@@ -120,6 +122,7 @@ const DatePickerWrapper = ({
           <div className={'relative overflow-hidden'}>
             <DatePickerProvider value={{ range, setRange }}>
               <DatePicker
+                onComplete={onComplete}
                 currentMonth={currentMonth}
                 setCurrentMonth={setCurrentMonth}
                 disabledRange={disabledRange}

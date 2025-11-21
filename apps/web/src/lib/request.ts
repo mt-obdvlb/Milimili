@@ -42,6 +42,12 @@ const request: AxiosInstance = (() => {
   instance.interceptors.request.use(async (config: RetryableAxiosRequestConfig) => {
     const headers = new AxiosHeaders(config.headers)
 
+    // ⚠️ 如果 headers 已经有 Cookie（说明是 refresh 或者重试时手动设置的），不要覆盖
+    if (headers.get('Cookie')) {
+      config.headers = headers
+      return config
+    }
+
     if (isServer()) {
       // SSR 下才手动注入 Cookie
       const { cookies } = await import('next/headers')

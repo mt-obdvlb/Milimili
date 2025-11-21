@@ -125,7 +125,7 @@ const HeaderBarRightEntry = ({
                     number: notificationStatistics?.find((item) => item.type === 'at')?.count ?? 0,
                   },
                   {
-                    url: 'love',
+                    url: 'like',
                     name: '收到的赞',
                     number:
                       notificationStatistics?.find((item) => item.type === 'like')?.count ?? 0,
@@ -149,7 +149,7 @@ const HeaderBarRightEntry = ({
                       'text-text2 hover:bg-graph_bg_thick relative flex cursor-pointer items-center py-2.5 pl-[27px] text-left text-sm transition-colors duration-300'
                     }
                     target={'_blank'}
-                    href={`/apps/web/src/app/(with-auth)/message/${item.url}`}
+                    href={`/message/${item.url}`}
                   >
                     {item.name}
                     {!!item.number && (
@@ -289,7 +289,7 @@ const HeaderBarRightEntry = ({
       </WithAuth>
       <WithAuth>
         <HeaderBarHoverCardWithBounce
-          href={'/space/favorite'}
+          href={userHomeInfo?.user.id ? `/space/${userHomeInfo.user.id}/favorite` : '/space'}
           align={'end'}
           alignOffset={-150}
           title={'收藏'}
@@ -299,6 +299,7 @@ const HeaderBarRightEntry = ({
               height='21'
               viewBox='0 0 20 21'
               fill='none'
+              id={'favorite-watch-later-target'}
               xmlns='http://www.w3.org/2000/svg'
             >
               <path
@@ -375,7 +376,7 @@ const HeaderBarRightEntry = ({
                           href={
                             item.folderName === '稍后再看'
                               ? '/watch-later'
-                              : `/apps/web/src/app/(with-auth)/space/favorite/${item.folderId}`
+                              : `/space/${userHomeInfo?.user.id}/favorite?folderId=${item.folderId}`
                           }
                           target={'_blank'}
                           className={

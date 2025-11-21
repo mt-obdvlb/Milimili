@@ -63,7 +63,7 @@ const HeaderBarRightEntryFeedVideoItem = ({ feed }: { feed: FeedRecentItem }) =>
         <div className={container()}>
           <div className={boxLeft()}>
             <Link
-              href={`/apps/web/src/app/(with-auth)/space/${feed.user.id}`}
+              href={`/space/${feed.user.id}`}
               target={'_blank'}
               className={boxLeftDynamicAvatar()}
             >
@@ -75,11 +75,7 @@ const HeaderBarRightEntryFeedVideoItem = ({ feed }: { feed: FeedRecentItem }) =>
           <div className={boxCenter()}>
             <div className={boxCenterNameLine()}>
               <div className={boxCenterName()}>
-                <Link
-                  target={'_blank'}
-                  href={`/apps/web/src/app/(with-auth)/space/${feed.user.id}`}
-                  className={username()}
-                >
+                <Link target={'_blank'} href={`/space/${feed.user.id}`} className={username()}>
                   {feed.user.name}
                 </Link>
               </div>

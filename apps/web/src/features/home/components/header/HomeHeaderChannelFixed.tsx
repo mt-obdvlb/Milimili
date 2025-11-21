@@ -40,7 +40,7 @@ const HomeHeaderChannelFixed = ({ categoryList }: { categoryList?: CategoryGetAl
         <div className={left()}>
           {[
             {
-              url: '/',
+              url: '/feed',
               name: '动态',
               svg: (
                 <svg
@@ -104,7 +104,7 @@ const HomeHeaderChannelFixed = ({ categoryList }: { categoryList?: CategoryGetAl
               ),
             },
           ].map((item) => (
-            <Link href={item.url} key={item.name}>
+            <Link target={'_blank'} href={item.url} key={item.name}>
               <div
                 className={
                   'hover:text-brand_blue mb-3.5 flex h-7 w-[70px] cursor-pointer items-center'
@@ -124,7 +124,7 @@ const HomeHeaderChannelFixed = ({ categoryList }: { categoryList?: CategoryGetAl
             }
           >
             {categoryList?.map((item) => (
-              <Link href={`/apps/web/src/app/category/${item.id}`} key={item.id}>
+              <Link target={'_blank'} href={`/category/${item.id}`} key={item.id}>
                 <div
                   className={cn(
                     'border-line_light bg-graph_bg_thin hover:bg-graph_bg_thick text-text2 h-7 cursor-pointer rounded-[6px] border text-center text-sm leading-7 font-normal',

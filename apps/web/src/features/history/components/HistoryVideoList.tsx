@@ -13,11 +13,13 @@ const HistoryVideoList = ({
   setIds,
   isSelect,
   ids,
+  isSticky,
 }: {
   isDetail: boolean
   setIds: Dispatch<SetStateAction<string[]>>
   isSelect: boolean
   ids: string[]
+  isSticky: boolean
   historyList?: HistoryGetList
 }) => {
   const groupedHistoryList = groupHistoryList(historyList)
@@ -54,6 +56,7 @@ const HistoryVideoList = ({
             setIds={setIds}
             isSelect={isSelect}
             ids={ids}
+            isSticky={isSticky}
           />
         ))}
         <div className={'relative'}>

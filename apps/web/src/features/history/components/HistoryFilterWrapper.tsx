@@ -10,12 +10,11 @@ import DatePickerWrapper from '@/components/layout/date-picker/DatePickerWrapper
 import CommonDialog from '@/components/layout/models/common/CommonDialog'
 import HistoryAllCheck from '@/features/history/components/HistoryAllCheck'
 import HistorySelectFilterBtnWrapper from '@/features/history/components/HistorySelectFilterBtnWrapper'
-import { useInView } from 'react-intersection-observer'
 import { useHistoryCleanUp } from '@/features'
 import HistoryTabs from '@/features/history/components/HistoryTabs'
 import HistoryFilterBtn from '@/features/history/components/HistoryFilterBtn'
 
-type WatchLaterFilterProps = {
+type HistoryFilterProps = {
   setTime: Dispatch<SetStateAction<HistoryGetTime>>
   setWatchAt: Dispatch<SetStateAction<HistoryGetWatchAt>>
   watchAt: HistoryGetWatchAt
@@ -29,6 +28,10 @@ type WatchLaterFilterProps = {
   historyList?: HistoryGetList
   setIds: Dispatch<SetStateAction<string[]>>
   ids: string[]
+  sentialRef: (node?: Element | null) => void
+  isSticky: boolean
+  open: boolean
+  setOpen: Dispatch<SetStateAction<boolean>>
 }
 
 const timeList = [
@@ -46,7 +49,7 @@ const watchAtList = [
   { label: '近一周', value: 'week' },
 ] as const
 
-const WatchLaterFilterWrapper = ({
+const HistoryFilterWrapper = ({
   setTime,
   time,
   range,
@@ -60,8 +63,11 @@ const WatchLaterFilterWrapper = ({
   setIds,
   historyList,
   ids,
-}: WatchLaterFilterProps) => {
-  const [open, setOpen] = useState(false)
+  sentialRef,
+  isSticky,
+  open,
+  setOpen,
+}: HistoryFilterProps) => {
   const [currenInput, setCurrenInput] = useState('')
   const [resetKey, setResetKey] = useState(0)
   const [isFocus, setIsFocus] = useState(false)
@@ -105,12 +111,15 @@ const WatchLaterFilterWrapper = ({
     toast('已清空历史记录')
   }
 
-  const { ref: sentialRef, inView } = useInView({ threshold: 1 })
-
   return (
     <>
       <div className={'h-0'} ref={sentialRef}></div>
-      <div className={cn('bg-bg1 sticky top-0 w-full', !inView && 'z-1000')}>
+      <div
+        className={cn(
+          'bg-bg1 sticky top-0 w-full ',
+          isSticky && 'z-1000 bg-bg1_float shadow-[0_2px_4px_rgba(0,0,0,.08)]'
+        )}
+      >
         <div
           className={cn(
             'mx-auto w-[1152px] py-[14px] pl-[72px]',
@@ -372,12 +381,13 @@ const WatchLaterFilterWrapper = ({
               list={watchAtList}
               mt
               className={cn(
-                '!m-0 mt-0 mr-0 flex h-[34px] min-w-[84px] shrink-0 cursor-pointer items-center justify-center rounded-[6px] !p-0 px-0 text-sm transition-all duration-300'
+                'm-0 mt-0 mr-0 flex h-[34px] min-w-[84px] shrink-0 cursor-pointer items-center justify-center rounded-[6px] p-0 px-0 text-sm transition-all duration-300'
               )}
               contanierClassName={cn('mt-[12px] gap-3')}
             >
               <DatePickerWrapper
-                className={'!mt-0'}
+                className={'mt-0'}
+                onComplete={() => setWatchAt('customer')}
                 range={range}
                 setRange={setRange}
                 resetKey={resetKey}
@@ -390,4 +400,4 @@ const WatchLaterFilterWrapper = ({
   )
 }
 
-export default WatchLaterFilterWrapper
+export default HistoryFilterWrapper

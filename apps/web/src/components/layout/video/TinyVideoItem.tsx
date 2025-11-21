@@ -9,8 +9,8 @@ import TinyVideoPlayer from '@/components/layout/video/TinyVideoPlayer'
 import { VideoListItem } from '@mtobdvlb/shared-types'
 import { Button } from '@/components'
 import WithAuth from '@/components/hoc/WithAuth'
-import CoverImage from '@/components/ui/CoverImage'
 import WatchLaterAdd from '@/components/ui/watch-later-add'
+import CoverImage from '@/components/ui/CoverImage'
 
 const TinyVideoItem = ({
   video,
@@ -29,7 +29,7 @@ const TinyVideoItem = ({
   hiddenTitle,
   isRounded = true,
   hiddenPlayerTime,
-  hiddenWatchLater,
+  showWatchLater,
 }: {
   video: VideoListItem & {
     duration?: number
@@ -51,7 +51,7 @@ const TinyVideoItem = ({
   hiddenTitle?: boolean
   isRounded?: boolean
   hiddenPlayerTime?: boolean
-  hiddenWatchLater?: boolean
+  showWatchLater?: boolean
 }) => {
   const [time, setTime] = useState(0)
   const [hover, setHover] = useState(false)
@@ -68,7 +68,7 @@ const TinyVideoItem = ({
         >
           <div className={cn('relative z-1 overflow-hidden ', isRounded && 'rounded-[6px]')}>
             <div className={'cursor-pointer bg-[#F1F2F3] pt-[56.25%]'}>
-              {!hiddenWatchLater && (
+              {showWatchLater && (
                 <div
                   className={
                     'absolute top-[8px] right-[8px] z-9 flex h-[28px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 min-w-[28px] translate-z-0 cursor-pointer items-center justify-end'

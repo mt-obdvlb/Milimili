@@ -1,19 +1,20 @@
 import request from '@/lib/request'
 import {
   HistoryAddDTO,
+  HistoryDeleteBatchDTO,
   HistoryGetItem,
   HistoryList,
   PageResult,
   Result,
 } from '@mtobdvlb/shared-types'
-import { HistoryDeleteBatchRequest, HistoryGetRequest } from '@/types'
+import { HistoryGetRequest } from '@/types'
 
 const baseURL = '/histories'
 
 const API = {
   recent: '/recent',
   list: '/list',
-  deleteBatch: '/',
+  deleteBatch: '/delete',
   clear: '/clear',
   add: '/',
 } as const
@@ -25,10 +26,8 @@ export const historyGetList = (params: HistoryGetRequest) =>
     params,
   })
 
-export const historyDeleteBatch = (params: HistoryDeleteBatchRequest) =>
-  request.delete<Result>(`${baseURL}${API.deleteBatch}`, {
-    params,
-  })
+export const historyDeleteBatch = (params: HistoryDeleteBatchDTO) =>
+  request.post<Result>(baseURL + API.deleteBatch, params)
 
 export const historyClearUp = () => request.delete<Result>(`${baseURL}${API.clear}`)
 

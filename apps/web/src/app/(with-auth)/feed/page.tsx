@@ -3,9 +3,9 @@ import ToTopBtn from '@/components/ui/ToTopBtn'
 import { cn } from '@/lib'
 import { getSearchLogTop10, getUserHomeInfo } from '@/features'
 import FeedAsideTop10List from '@/features/feed/components/FeedAsideTop10List'
-import Image from 'next/image'
 import Link from 'next/link'
 import FeedMainWrapper from '@/features/feed/components/FeedMainWrapper'
+import CoverImage from '@/components/ui/CoverImage'
 
 const Feed = async () => {
   const [{ searchLogTop10List }, { userHomeInfo }] = await Promise.all([
@@ -45,7 +45,7 @@ const Feed = async () => {
                           'size-12 rounded-full overflow-hidden mr-2 cursor-pointer bg-[#f1f2f3] relative'
                         }
                       >
-                        <Image
+                        <CoverImage
                           className={'size-full inline-block align-middle'}
                           fill
                           src={userHomeInfo.user.avatar}
@@ -67,17 +67,17 @@ const Feed = async () => {
                         {[
                           {
                             name: '关注',
-                            href: `/space/${userHomeInfo.user.id}`,
+                            href: `/space/${userHomeInfo.user.id}/relation/follow`,
                             num: userHomeInfo.followings,
                           },
                           {
                             name: '粉丝',
-                            href: `/space/${userHomeInfo.user.id}`,
+                            href: `/space/${userHomeInfo.user.id}/relation/fans`,
                             num: userHomeInfo.followers,
                           },
                           {
                             name: '动态',
-                            href: `/space/${userHomeInfo.user.id}`,
+                            href: `/space/${userHomeInfo.user.id}/feed`,
                             num: userHomeInfo.feeds,
                           },
                         ].map((item) => (

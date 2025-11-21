@@ -73,7 +73,7 @@ const WatchLaterSelectFilterBtnWrapper = ({ ids }: { ids: WatchLaterIds }) => {
               targetFolderId: folderId,
             })
             if (code) return
-            toast('已复制视频')
+            toast('已移动视频')
           }}
           svg={
             <svg

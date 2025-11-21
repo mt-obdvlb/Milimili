@@ -8,6 +8,7 @@ import HistoryFilterWrapper from '@/features/history/components/HistoryFilterWra
 import HistoryVideoList from '@/features/history/components/HistoryVideoList'
 import { useHistoryList } from '@/features'
 import { useInfiniteScroll } from '@/hooks'
+import { useInView } from 'react-intersection-observer'
 
 const HistoryWrapper = () => {
   const [time, setTime] = useState<HistoryGetTime>('all')
@@ -26,10 +27,17 @@ const HistoryWrapper = () => {
     watchAt,
   })
   const { ref } = useInfiniteScroll(fetchNextPage)
+  const { ref: sentialRef, inView } = useInView({ threshold: 1 })
+  const [open, setOpen] = useState(false)
+
   return (
     <div className={'mx-auto min-w-[1060px] pt-[30px]'}>
       <HistoryTitle isDetail={isDetail} setIsDetail={setIsDetail} />
       <HistoryFilterWrapper
+        open={open}
+        setOpen={setOpen}
+        sentialRef={sentialRef}
+        isSticky={!inView}
         ids={ids}
         setTime={setTime}
         setWatchAt={setWatchAt}
@@ -50,6 +58,7 @@ const HistoryWrapper = () => {
         setIds={setIds}
         isDetail={isDetail}
         historyList={historyList}
+        isSticky={open}
       />
       <div ref={ref} className={'text-text3 py-30 text-center text-sm'}>
         已经到底了～

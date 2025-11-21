@@ -18,6 +18,9 @@ export const useFollow = (followingId: string) => {
       await queryClient.invalidateQueries({
         queryKey: ['follow', followingId],
       })
+      await queryClient.invalidateQueries({
+        queryKey: ['feed', 'list'],
+      })
     },
   })
 

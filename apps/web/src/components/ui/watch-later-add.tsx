@@ -8,6 +8,7 @@ import {
 } from '@/features'
 import { useEffect, useRef, useState } from 'react'
 import WithAuth from '@/components/hoc/WithAuth'
+import { useToWatchLater } from '@/hooks/useToWatchLater'
 
 const WatchLaterAdd = ({ videoId }: { videoId: string }) => {
   const { favoriteWatchLaterToggle } = useFavoriteWatchLaterToggle(videoId)
@@ -25,6 +26,8 @@ const WatchLaterAdd = ({ videoId }: { videoId: string }) => {
     setContainerWidth(hovered && !isFavorite ? width : 28)
   }, [containerRef, hovered, isFavorite])
 
+  const { trigger } = useToWatchLater(containerRef, {})
+
   return (
     <WithAuth>
       <motion.div
@@ -37,7 +40,8 @@ const WatchLaterAdd = ({ videoId }: { videoId: string }) => {
           const folderId = favoriteFolderList?.find((item) => item.type === 'watch_later')?.id
           if (!folderId) return
           const { code } = await favoriteWatchLaterToggle()
-          if (code) return
+          if (code || isFavorite) return
+          trigger()
         }}
         style={{
           width: `${containerWidth}px`,

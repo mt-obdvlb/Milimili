@@ -1,28 +1,37 @@
+'use client'
+
 import { VideoListItem } from '@mtobdvlb/shared-types'
 import { tv } from 'tailwind-variants'
 import Link from 'next/link'
-import Image from 'next/image'
 import { cn } from '@/lib'
-import { formatPlayCount } from '@/utils'
+import { formatPlayCount, openNewTab } from '@/utils'
+import { useFavoriteGetByVideoId, useFavoriteWatchLaterToggle } from '@/features'
+import CoverImage from '@/components/ui/CoverImage'
+import { useToWatchLater } from '@/hooks/useToWatchLater'
+import { useRef } from 'react'
+import WithAuth from '@/components/hoc/WithAuth'
 
 const HotVideoItem = ({ video }: { video: VideoListItem }) => {
   const videoStyles = tv({
     slots: {
       card: 'w-[calc(50%-5px)] h-[116px] mr-[5px] rounded-[2px] relative flex align-top mb-10',
-      content: 'w-[206px] shrink-0 mr-2.5 bg-[#e7e7e7] h-[116px] rounded-[2px] relative',
+      content:
+        'w-[206px] group/content shrink-0 mr-2.5 bg-[#e7e7e7] h-[116px] rounded-[2px] relative',
       info: 'cursor-pointer w-full flex flex-col justify-between text-text3 text-xs pr-[70px]',
     },
   })
   const { card, content, info } = videoStyles()
+
+  const { isFavorite } = useFavoriteGetByVideoId(video.id)
+  const { favoriteWatchLaterToggle } = useFavoriteWatchLaterToggle(video.id)
+  const startRef = useRef<HTMLDivElement>(null)
+  const { trigger } = useToWatchLater(startRef)
+
   return (
     <div className={card()}>
       <div className={content()}>
-        <Link
-          href={`/apps/web/src/app/(with-auth)/video/${video.id}`}
-          className={'peer'}
-          target={'_blank'}
-        >
-          <Image
+        <Link href={`/video/${video.id}`} className={'peer'} target={'_blank'}>
+          <CoverImage
             src={video.thumbnail}
             alt={video.title}
             fill
@@ -30,31 +39,45 @@ const HotVideoItem = ({ video }: { video: VideoListItem }) => {
             unoptimized
           />
         </Link>
-        <div
-          className={cn(
-            "group/later absolute right-2 bottom-2 z-20 hidden size-7 cursor-pointer bg-[url('/images/watch-later.png')] bg-contain peer-hover:block hover:block"
-          )}
-        >
-          <span
+        <WithAuth>
+          <div
             className={cn(
-              'absolute -top-7.5 -left-[21px] hidden rounded-[4px] bg-[rgba(0,0,0,0.8)] px-2 py-1 text-xs leading-4.5 whitespace-nowrap text-white group-hover/later:inline'
+              "group/later absolute group-hover/content:block right-2 bottom-2 z-20 hidden size-7 cursor-pointer bg-[url('/images/watch_later.png')] bg-contain peer-hover:block hover:block",
+              isFavorite && "bg-[url('/images/hot-yes.png')]"
             )}
+            onClick={async () => {
+              const { code } = await favoriteWatchLaterToggle()
+              if (code || isFavorite) return
+              trigger()
+            }}
+            ref={startRef}
           >
-            稍后再看
-          </span>
-        </div>
+            <span
+              className={cn(
+                'absolute -top-7.5 -left-[21px] hidden rounded-[4px] bg-[rgba(0,0,0,0.8)] px-2 py-1 text-xs leading-4.5 whitespace-nowrap text-white group-hover/later:inline',
+                isFavorite && '-left-[5px]'
+              )}
+            >
+              {isFavorite ? '移除' : '稍后再看'}
+            </span>
+          </div>
+        </WithAuth>
       </div>
       <div className={info()}>
         <p
           className={
             'text-text1 hover:text-brand_blue mb-2 line-clamp-2 h-[43px] p-0 text-sm leading-6 font-semibold break-words text-ellipsis transition-colors duration-300'
           }
+          onClick={() => openNewTab(`/video/${video.id}`)}
         >
           {video.title}
         </p>
         <div>
           <span
-            className={'text-text3 mb-1 line-clamp-1 flex h-4 items-center text-xs text-ellipsis'}
+            onClick={() => openNewTab(`/space/${video.userId}`)}
+            className={
+              'text-text3 mb-1 line-clamp-1 hover:text-brand_blue flex h-4 items-center text-xs text-ellipsis'
+            }
           >
             <svg
               data-v-507d2d1a=''
@@ -77,7 +100,7 @@ const HotVideoItem = ({ video }: { video: VideoListItem }) => {
                 fill='currentColor'
               ></path>
             </svg>
-            <span className={'hover:text-brand_blue flex items-center'}>{video.username}</span>
+            <span className={' flex items-center'}>{video.username}</span>
           </span>
           <span className={'flex items-center leading-4 font-normal'}>
             <span className={'mr-3 flex items-center'}>

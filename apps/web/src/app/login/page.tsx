@@ -1,4 +1,9 @@
 import LoginWrapper from '@/features/login/components/LoginWrapper'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: '登录',
+}
 
 const Login = () => {
   return (

@@ -36,7 +36,7 @@ const Category = async ({ params }: { params: Promise<{ id: string }> }) => {
             <div className={'text-text1 text-[28px] leading-10 font-medium'}>{categoryName}</div>
           </div>
           <div>
-            <CategoryMainVideoList videoSwiperList={videoSwiperList} />
+            <CategoryMainVideoList categoryName={categoryName} videoSwiperList={videoSwiperList} />
           </div>
         </div>
       </main>

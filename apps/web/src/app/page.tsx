@@ -23,7 +23,7 @@ const Home = async () => {
         <HeaderChannel categoryList={categoryList} />
         <HomeHeaderChannelFixed categoryList={categoryList} />
       </header>
-      <main className={'max-w-[calc(1920px+2*60px)] min-w-[1300px] px-[60px] text-sm'}>
+      <main className={'max-w-[calc(1920px+2*60px)] min-w-[1300px] px-[60px] text-sm '}>
         <div className={'text-text1'}>
           <div className={'relative mb-[60px]'}>
             <div

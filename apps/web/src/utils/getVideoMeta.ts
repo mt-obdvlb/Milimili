@@ -25,10 +25,6 @@ const getVideoFirstFrame = (video: HTMLVideoElement): Promise<string> =>
     }
   })
 
-/**
- * 获取视频元数据：时长 + 缩略图（优先封面，否则第一帧截图）
- * @param file File 对象 或者 视频 URL 字符串
- */
 export const getVideoMeta = (
   file: File | string
 ): Promise<{

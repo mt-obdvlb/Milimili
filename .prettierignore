@@ -11,8 +11,6 @@ build/
 .idea/
 .vscode/
 
-# Public libraries
-/apps/web/public/comment-core-library/
 
 # Environment files
 **/.env

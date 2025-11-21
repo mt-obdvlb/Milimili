@@ -56,14 +56,15 @@ export const UserService = {
     }
   },
   getInfoHome: async (id: string) => {
+    const objectId = new Types.ObjectId(id)
     const user = await UserModel.findById(id, {
       name: 1,
       avatar: 1,
       email: 1,
     })
     if (!user) throw new Error(MESSAGE.USER_NOT_FOUND)
-    const followings = await FollowModel.countDocuments({ followerId: id })
-    const followers = await FollowModel.countDocuments({ followedId: id })
+    const followings = await FollowModel.countDocuments({ followerId: objectId })
+    const followers = await FollowModel.countDocuments({ followingId: objectId })
     const feeds = await FeedModel.countDocuments({ userId: id })
     return {
       user: {
@@ -78,10 +79,11 @@ export const UserService = {
     }
   },
   getInfo: async (id: string): Promise<UserGetInfo> => {
+    const objectId = new Types.ObjectId(id)
     const user = await UserModel.findById(id)
     if (!user) throw new Error(MESSAGE.USER_NOT_FOUND)
-    const followings = await FollowModel.countDocuments({ followerId: id })
-    const followers = await FollowModel.countDocuments({ followedId: id })
+    const followings = await FollowModel.countDocuments({ followerId: objectId })
+    const followers = await FollowModel.countDocuments({ followingId: objectId })
     return {
       name: user.name,
       avatar: user.avatar,
@@ -95,7 +97,7 @@ export const UserService = {
   getByEmail: async (email: string): Promise<UserGetInfo> => {
     const user = await UserModel.findOne({ email })
     if (!user) throw new HttpError(400, MESSAGE.USER_NOT_FOUND)
-    const followers = await FollowModel.countDocuments({ followedId: user._id })
+    const followers = await FollowModel.countDocuments({ folllowingId: user._id })
     const followings = await FollowModel.countDocuments({ followerId: user._id })
     return {
       id: user._id.toString(),
@@ -119,7 +121,7 @@ export const UserService = {
   getByName: async (name: string): Promise<UserGetByName> => {
     const user = await UserModel.findOne({ name })
     if (!user) throw new HttpError(400, MESSAGE.USER_NOT_FOUND)
-    const followers = await FollowModel.countDocuments({ followedId: user._id })
+    const followers = await FollowModel.countDocuments({ folllowingId: user._id })
     const followings = await FollowModel.countDocuments({ followerId: user._id })
     return {
       id: user._id.toString(),
@@ -194,10 +196,11 @@ export const UserService = {
     await UserModel.findByIdAndUpdate(id, body, { new: true })
   },
   getById: async (id: string): Promise<UserGetInfo> => {
+    const objectId = new Types.ObjectId(id)
     const user = await UserModel.findById(id)
     if (!user) throw new Error(MESSAGE.USER_NOT_FOUND)
-    const followings = await FollowModel.countDocuments({ followerId: id })
-    const followers = await FollowModel.countDocuments({ followedId: id })
+    const followings = await FollowModel.countDocuments({ followerId: objectId })
+    const followers = await FollowModel.countDocuments({ followingId: objectId })
     return {
       id: user._id.toString(),
       name: user.name,

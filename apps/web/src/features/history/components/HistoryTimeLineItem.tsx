@@ -19,6 +19,7 @@ type Props = {
   isSelect: boolean
   ids: string[]
   index: number
+  isSticky: boolean
   total: number
 }
 
@@ -31,6 +32,7 @@ const HistoryTimeLineItem: React.FC<Props> = ({
   ids,
   index,
   total,
+  isSticky,
 }) => {
   const timeLineItemStyles = tv({
     slots: {
@@ -63,8 +65,11 @@ const HistoryTimeLineItem: React.FC<Props> = ({
 
   const [isFixed, setIsFixed] = useState(false)
   const [type, setType] = useState<'top' | 'bottom' | 'normal'>('normal')
+  const [upperBound, setUpperBound] = useState(94 + 36 * index)
+  useEffect(() => {
+    setUpperBound((isSticky ? 94 + 104 : 94) + 36 * index)
+  }, [index, isSticky])
 
-  const upperBound = 94 + 36 * index
   const lowerBound = 72 + (total - 1 - index) * 32
 
   const labelOffsetRef = useRef<number | null>(null)

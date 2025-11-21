@@ -173,7 +173,7 @@ const HeaderBarRightEntryAvatar = ({ userHomeInfo }: { userHomeInfo?: UserGetInf
                     </svg>
                   ),
                   name: '投稿管理',
-                  url: '',
+                  url: '/platform/upload-manager',
                 },
               ].map((item) => (
                 <Link

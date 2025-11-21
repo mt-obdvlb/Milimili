@@ -4,7 +4,7 @@ import { favoriteCleanWatchLater, videoGetWatchLater } from '@/services'
 
 export const useWatchLaterList = (params: VideoGetWatchLaterRequest) => {
   const { data: videoWatchLaterList } = useQuery({
-    queryKey: ['video', 'watchLater', params],
+    queryKey: ['video', 'list', 'watchLater', params],
     queryFn: () => videoGetWatchLater(params),
   })
   return { videoWatchLaterList: videoWatchLaterList?.data }
@@ -16,7 +16,7 @@ export const useWatchLaterCleanUp = () => {
     mutationFn: () => favoriteCleanWatchLater(),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: ['video', 'watchLater'],
+        queryKey: ['video', 'list', 'watchLater'],
         exact: false,
       })
     },

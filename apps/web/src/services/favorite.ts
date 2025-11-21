@@ -23,7 +23,7 @@ const API = {
   folderList: '/folder',
   deleteBatch: '/',
   addBatch: '/batch',
-  moveBatch: 'move-batch',
+  moveBatch: '/move-batch',
   cleanWatchLater: '/clean-watch-later',
   folderAdd: '/folder',
   videoId: '/videoId',

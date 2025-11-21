@@ -113,13 +113,19 @@ const SearchFilterWrapper = ({
         <Filter<SearchPublishedAt>
           value={publishedAt}
           set={(val) => {
-            setPublishedAt(val)
             setResetKey(resetKey + 1)
+            setRange(undefined)
+            setPublishedAt(val)
           }}
           list={publishedAtList}
           mt
         >
-          <DatePickerWrapper range={range} setRange={setRange} resetKey={resetKey} />
+          <DatePickerWrapper
+            onComplete={() => setPublishedAt('customer')}
+            range={range}
+            setRange={setRange}
+            resetKey={resetKey}
+          />
         </Filter>
         <Filter<SearchTime> value={time} set={setTime} list={timeList} mt></Filter>
         <div className='flex flex-wrap items-center justify-start'>

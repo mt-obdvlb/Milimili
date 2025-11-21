@@ -37,12 +37,7 @@ export const SearchService = {
         $options: 'i',
       },
     }
-    const videoQuery: FilterQuery<typeof VideoModel> = {
-      $or: [
-        { title: { $regex: kw, $options: 'i' } },
-        { description: { $regex: kw, $options: 'i' } },
-      ],
-    }
+    const videoQuery: FilterQuery<typeof VideoModel> = {}
 
     if (time !== 'all') {
       if (time === '10') videoQuery.time = { $lt: 600 }
@@ -112,7 +107,16 @@ export const SearchService = {
           path: '$user',
           preserveNullAndEmptyArrays: true,
         },
-      }, // 保证 user 是对象
+      },
+      {
+        $match: {
+          $or: [
+            { title: { $regex: kw, $options: 'i' } },
+            { description: { $regex: kw, $options: 'i' } },
+            { 'user.name': { $regex: kw, $options: 'i' } }, // 新增：用户名字匹配
+          ],
+        },
+      },
       { $sort: sortStage[sort] },
       { $skip: skip },
       { $limit: pageSize },
@@ -149,7 +153,7 @@ export const SearchService = {
     ]
 
     const followCounts = await FollowModel.aggregate<FollowCountAgg>([
-      { $match: { followingId: { $in: userIds } } },
+      { $match: { followingId: { $in: userIds.map((id) => new Types.ObjectId(id)) } } },
       {
         $group: {
           _id: '$followingId',
@@ -157,14 +161,13 @@ export const SearchService = {
         },
       },
     ])
-    const followerMap = new Map(followCounts.map((f) => [f._id, f.count]))
+    const followerMap = new Map(followCounts.map((f) => [f._id.toString(), f.count]))
 
     const videoCounts = await VideoModel.aggregate<VideoCountAgg>([
       { $match: { userId: { $in: userIds.map((id) => new Types.ObjectId(id)) } } },
       { $group: { _id: '$userId', count: { $sum: 1 } } },
     ])
-    const videoCountMap = new Map(videoCounts.map((v) => [v._id, v.count]))
-
+    const videoCountMap = new Map(videoCounts.map((v) => [v._id.toString(), v.count]))
     // ===== 构造 SearchGetItem =====
 
     const items: SearchGetItem[] = []

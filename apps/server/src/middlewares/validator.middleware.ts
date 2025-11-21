@@ -10,7 +10,7 @@ type SchemaGroup = {
 
 export const validatorMiddleware =
   (schemas: SchemaGroup) => (req: Request, res: Response, next: NextFunction) => {
-    console.log(req.query, req.body, req.params)
+    console.log('query', req.query, 'body', req.body, 'params', req.params)
     if (schemas.body) {
       const bodyResult = schemas.body.safeParse(req.body)
       if (!bodyResult.success) {

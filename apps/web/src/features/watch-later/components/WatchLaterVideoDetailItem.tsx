@@ -15,7 +15,7 @@ const WatchLaterVideoDetailItem = ({ video }: { video: VideoGetWaterLaterItem })
     <article className={'relative flex'}>
       <div className={'text-text1 relative min-w-[178px] shrink-0'}>
         <Link
-          href={`/apps/web/src/app/(with-auth)/video/${video.id}?t=${time.toFixed(0)}`}
+          href={`/video/${video.id}?t=${time.toFixed(0)}`}
           target={'_blank'}
           className={'block transition-colors duration-200 ease-linear'}
           onMouseEnter={() => setHover(true)}
@@ -83,7 +83,7 @@ const WatchLaterVideoDetailItem = ({ video }: { video: VideoGetWaterLaterItem })
           className={
             'text-text1 hover:text-brand_blue mb-2 line-clamp-1 w-fit max-w-[calc(100%-54px)] cursor-pointer overflow-hidden text-[16px] leading-[22px] font-medium transition-colors duration-300'
           }
-          href={`/apps/web/src/app/(with-auth)/video/${video.id}`}
+          href={`/video/${video.id}`}
         >
           {video.title}
         </Link>
@@ -92,7 +92,7 @@ const WatchLaterVideoDetailItem = ({ video }: { video: VideoGetWaterLaterItem })
             className={
               'text-text3 hover:text-brand_blue mr-5 flex cursor-pointer items-center text-sm'
             }
-            href={`/apps/web/src/app/(with-auth)/space/${video.userId}`}
+            href={`/space/${video.userId}`}
           >
             <i
               className={

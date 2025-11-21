@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { cn } from '@/lib'
 import { usePathname, useRouter } from 'next/navigation'
 import { useMessageConversation } from '@/features'
+import { flushSync } from 'react-dom'
 
 const MessageWhisperListItem = ({
   ref,
@@ -69,8 +70,10 @@ const MessageWhisperListItem = ({
         <div
           onClick={async (e) => {
             e.stopPropagation()
+            flushSync(() => {
+              router.push('/message/whisper')
+            })
             await deleteConversation(item.id)
-            router.push('/message/whisper')
           }}
           className={'size-4 cursor-pointer'}
         >

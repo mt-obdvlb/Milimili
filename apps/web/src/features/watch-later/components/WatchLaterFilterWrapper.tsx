@@ -396,7 +396,12 @@ const WatchLaterFilterWrapper = ({
               mt
               className={'h-[34px] text-[15px]'}
             >
-              <DatePickerWrapper range={range} setRange={setRange} resetKey={resetKey} />
+              <DatePickerWrapper
+                onComplete={() => setAddAt('customer')}
+                range={range}
+                setRange={setRange}
+                resetKey={resetKey}
+              />
             </Filter>
             <Filter<VideoGetWatchLaterTime>
               className={'h-[34px] text-[15px]'}

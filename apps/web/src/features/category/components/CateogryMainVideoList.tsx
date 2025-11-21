@@ -6,12 +6,24 @@ import { useMemo } from 'react'
 import TinyVideoItem from '@/components/layout/video/TinyVideoItem'
 import RecommendedSwiper from '@/components/layout/swiper/RecommendedSwiper'
 import { VideoList } from '@mtobdvlb/shared-types'
+import { useTitle } from 'react-use'
 
-const CategoryMainVideoList = ({ videoSwiperList }: { videoSwiperList?: VideoList }) => {
+const CategoryMainVideoList = ({
+  videoSwiperList,
+  categoryName,
+}: {
+  videoSwiperList?: VideoList
+  categoryName?: string
+}) => {
   const { videoRecommendList, videoRandomList, fetchNextPage } = useVideoList()
   const totalList = useMemo(
     () => [...(videoRecommendList?.slice(0, 3) ?? []), ...(videoRandomList ?? [])],
     [videoRecommendList, videoRandomList]
+  )
+  useTitle(
+    categoryName
+      ? `${categoryName}-咪哩咪哩 (゜-゜)つロ 干杯~-milimili`
+      : '咪哩咪哩 (゜-゜)つロ 干杯~-milimili'
   )
   return (
     <>

@@ -1,10 +1,9 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { searchGet } from '@/services/search'
 import type { SearchGetRequest } from '@/types/search'
-import { Result, SearchGetList } from '@mtobdvlb/shared-types'
 
 export const useSearch = (params: SearchGetRequest) => {
-  const { data } = useQuery<Result<SearchGetList>, unknown>({
+  const { data } = useQuery({
     queryKey: ['search', params],
     queryFn: () => searchGet(params),
     placeholderData: keepPreviousData,

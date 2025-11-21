@@ -31,8 +31,8 @@ router.post(
   validatorMiddleware({ body: historyAddDTO }),
   asyncHandler(historyAdd)
 )
-router.delete(
-  '/',
+router.post(
+  '/delete',
   authMiddleware,
   validatorMiddleware({ body: historyDeleteBatchDTO }),
   asyncHandler(historyDeleteBatch)

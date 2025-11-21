@@ -2,7 +2,6 @@ import { SearchGetItem, SearchRecommendUser } from '@mtobdvlb/shared-types'
 import { tv } from 'tailwind-variants'
 import { cn } from '@/lib'
 import Link from 'next/link'
-import Image from 'next/image'
 import { Button } from '@/components'
 import SearchUserVideoItem from '@/features/search/components/SearchUserVideoItem'
 import SearchVideoItem from '@/features/search/components/SearchVideoItem'
@@ -10,6 +9,7 @@ import { Dispatch, SetStateAction } from 'react'
 import SearchEmpty from '@/features/search/components/SearchEmpty'
 import SearchPagination from '@/features/search/components/SearchPagination'
 import SearchFollowBtn from '@/features/search/components/SearchFollowBtn'
+import CoverImage from '@/components/ui/CoverImage'
 
 const SearchAllList = ({
   searchUser,
@@ -44,7 +44,7 @@ const SearchAllList = ({
             <div className={userContainer()}>
               <div className={'mx-auto w-full max-w-[2200px] px-16'}>
                 <div className={'relative flex h-[68px] items-center justify-start'}>
-                  <Link href={`/apps/web/src/app/(with-auth)/space/${searchUser?.user.id}`}>
+                  <Link target={'_blank'} href={`/space/${searchUser?.user.id}`}>
                     <div
                       className={
                         'relative -mt-[9px] mr-[7px] mb-auto -ml-[9px] w-[86px] min-w-[86px] cursor-pointer'
@@ -56,7 +56,7 @@ const SearchAllList = ({
                             "relative block size-[86px] translate-0 cursor-pointer rounded-full bg-[url('/images/avatar.jpg')] bg-cover"
                           }
                         >
-                          <Image
+                          <CoverImage
                             src={searchUser.user.avatar}
                             alt={searchUser.user.name}
                             className={
@@ -72,7 +72,8 @@ const SearchAllList = ({
                   <div className={'w-[calc(100%-68px-15px)]'}>
                     <h2 className={'text-text1 mt-0 mb-[5px] text-[18px] leading-[1.25] font-bold'}>
                       <Link
-                        href={`/apps/web/src/app/(with-auth)/space/${searchUser.user.id}`}
+                        target={'_blank'}
+                        href={`/space/${searchUser.user.id}`}
                         className={
                           'hover:text-brand_blue inline-block max-w-full cursor-pointer overflow-hidden align-middle text-[18px] font-semibold text-ellipsis whitespace-nowrap transition-colors duration-200'
                         }

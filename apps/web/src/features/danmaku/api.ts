@@ -7,7 +7,7 @@ export const useDanmakuGet = (videoId: string, isGet: boolean = true) => {
   const { data } = useQuery({
     queryKey: ['danmaku', videoId],
     queryFn: () => danmakuGet(videoId),
-    enabled: isGet,
+    enabled: isGet && !!videoId,
   })
   return {
     danmakuList: data?.data ?? [],

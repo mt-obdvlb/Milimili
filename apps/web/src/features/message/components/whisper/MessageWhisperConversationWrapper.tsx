@@ -6,12 +6,15 @@ import MessageWhisperSend from '@/features/message/components/whisper/MessageWhi
 import { formatWatchAt } from '@/utils'
 import MessageWhisperConversationItem from '@/features/message/components/whisper/MessageWhisperConversationItem'
 import { Fragment } from 'react'
+import { useParams } from 'next/navigation'
 
-const MessageWhisperConversationWrapper = ({ userId }: { userId: string }) => {
+const MessageWhisperConversationWrapper = () => {
+  const params = useParams()
+  const userId = params.userId as string
   const { conversation } = useMessageConversationDetail(userId)
   const user = useUserStore((state) => state.user)
   const { user: toUser } = useUserGetById(userId)
-  if (!user || !toUser || !conversation) return null
+  if (!userId || !user || !toUser || !conversation) return null
   return (
     <div className={'size-full bg-bg2 relative flex flex-col rounded-r-[4px]'}>
       <div

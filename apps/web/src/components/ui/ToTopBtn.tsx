@@ -18,7 +18,7 @@ const ToTopBtn = ({
       <Button
         variant={'primary'}
         className={cn(
-          'flex justify-center h-[31px] rounded-[8px] text-xs py-[7px] px-3 text-text1 border border-line_regular ml-2 origin-center transition duration-200 cursor-pointer',
+          'flex justify-center  h-[31px] rounded-[8px] text-xs py-[7px] px-3 text-text1 border border-line_regular ml-2 origin-center transition duration-200 cursor-pointer',
           'hover:bg-graph_bg_thick pointer-events-auto mt-3 ml-0 h-auto min-h-10 w-10 flex-col items-center px-0 pt-2 pb-1.5 text-[22px] opacity-100 transition-opacity duration-300 select-auto',
           inlineClassName,
           isShow ? 'opacity-100' : 'opacity-0'

@@ -16,7 +16,7 @@ const HomeMainVideoList = () => {
   return (
     <>
       {totalList.map((item, index) => (
-        <TinyVideoItem key={item.id + index} margin={index >= 6} video={item} />
+        <TinyVideoItem showWatchLater key={item.id + index} margin={index >= 6} video={item} />
       ))}
       <SkeletonWrapper fetchData={fetchNextPage} />
     </>

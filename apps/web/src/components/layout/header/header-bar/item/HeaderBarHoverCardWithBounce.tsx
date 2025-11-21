@@ -45,7 +45,16 @@ const HeaderBarHoverCardWithBounce = ({
         <Link
           target={'_blank'}
           href={href}
-          onClick={building ? toastBuilding : () => {}}
+          onClick={(e) => {
+            if (building) {
+              e.preventDefault()
+              toastBuilding()
+            } else {
+              if (!href.length) {
+                e.preventDefault()
+              }
+            }
+          }}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={() => {}}
           className={

@@ -1,6 +1,6 @@
 import { MessageGetConversationItem } from '@mtobdvlb/shared-types'
 import { cn } from '@/lib'
-import Image from 'next/image'
+import CoverImage from '@/components/ui/CoverImage'
 
 const MessageWhisperConversationItem = ({
   message,
@@ -17,7 +17,7 @@ const MessageWhisperConversationItem = ({
           isMe && 'ml-2.5 mr-0'
         )}
       >
-        <Image src={message.user.avatar} alt={message.user.name} width={30} height={30} />
+        <CoverImage src={message.user.avatar} alt={message.user.name} width={30} height={30} />
       </div>
       <div className={'w-full'}>
         <div className={cn('w-fit flex', isMe && 'flex-row-reverse ml-auto')}>

@@ -69,6 +69,9 @@ const LoginModelPassword = ({
     )
   }
 
+  const password = form.watch('password')
+  const email = form.watch('email')
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit, onError)}>
@@ -209,9 +212,10 @@ const LoginModelPassword = ({
           </Button>
           <Button
             type='submit'
+            disabled={!password.length || !email.length}
             className={cn(
               btnPrimary(),
-              !(form.getValues('password') || form.getValues('email')) &&
+              (!password.length || !email.length) &&
                 'cursor-not-allowed opacity-50 hover:opacity-50'
             )}
           >

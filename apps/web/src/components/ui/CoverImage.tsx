@@ -1,7 +1,7 @@
 'use client'
 
 import Image, { ImageProps } from 'next/image'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 type CoverImageProps = Omit<ImageProps, 'src'> & {
   src: string
@@ -13,13 +13,12 @@ type CoverImageProps = Omit<ImageProps, 'src'> & {
 const CoverImage = ({
   src,
   maxRetry = 2,
-  fallbackSrc = '/gochat.png',
-  showSkeleton = true,
+  fallbackSrc = '/empty2.png',
+  alt = 'alt',
   ...rest
 }: CoverImageProps) => {
   const [imgSrc, setImgSrc] = useState(src)
   const [retryCount, setRetryCount] = useState(0)
-  const [isLoaded, setIsLoaded] = useState(false)
 
   const handleError = () => {
     if (retryCount < maxRetry) {
@@ -30,15 +29,16 @@ const CoverImage = ({
       setImgSrc(fallbackSrc)
     }
   }
+  useEffect(() => {
+    setRetryCount(0)
+    setImgSrc(src)
+  }, [src])
+
+  if (!imgSrc) return null
 
   return (
     <>
-      {/* Skeleton */}
-      {showSkeleton && !isLoaded && (
-        <div className='absolute inset-0 animate-pulse bg-muted rounded-md' />
-      )}
-
-      <Image {...rest} src={imgSrc} onLoad={() => setIsLoaded(true)} onError={handleError} />
+      <Image alt={alt || 'alt'} {...rest} src={imgSrc} onError={handleError} />
     </>
   )
 }

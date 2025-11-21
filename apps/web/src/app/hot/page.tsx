@@ -2,6 +2,11 @@ import HeaderBarWrapper from '@/components/layout/header/header-bar/HeaderBarWra
 import HeaderBanner from '@/components/layout/header/header-banner/HeaderBanner'
 import HotToTopBtn from '@/features/hot/components/HotToTopBtn'
 import HotTabs from '@/features/hot/components/HotTabs'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: '咪哩咪哩热门',
+}
 
 const Hot = () => {
   return (

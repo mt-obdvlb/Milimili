@@ -1,7 +1,6 @@
 'use client'
 
 import React, { Dispatch, SetStateAction, useState } from 'react'
-import 'react-day-picker/style.css'
 import { Calendar, DatePickerSelectMode } from '@/components'
 import DatePickerRoot from '@/components/layout/date-picker/DatePickerRoot'
 import { useDatePicker } from '@/components/layout/date-picker/DatePickerProvider'
@@ -13,12 +12,14 @@ const DatePicker = ({
   disabledRange,
   setCurrentMonth,
   currentMonth,
+  onComplete,
 }: {
   setOpen: Dispatch<SetStateAction<boolean>>
   selectMode: DatePickerSelectMode
   disabledRange: DateRange
   currentMonth: Date
   setCurrentMonth: Dispatch<SetStateAction<Date>>
+  onComplete: () => void
 }) => {
   const { range, setRange } = useDatePicker()
   const [hoverDate, setHoverDate] = useState<Date | undefined>()
@@ -41,27 +42,24 @@ const DatePicker = ({
         if (!val) return
 
         if (selectMode === 'normal') {
-          if (!range?.from || (range?.from && range?.to)) {
-            setRange({ from: val.from, to: undefined })
-          } else if (range?.from && !range?.to) {
-            const second = val.from! // DayPicker 里第二次点击的那天
-            const first = range.from
-
-            const [start, end] =
-              first.getTime() < second.getTime() ? [first, second] : [second, first]
-
-            setRange({ from: start, to: end })
+          if (!range?.from) {
+            setRange({ from: val.from })
+          } else {
+            setRange(val)
             setOpen(false)
+            onComplete()
           }
         } else if (selectMode === 'start') {
           if (val.from) {
             setRange({ from: val.from, to: range?.to })
             setOpen(false)
+            onComplete()
           }
         } else if (selectMode === 'end') {
           if (val.to) {
             setRange({ from: range?.from, to: val.to })
             setOpen(false)
+            onComplete()
           }
         }
       }}

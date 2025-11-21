@@ -44,11 +44,7 @@ const HeaderBarRightEntryHistoryVideoItem = ({ history }: { history: HistoryList
   } = historyStyles()
 
   return (
-    <Link
-      href={`/apps/web/src/app/(with-auth)/video/history.video.id`}
-      target={'_blank'}
-      className={base()}
-    >
+    <Link href={`/video/${history.video.id}`} target={'_blank'} className={base()}>
       <div className={image()}>
         <picture className={image()}>
           <img className={img()} src={history.video.thumbnail} alt={history.video.title} />

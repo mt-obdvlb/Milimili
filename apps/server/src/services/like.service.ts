@@ -108,12 +108,26 @@ export const LikeService = {
   },
 
   isLike: async (userId: string, dto: LikeGetDTO) => {
-    const { targetId, targetType } = await resolveTarget(dto)
-    const exist = await LikeModel.exists({
-      userId: new Types.ObjectId(userId),
-      targetId,
-      targetType,
-    })
-    return exist ? 0 : 1 // 0=已喜欢, 1=未喜欢
+    try {
+      const { targetId, targetType } = await resolveTarget(dto)
+
+      const exist = await LikeModel.exists({
+        userId: new Types.ObjectId(userId),
+        targetId,
+        targetType,
+      })
+      return exist ? 0 : 1 // 0=已喜欢, 1=未喜欢
+    } catch (err) {
+      // 如果是找不到目标对象的错误，则直接返回未喜欢
+      if (
+        err instanceof HttpError &&
+        [MESSAGE.VIDEO_NOT_FOUND, MESSAGE.FEED_NOT_FOUND, MESSAGE.COMMENT_NOT_FOUND].includes(
+          err.message
+        )
+      ) {
+        return 1
+      }
+      throw err
+    }
   },
 }
