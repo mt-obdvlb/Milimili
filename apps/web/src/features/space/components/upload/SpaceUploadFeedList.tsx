@@ -18,8 +18,8 @@ interface ItemPosition {
 const SpaceUploadFeedList = ({ userId }: { userId: string }) => {
   const { feedList: rawFeedList, fetchNextPage } = useFeedGetList({
     userId,
-    type: 'image-text',
     pageSize: 50,
+    type: 'all',
   })
   const { ref: fetchRef } = useInfiniteScroll(fetchNextPage)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -28,7 +28,18 @@ const SpaceUploadFeedList = ({ userId }: { userId: string }) => {
   const [containerHeight, setContainerHeight] = useState(0)
   const [imageHeights, setImageHeights] = useState<Record<string, number>>({})
 
-  const feedList = useMemo(() => rawFeedList.filter((item) => !!item.images?.length), [rawFeedList])
+  const feedList = useMemo(
+    () =>
+      rawFeedList
+        .filter((item) => !!item.images?.length || !!item.video?.thumbnail)
+        .map((item) => ({
+          id: item.id,
+          image: item.images?.[0] || item.video?.thumbnail || '',
+          likes: item.likes,
+          content: item.content,
+        })),
+    [rawFeedList]
+  )
 
   useLayoutEffect(() => {
     const container = containerRef.current
@@ -100,13 +111,13 @@ const SpaceUploadFeedList = ({ userId }: { userId: string }) => {
             <Link
               target={'_blank'}
               className={'relative w-full rounded-[6px]'}
-              href={`/apps/web/src/app/(with-auth)/feed/${item.id}`}
+              href={`/feed/${item.id}`}
             >
               <div className={'rounded-[6px] size-full'}>
                 <Image
                   width={itemWidth}
                   height={imgHeight}
-                  src={item.images?.[0] ?? ''}
+                  src={item.image}
                   alt=''
                   className='w-full object-cover rounded-[6px]'
                   style={{ height: imgHeight }}
@@ -132,7 +143,7 @@ const SpaceUploadFeedList = ({ userId }: { userId: string }) => {
             </Link>
             <Link
               target={'_blank'}
-              href={`/apps/web/src/app/(with-auth)/feed/${item.id}`}
+              href={`/feed/${item.id}`}
               className='line-clamp-2 text-ellipsis block text-sm py-1.5 text-text1 transition-all duration-300 hover:text-brand_blue'
             >
               {item.content}

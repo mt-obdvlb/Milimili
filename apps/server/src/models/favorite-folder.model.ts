@@ -6,7 +6,7 @@ type FavoriteFolderBase = {
   description?: string
   type: FavoriteFolderType
   isOpen: boolean
-  thumbnail: string
+  thumbnail?: string
 }
 
 type FavoriteFolderDB = FavoriteFolderBase & {
@@ -34,7 +34,7 @@ const favoriteFolderSchema = new Schema<IFavoriteFolder>(
       required: true,
       default: true,
     },
-    thumbnail: { type: String, trim: true, required: true },
+    thumbnail: { type: String, trim: true, required: false },
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
@@ -43,5 +43,8 @@ const favoriteFolderSchema = new Schema<IFavoriteFolder>(
   },
   { versionKey: false, timestamps: true }
 )
+
+// ✅ 添加复合唯一索引：每个用户下 name 唯一
+favoriteFolderSchema.index({ userId: 1, name: 1 }, { unique: true })
 
 export const FavoriteFolderModel = model<IFavoriteFolder>('FavoriteFolder', favoriteFolderSchema)

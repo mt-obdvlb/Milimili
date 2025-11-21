@@ -56,11 +56,8 @@ const UploadImage: React.FC<Props> = ({
   imgUrl,
   ASPECT = 16 / 9,
 }) => {
-  // 假定 useUploadFile 返回 { uploadFile: (file: File) => Promise<UploadResult> }
-  // 若你的实现不同，微调类型断言即可（无 any）
   const { uploadFile } = useUploadFile()
 
-  // local src (objectURL or external URL)
   const [localSrc, setLocalSrc] = useState<string | undefined>(() => imgUrl)
   const fileRef = useRef<File | null>(null)
   const lastObjectUrlRef = useRef<string | null>(null)
@@ -121,10 +118,10 @@ const UploadImage: React.FC<Props> = ({
     const containerRatio = CONTAINER_W / CONTAINER_H
     const imgRatio = natW / natH
 
-    let w = CONTAINER_W
-    let h = CONTAINER_H
-    let offsetX = 0
-    let offsetY = 0
+    let w
+    let h
+    let offsetX
+    let offsetY
 
     if (imgRatio > containerRatio) {
       // 图更宽：fit 容器宽 -> 高变小
@@ -162,15 +159,12 @@ const UploadImage: React.FC<Props> = ({
     // 立即更新预览
     setTimeout(
       () =>
-        updatePreview(
-          {
-            x: cx,
-            y: cy,
-            width: boundedW,
-            height: boundedH,
-          },
-          { w, h, offsetX, offsetY }
-        ),
+        updatePreview({
+          x: cx,
+          y: cy,
+          width: boundedW,
+          height: boundedH,
+        }),
       0
     )
   }
@@ -201,8 +195,7 @@ const UploadImage: React.FC<Props> = ({
   }
 
   // 更新右侧预览（按 200px 宽生成）
-  const updatePreview = async (c: CropBox = crop, _: DisplayRect = display): Promise<void> => {
-    console.log(_)
+  const updatePreview = async (c: CropBox = crop): Promise<void> => {
     if (!localSrc) {
       setPreviewDataUrl(undefined)
       return
@@ -480,10 +473,9 @@ const UploadImage: React.FC<Props> = ({
     try {
       const { fileUrl } = await uploadFile(outFile)
       uploadUrl = fileUrl
-    } catch (err) {
+    } catch {
       // upload 错误时，降级为本地 dataURL
 
-      console.error('uploadFile error', err)
       uploadUrl = null
     }
 

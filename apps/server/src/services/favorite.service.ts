@@ -24,7 +24,11 @@ import { MESSAGE } from '@/constants'
 
 export const FavoriteService = {
   listFolder: async (userId: string) => {
-    const folders = await FavoriteFolderModel.find({ userId }).lean()
+    const folders = await FavoriteFolderModel.find({ userId })
+      .sort({
+        createdAt: 1,
+      })
+      .lean()
 
     const result: FavoriteFolderList = await Promise.all(
       folders.map(async (folder) => {
@@ -36,6 +40,7 @@ export const FavoriteService = {
           number: count,
           type: folder.type,
           thumbnail: folder.thumbnail,
+          description: folder.description,
         }
       })
     )
@@ -315,6 +320,7 @@ export const FavoriteService = {
       thumbnail: folder.thumbnail,
       type: folder.type,
       number: count,
+      description: folder.description,
     }
   },
   folderDelete: async (userId: string, folderId: string) => {

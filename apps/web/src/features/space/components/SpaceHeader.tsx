@@ -50,15 +50,17 @@ const SpaceHeader = ({ user }: { user: UserGetInfo }) => {
                   width={64}
                 />
               </div>
-              <Link
-                target={'_blank'}
-                href={'/account'}
-                className={
-                  'absolute inset-0 rounded-full bg-black/50 flex items-center justify-center text-text_white text-sm opacity-0 transition-opacity duration-300 hover:opacity-100'
-                }
-              >
-                更换头像
-              </Link>
+              {user.id === meUser?.id && (
+                <Link
+                  target={'_blank'}
+                  href={'/account'}
+                  className={
+                    'absolute inset-0 rounded-full bg-black/50 flex items-center justify-center text-text_white text-sm opacity-0 transition-opacity duration-300 hover:opacity-100'
+                  }
+                >
+                  更换头像
+                </Link>
+              )}
             </div>
           </div>
           <div className={'flex-1'}>
@@ -78,7 +80,9 @@ const SpaceHeader = ({ user }: { user: UserGetInfo }) => {
             <div className={'flex items-center'}>
               <div className={'mr-6'}>
                 <FollowBtn
-                  className={'w-[150px] h-[34px] rounded-[6px] text-sm font-bold'}
+                  className={
+                    'w-[150px] h-[34px] rounded-[6px] text-sm font-bold border-white/20 bg-white/14 hover:bg-white/40 text-white hover:border-white/20'
+                  }
                   followingId={user.id}
                 />
               </div>

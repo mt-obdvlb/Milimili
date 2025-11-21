@@ -1,18 +1,13 @@
 'use client'
 
 import { motion } from 'motion/react'
-import {
-  useFavoriteGetByVideoId,
-  useFavoriteGetFolderList,
-  useFavoriteWatchLaterToggle,
-} from '@/features'
+import { useFavoriteGetByVideoId, useFavoriteWatchLaterToggle } from '@/features'
 import { useEffect, useRef, useState } from 'react'
 import WithAuth from '@/components/hoc/WithAuth'
 import { useToWatchLater } from '@/hooks/useToWatchLater'
 
 const WatchLaterAdd = ({ videoId }: { videoId: string }) => {
   const { favoriteWatchLaterToggle } = useFavoriteWatchLaterToggle(videoId)
-  const { favoriteFolderList } = useFavoriteGetFolderList()
   const { isFavorite } = useFavoriteGetByVideoId(videoId)
 
   const [hovered, setHovered] = useState(false)
@@ -37,8 +32,6 @@ const WatchLaterAdd = ({ videoId }: { videoId: string }) => {
         onClick={async (e) => {
           e.stopPropagation()
           e.preventDefault()
-          const folderId = favoriteFolderList?.find((item) => item.type === 'watch_later')?.id
-          if (!folderId) return
           const { code } = await favoriteWatchLaterToggle()
           if (code || isFavorite) return
           trigger()

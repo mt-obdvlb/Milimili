@@ -10,6 +10,7 @@ import { cn } from '@/lib'
 import { Button } from '@/components'
 import FavoriteAddModel from '@/components/layout/models/favorite-add-model/FavoriteAddModel'
 import { AnimatePresence, motion } from 'motion/react'
+import SpaceFavoriteHoverCard from '@/features/space/components/favorite/SpaceFavoriteHoverCard'
 
 const SpaceFavoriteAside = ({ userId }: { userId: string }) => {
   const { favoriteFolderList } = useFavoriteGetFolderList(userId)
@@ -47,7 +48,7 @@ const SpaceFavoriteAside = ({ userId }: { userId: string }) => {
             'leading-12 w-full hover:text-brand_blue font-medium text-[16px] px-4 h-12 flex items-center justify-between cursor-pointer'
           }
         >
-          TA的文件夹
+          {user?.id === userId ? '我' : 'TA'}创建的文件夹
           <div className={cn('transition duration-300', open ? 'rotate-90' : 'rotate-270')}>
             <svg
               className='vui_icon'
@@ -71,7 +72,10 @@ const SpaceFavoriteAside = ({ userId }: { userId: string }) => {
               initial={{ height: 0 }}
               animate={{ height: 'auto' }}
               exit={{ height: 0 }}
-              transition={{ duration: 0.3, ease: 'easeOut' }}
+              transition={{
+                duration: 0.3,
+                ease: 'easeOut',
+              }}
               className={'pb-4 overflow-hidden'}
             >
               <div className={'max-h-[458px] overflow-y-auto overflow-x-hidden'}>
@@ -108,7 +112,7 @@ const SpaceFavoriteAside = ({ userId }: { userId: string }) => {
                       key={item.id}
                       onClick={() => router.push(`/space/${userId}/favorite?folderId=${item.id}`)}
                       className={cn(
-                        'h-12 text-text1 transition-all duration-200 flex items-center justify-between py-3.5 px-4 rounded-[6px] cursor-pointer',
+                        'h-12 text-text1 transition-all group duration-200 flex items-center justify-between py-3.5 px-4 rounded-[6px] cursor-pointer',
                         item.id === folderId
                           ? 'bg-brand_blue text-white'
                           : 'hover:bg-graph_bg_thick'
@@ -139,10 +143,15 @@ const SpaceFavoriteAside = ({ userId }: { userId: string }) => {
                             {item.name}
                           </span>
                         </div>
+                        {user?.id === userId && (
+                          <SpaceFavoriteHoverCard item={item} folderId={folderId} />
+                        )}
                         <div
                           className={cn(
                             'shrink-0 text-xs text-text3',
-                            item.id === folderId && 'text-white'
+                            item.id === folderId && 'text-white',
+                            user?.id === userId &&
+                              'group-hover:hidden peer-data-[state=open]:hidden'
                           )}
                         >
                           {item.number}

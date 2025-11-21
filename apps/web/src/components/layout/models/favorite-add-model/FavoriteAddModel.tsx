@@ -1,6 +1,14 @@
 'use client'
 
-import React, { cloneElement, ReactElement, ReactNode, useEffect, useState } from 'react'
+import React, {
+  cloneElement,
+  Dispatch,
+  ReactElement,
+  ReactNode,
+  SetStateAction,
+  useEffect,
+  useState,
+} from 'react'
 import {
   Dialog,
   DialogContent,
@@ -11,7 +19,7 @@ import {
   Input,
 } from '@/components'
 import DialogFooterBtnWrapper from '@/components/layout/models/common/DialogFooterBtnWrapper'
-import { useFavoriteFolderAdd } from '@/features'
+import { useFavoriteDetail, useFavoriteFolderAdd, useFavoriteFolderUpdate } from '@/features'
 import UploadImage from '@/components/layout/models/upload/uploadImage'
 import { fileToBlobUrl } from '@/utils'
 import { Textarea } from '@/components/ui/textarea'
@@ -29,15 +37,25 @@ export const favoriteFolderAddDTO = z.object({
 export type FavoriteFolderAddDTO = z.infer<typeof favoriteFolderAddDTO>
 
 const FavoriteAddModel: React.FC<{
-  children: ReactNode
-}> = ({ children }) => {
-  const [dialogOpen, setDialogOpen] = useState(false)
+  children?: ReactNode
+  folderId?: string
+  open?: boolean
+  setOpen?: Dispatch<SetStateAction<boolean>>
+}> = ({ children, folderId, open, setOpen }) => {
+  const [internalOpen, setInternalOpen] = useState(false)
+  const isControlled = open !== undefined && setOpen !== undefined
+  const dialogOpen = isControlled ? open : internalOpen
+  const setDialogOpen = (value: boolean) => {
+    if (isControlled) setOpen!(value)
+    else setInternalOpen(value)
+  }
   const { favoriteFolderAdd } = useFavoriteFolderAdd()
+  const { favoriteFolderUpdate } = useFavoriteFolderUpdate()
   const [url, setUrl] = useState<string>('')
-  const [file, setFile] = useState<File | undefined>()
+  const [fileUrl, setFileUrl] = useState('')
   const [uploadOpen, setUploadOpen] = useState(false)
+  const { favoriteDetail } = useFavoriteDetail(folderId ?? '')
 
-  // react-hook-form + zod
   const form = useForm<FavoriteFolderAddDTO>({
     resolver: zodResolver(favoriteFolderAddDTO),
     defaultValues: {
@@ -49,37 +67,44 @@ const FavoriteAddModel: React.FC<{
     reValidateMode: 'onBlur',
   })
 
-  // 当 url（由 UploadImage 设置）改变时，将其同步到表单的 thumbnail 字段
+  // 填充表单数据（修改模式）
+  useEffect(() => {
+    if (folderId && favoriteDetail && dialogOpen) {
+      setUrl(favoriteDetail.thumbnail || '')
+      form.reset({
+        name: favoriteDetail.name,
+        description: favoriteDetail.description || '',
+        thumbnail: favoriteDetail.thumbnail || '',
+      })
+    }
+  }, [folderId, favoriteDetail, form, dialogOpen])
+
+  // 当 url 改变时同步到表单
   useEffect(() => {
     if (url) form.setValue('thumbnail', url)
   }, [url, form])
 
-  // 当 dialog 关闭时重置表单和状态（保证下次打开是干净的）
+  // 当 dialog 关闭时重置表单和状态
   useEffect(() => {
     if (!dialogOpen) {
       form.reset()
       setUrl('')
-      setFile(undefined)
+      setFileUrl('')
       setUploadOpen(false)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dialogOpen])
+  }, [dialogOpen, form])
 
-  const onSubmit = async (values: FavoriteFolderAddDTO) => {
-    // 优先使用当前的 url（upload 之后），否则使用表单里的 thumbnail（若有）
-    const payload: FavoriteFolderAddDTO = {
-      ...values,
-      thumbnail: url || values.thumbnail,
+  const onSubmit = async (payload: FavoriteFolderAddDTO) => {
+    if (folderId) {
+      await favoriteFolderUpdate({ id: folderId, body: payload })
+    } else {
+      await favoriteFolderAdd(payload)
     }
 
-    // 调用后端 hook
-    await favoriteFolderAdd(payload)
-
-    // 关闭对话框并重置（你也可以在这里加 toast 成功提示）
     setDialogOpen(false)
     form.reset()
     setUrl('')
-    setFile(undefined)
+    setFileUrl('')
     setUploadOpen(false)
   }
 
@@ -88,7 +113,6 @@ const FavoriteAddModel: React.FC<{
   }
 
   const nameValue = form.watch('name')
-
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>{cloneElement(children as ReactElement)}</DialogTrigger>
@@ -113,7 +137,7 @@ const FavoriteAddModel: React.FC<{
               <UploadImage
                 setDialogOpen={setUploadOpen}
                 dialogOpen={uploadOpen}
-                imgUrl={file && fileToBlobUrl(file)}
+                imgUrl={fileUrl}
                 setUrl={setUrl}
               >
                 <div className={'relative h-[89px] w-[158px]'}>
@@ -139,7 +163,9 @@ const FavoriteAddModel: React.FC<{
                         type={'file'}
                         className={'size-0 opacity-0'}
                         onChange={(e) => {
-                          setFile(e.target.files?.[0])
+                          const file = e.target.files?.[0]
+                          if (!file) return
+                          setFileUrl(fileToBlobUrl(file))
                           setUploadOpen(true)
                         }}
                       />
@@ -241,7 +267,7 @@ const FavoriteAddModel: React.FC<{
                   await form.handleSubmit(onSubmit)()
                 }}
                 disabled={!nameValue?.trim() || form.formState.isSubmitting}
-                setDialogOpen={setDialogOpen}
+                setDialogOpen={setDialogOpen as Dispatch<SetStateAction<boolean>>}
               />
             </DialogFooter>
           </form>

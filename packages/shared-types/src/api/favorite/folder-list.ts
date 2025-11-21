@@ -5,7 +5,8 @@ export type FavoriteFolderListItem = {
   name: string
   number: number
   type: FavoriteFolderType
-  thumbnail: string
+  thumbnail?: string
+  description?: string
 }
 
 export type FavoriteFolderList = FavoriteFolderListItem[]

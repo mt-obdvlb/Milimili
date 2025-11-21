@@ -127,8 +127,10 @@ export const useFavoriteFolderUpdate = () => {
     mutationFn: favoriteUpdateFolder,
     onSuccess: async () => {
       await queryClient.invalidateQueries({
+        queryKey: ['favorite', 'detail'],
+      })
+      await queryClient.invalidateQueries({
         queryKey: ['favorite', 'list', 'folder'],
-        exact: false,
       })
     },
   })
