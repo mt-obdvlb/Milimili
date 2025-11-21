@@ -21,14 +21,13 @@ const CommentPublish = ({
   videoId,
   feedId,
   name,
-  mainCommentId,
 }: Pick<CommentDTO, 'commentId' | 'feedId' | 'videoId'> & {
   name?: string
   mainCommentId?: string
 }) => {
   const atTextRef = useRef<AtTextareaRef>(null)
   const [textCount, setTextCount] = useState(0)
-  const { comment } = useComment({ commentId: mainCommentId ?? commentId, videoId, feedId })
+  const { comment } = useComment()
 
   const form = useForm<CommentPublishForm>({
     resolver: zodResolver(commentPublishSchema),

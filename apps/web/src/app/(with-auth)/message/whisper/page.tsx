@@ -1,10 +1,10 @@
-import Image from 'next/image'
+import CoverImage from '@/components/ui/CoverImage'
 
 const MessageWhisper = () => {
   return (
     <div className={'z-2 size-full bg-bg2 relative flex flex-col rounded-r-[4px]'}>
       <div className={'size-full flex items-center justify-center flex-col'}>
-        <Image
+        <CoverImage
           src={'/images/gochat.png'}
           alt={'gochat'}
           className={'mb-8'}

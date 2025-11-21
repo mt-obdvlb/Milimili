@@ -45,7 +45,7 @@ const MessageReplyListItem = ({
           <Link
             onClick={(e) => e.stopPropagation()}
             target={'_blank'}
-            href={`/apps/web/src/app/(with-auth)/space/${item.fromUser.id}`}
+            href={`/space/${item.fromUser.id}`}
             className={'font-bold decoration-0 hover:text-brand_blue text-text1'}
           >
             {item.fromUser.name}
@@ -95,7 +95,14 @@ const MessageReplyListItem = ({
           {/*  <span>回复</span>*/}
           {/*</MessageCommonItemBtn>*/}
           <MessageCommonItemBtn
-            onClick={() => (isLike ? unlike() : like())}
+            onClick={async (e) => {
+              e.stopPropagation()
+              if (isLike) {
+                await unlike()
+              } else {
+                await like()
+              }
+            }}
             className={cn('hover:text-brand_blue', isLike && 'text-brand_blue')}
           >
             {isLike ? (

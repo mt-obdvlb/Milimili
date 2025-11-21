@@ -23,7 +23,8 @@ const MessageCommonItemMetaData = ({
         className={
           'hover:text-brand_blue opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto'
         }
-        onClick={async () => {
+        onClick={async (e) => {
+          e.stopPropagation()
           const { code } = await deleteMessage(item.id)
           if (code) return
           toast('已删除')

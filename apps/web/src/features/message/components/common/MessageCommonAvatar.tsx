@@ -7,7 +7,7 @@ const MessageCommonAvatar = ({ src, userId }: { src: string; userId: string }) =
       <Link
         target={'_blank'}
         onClick={(e) => e.stopPropagation()}
-        href={`/apps/web/src/app/(with-auth)/space/${userId}`}
+        href={`/space/${userId}`}
         className={'size-[46px] block'}
       >
         <div className={'size-full bg-[#f1f2f3] overflow-hidden rounded-full relative'}>

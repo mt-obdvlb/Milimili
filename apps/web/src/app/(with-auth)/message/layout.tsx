@@ -1,6 +1,11 @@
 import { ReactNode } from 'react'
 import HeaderBarTypeTwoWrapper from '@/components/layout/header/header-bar/HeaderBarTypeTwoWrapper'
 import MessageLayoutWrapper from '@/features/message/components/layout/MessageLayoutWrapper'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: '消息中心-咪哩咪哩 (゜-゜)つロ 干杯~-milimili',
+}
 
 const MessageLayout = ({ children }: { children: ReactNode }) => {
   return (

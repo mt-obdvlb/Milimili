@@ -31,7 +31,7 @@ const CommentItemFooter = ({
 
   const { isLike } = useLikeGet({ commentId: comment.id })
 
-  const { deleteComment } = useCommentDelete({ commentId: mainCommentId })
+  const { deleteComment } = useCommentDelete()
   return (
     <div className={'w-full flex items-center relative mt-[3px] text-[13px] text-text3'}>
       <div className={'not-first-of-type:ml-5'}>{formatFeedDate(comment.createdAt)}</div>

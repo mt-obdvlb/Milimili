@@ -11,6 +11,7 @@ import { Types } from 'mongoose'
 import { ConversationModel } from '@/models/conversation.model'
 import { MESSAGE } from '@/constants'
 import { HttpError } from '@/utils'
+import { pushNewWhisper } from '@/socket/message'
 
 type MessageStatisticsItem = {
   type: MessageType
@@ -60,6 +61,7 @@ export const MessageService = {
         content,
       }),
     ])
+
     await Promise.all([
       ConversationModel.findOneAndUpdate(
         {
@@ -94,6 +96,7 @@ export const MessageService = {
         }
       ),
     ])
+    pushNewWhisper(toId)
   },
   getList: async (
     id: string,

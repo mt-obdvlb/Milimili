@@ -205,7 +205,7 @@ export const CommentService = {
     await MessageModel.create({
       userId: targetUserId,
       sourceType: targetType,
-      fromUserId: userId,
+      fromUserId: new Types.ObjectId(userId),
       type: 'reply',
       content: trimmed,
       sourceId: targetId,

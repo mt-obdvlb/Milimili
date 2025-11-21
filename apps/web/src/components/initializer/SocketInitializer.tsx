@@ -45,6 +45,9 @@ export const SocketInitializer = () => {
     socket.on('new_feed', async () => {
       await queryClient.invalidateQueries({ queryKey: ['feed', 'recent'] })
     })
+    socket.on('new_whisper', async () => {
+      await queryClient.invalidateQueries({ queryKey: ['conversation'] })
+    })
     return () => {
       socket.off('new_notification')
       socket.off('new_history')
