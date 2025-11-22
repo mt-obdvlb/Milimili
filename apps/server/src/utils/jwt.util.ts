@@ -1,6 +1,8 @@
-import { jwtConfig } from '@/config'
+import { getJwtConfig } from '@/config'
 import { MESSAGE } from '@/constants'
 import jwt, { JwtPayload } from 'jsonwebtoken'
+
+const jwtConfig = getJwtConfig()
 
 export const signToken = (
   payload: {

@@ -1,4 +1,6 @@
+export * from './VIdeoEndWrapper'
 export * from './VideoContainer'
+export * from './VideoEndItem'
 export * from './VideoPlayer'
 export * from './VideoPlayerController'
 export * from './VideoPlayerControllerHoverContent'

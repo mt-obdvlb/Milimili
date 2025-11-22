@@ -1,5 +1,7 @@
 import Oss from 'ali-oss'
-import { ossConfig } from '@/config/oss'
+import { getOssConfig } from '@/config'
+
+const ossConfig = getOssConfig()
 
 const ossClient = new Oss({
   bucket: ossConfig.bucket,

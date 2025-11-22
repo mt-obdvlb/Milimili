@@ -1,10 +1,12 @@
 import app from './app'
-import { appConfig } from '@/config'
-import { mongoConfig } from '@/config/mongo'
+import { getAppConfig, getMongoConfig } from '@/config'
 import mongoose, { Types } from 'mongoose'
 import { createServer } from 'http'
 import { initSocket } from './socket'
 import { CategoryModel } from '@/models'
+
+const appConfig = getAppConfig()
+const mongoConfig = getMongoConfig()
 
 const PORT = appConfig.port
 const MONGO_URI = mongoConfig.uri

@@ -1,3 +1,3 @@
-export const mongoConfig = {
-  uri: process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/milimili',
-}
+export const getMongoConfig = () => ({
+  uri: process.env.MONGO_URI,
+})

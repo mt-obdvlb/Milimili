@@ -1,9 +1,9 @@
-export const emailConfig = {
+export const getEmailConfig = () => ({
   host: 'smtp.qq.com',
   port: 465,
   secure: true,
   auth: {
-    user: process.env.EMAIL_USER || '1719228313@qq.com',
-    pass: process.env.EMAIL_PASS || 'tmdqjgwxpffmdedf',
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
-}
+})

@@ -1,19 +1,20 @@
+import 'dotenv/config'
 import { errorMiddleware, rateLimiter } from '@/middlewares'
 import router from '@/routes'
 import { setupSwagger } from '@/utils'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
-import dotenv from 'dotenv'
 import express from 'express'
 import morgan from 'morgan'
+import { getAppConfig } from '@/config'
 
-dotenv.config()
+const appConfig = getAppConfig()
 
 const app = express()
 
 app.use(
   cors({
-    origin: 'http://localhost:3001',
+    origin: appConfig.frontendUrl,
     credentials: true,
   })
 )

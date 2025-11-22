@@ -1,6 +1,6 @@
-export const ossConfig = {
-  region: 'oss-cn-beijing',
-  accessKeyId: 'LTAI5tJooaeaNeBtpAumsY6W',
-  accessKeySecret: 'xQyUWQTQtErpuOqi7j0G46IKOBX0bv',
-  bucket: 'mtobdvlb-web',
-}
+export const getOssConfig = () => ({
+  region: process.env.OSS_REGION,
+  accessKeyId: process.env.OSS_ACCESS_KEY_ID,
+  accessKeySecret: process.env.OSS_ACCESS_KEY_SECRET,
+  bucket: process.env.OSS_BUCKET,
+})

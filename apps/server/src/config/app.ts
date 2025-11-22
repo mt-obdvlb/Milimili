@@ -1,3 +1,4 @@
-export const appConfig = {
-  port: process.env.PORT || 3000,
-}
+export const getAppConfig = () => ({
+  port: process.env.PORT,
+  frontendUrl: process.env.FRONTEND_URL,
+})

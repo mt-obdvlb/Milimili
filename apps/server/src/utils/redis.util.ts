@@ -1,5 +1,7 @@
-import { redisConfig } from '@/config'
+import { getRedisConfig } from '@/config'
 import Redis from 'ioredis'
+
+const redisConfig = getRedisConfig()
 
 const redis = new Redis(redisConfig.uri, {
   keyPrefix: 'milimili:',
