@@ -10,6 +10,7 @@ import {
   useMemo,
   useState,
 } from 'react'
+import { toast } from '@/lib'
 
 type VideoContextType = {
   videoRef: RefObject<HTMLVideoElement | null>
@@ -181,6 +182,10 @@ export const VideoProvider = ({
       const container = containerRef.current
       if (!video || !container) return
 
+      const target = e.target as HTMLElement
+      if (target.isContentEditable || target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')
+        return
+
       const isFocused = container.matches(':focus-within') || isWebFull || isFullScreen
 
       switch (e.code) {
@@ -191,20 +196,25 @@ export const VideoProvider = ({
         case 'KeyF':
           e.preventDefault()
           toggleFullScreen()
+          toast(`进入全屏`)
           break
         case 'ArrowLeft':
           e.preventDefault()
           seek(Math.max(video.currentTime - 5, 0))
+          toast('后退5秒')
+
           break
         case 'ArrowRight':
           e.preventDefault()
           seek(Math.min(video.currentTime + 5, video.duration))
+          toast('前进5秒')
           break
         case 'ArrowUp':
           if (isFocused) {
             e.preventDefault()
             const newVol = Math.min(video.volume + 0.05, 1)
             setVolume(newVol)
+            toast(`音量${Math.round(newVol * 100)}`)
           }
           break
         case 'ArrowDown':
@@ -212,6 +222,7 @@ export const VideoProvider = ({
             e.preventDefault()
             const newVol = Math.max(video.volume - 0.05, 0)
             setVolume(newVol)
+            toast(`音量${Math.round(newVol * 100)}`)
           }
           break
       }
