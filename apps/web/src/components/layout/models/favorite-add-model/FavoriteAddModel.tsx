@@ -218,11 +218,13 @@ const FavoriteAddModel: React.FC<{
                         <FormControl>
                           <Input
                             {...field}
-                            disabled={favoriteDetail?.type !== 'normal'}
+                            disabled={favoriteDetail?.type && favoriteDetail?.type !== 'normal'}
                             placeholder={'快来给你的收藏夹命名吧'}
                             className={cn(
                               'text-text1 h-h-md leading-md inline-flex w-full border-none p-0 outline-none',
-                              favoriteDetail?.type !== 'normal' && 'cursor-not-allowed text-text3'
+                              favoriteDetail?.type &&
+                                favoriteDetail?.type !== 'normal' &&
+                                'cursor-not-allowed text-text3'
                             )}
                           />
                         </FormControl>

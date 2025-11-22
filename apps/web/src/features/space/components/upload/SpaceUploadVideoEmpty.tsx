@@ -1,6 +1,6 @@
 import Image from 'next/image'
 
-const SpaceUploadVideoEmpty = () => {
+const SpaceUploadVideoEmpty = ({ title }: { title: string }) => {
   return (
     <div className={'flex flex-col items-center'}>
       <div className={'mb-1.5'}>
@@ -12,7 +12,7 @@ const SpaceUploadVideoEmpty = () => {
         />
       </div>
       <div className={'text-text3 text-center text-sm'}>
-        空间主人还没投过视频，这里什么也没有...
+        空间主人还没投过{title}，这里什么也没有...
       </div>
     </div>
   )

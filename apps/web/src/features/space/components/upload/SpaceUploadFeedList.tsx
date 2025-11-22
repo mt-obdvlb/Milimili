@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { formatPlayCount } from '@/utils'
 import { useInfiniteScroll } from '@/hooks'
+import SpaceUploadVideoEmpty from '@/features/space/components/upload/SpaceUploadVideoEmpty'
 
 const GAP = 16
 const COLUMNS = 5
@@ -90,6 +91,8 @@ const SpaceUploadFeedList = ({ userId }: { userId: string }) => {
       return { ...prev, [id]: height }
     })
   }
+
+  if (!feedList.length) return <SpaceUploadVideoEmpty title={'动态'} />
 
   return (
     <div

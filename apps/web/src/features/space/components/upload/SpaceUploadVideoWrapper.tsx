@@ -13,7 +13,7 @@ const SpaceUploadVideoWrapper = ({ userId }: { userId: string }) => {
 
   const { videoSpaceList, total } = useVideoListSpace({ sort, page, userId, pageSize: 50 })
 
-  if (!total) return <SpaceUploadVideoEmpty />
+  if (!total) return <SpaceUploadVideoEmpty title={'视频'} />
 
   return (
     <div>
