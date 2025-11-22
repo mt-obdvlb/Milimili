@@ -12,9 +12,14 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'mtobdvlb-web.oss-cn-beijing.aliyuncs.com',
-        pathname: '/**', // ** 表示匹配任意子路径
+        pathname: '/**',
       },
     ],
+  },
+  swcMinify: true, // 开启 SWC 压缩
+  compiler: {
+    // 生产环境去掉 console
+    removeConsole: process.env.NODE_ENV === 'production',
   },
 }
 
