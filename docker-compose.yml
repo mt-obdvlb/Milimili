@@ -1,0 +1,34 @@
+version: '3.9'
+
+services:
+  backend:
+    build: ./apps/server
+    container_name: milimili-server
+    restart: always
+    env_file:
+      - .env.production
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+      - redis
+
+  mongo:
+    image: mongo:6.0
+    container_name: milimili-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  redis:
+    image: redis:7-alpine
+    container_name: milimili-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: [ "redis-server", "--requirepass", "68562520" ]
+
+volumes:
+  mongo-data:
