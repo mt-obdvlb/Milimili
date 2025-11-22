@@ -8,7 +8,13 @@ import { HoverCard, HoverCardTrigger } from '@/components'
 import { motion } from 'motion/react'
 import { useState } from 'react'
 
-const VideoShare = ({ videoDetail }: { videoDetail: VideoGetDetail }) => {
+const VideoShare = ({
+  videoDetail,
+  className,
+}: {
+  videoDetail: VideoGetDetail
+  className?: string
+}) => {
   const { shareVideo } = useVideoShare()
   const [isHover, setIsHover] = useState(false)
 
@@ -23,7 +29,8 @@ const VideoShare = ({ videoDetail }: { videoDetail: VideoGetDetail }) => {
           <div
             className={cn(
               'relative flex items-center   transition-all duration-300 text-[13px] text-text2 font-medium cursor-pointer',
-              isHover && 'text-brand_blue'
+              isHover && 'text-brand_blue',
+              className
             )}
             onClick={async () => {
               await shareVideo({ videoId: videoDetail.video.id })

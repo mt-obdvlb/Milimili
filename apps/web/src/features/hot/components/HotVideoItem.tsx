@@ -5,7 +5,7 @@ import { tv } from 'tailwind-variants'
 import Link from 'next/link'
 import { cn } from '@/lib'
 import { formatPlayCount, openNewTab } from '@/utils'
-import { useFavoriteGetByVideoId, useFavoriteWatchLaterToggle } from '@/features'
+import { useFavoriteWatchLaterToggle, useIsWatchLater } from '@/features'
 import CoverImage from '@/components/ui/CoverImage'
 import { useToWatchLater } from '@/hooks/useToWatchLater'
 import { useRef } from 'react'
@@ -22,7 +22,7 @@ const HotVideoItem = ({ video }: { video: VideoListItem }) => {
   })
   const { card, content, info } = videoStyles()
 
-  const { isFavorite } = useFavoriteGetByVideoId(video.id)
+  const { isFavorite } = useIsWatchLater(video.id)
   const { favoriteWatchLaterToggle } = useFavoriteWatchLaterToggle(video.id)
   const startRef = useRef<HTMLDivElement>(null)
   const { trigger } = useToWatchLater(startRef)

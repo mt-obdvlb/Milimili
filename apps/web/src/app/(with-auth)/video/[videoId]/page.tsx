@@ -10,7 +10,11 @@ const Video = async ({ params }: { params: Promise<{ videoId: string }> }) => {
       <header className={'min-h-16'}>
         <HeaderBarWrapper isFixed />
       </header>
-      {videoDetail && <VideoWrapper videoDetail={videoDetail} />}
+      {videoDetail ? (
+        <VideoWrapper videoDetail={videoDetail} />
+      ) : (
+        <main className={'mx-auto text-text1 py-50'}>暂无内容</main>
+      )}
     </div>
   )
 }

@@ -1,14 +1,14 @@
 'use client'
 
 import { motion } from 'motion/react'
-import { useFavoriteGetByVideoId, useFavoriteWatchLaterToggle } from '@/features'
+import { useFavoriteWatchLaterToggle, useIsWatchLater } from '@/features'
 import { useEffect, useRef, useState } from 'react'
 import WithAuth from '@/components/hoc/WithAuth'
 import { useToWatchLater } from '@/hooks/useToWatchLater'
 
 const WatchLaterAdd = ({ videoId }: { videoId: string }) => {
   const { favoriteWatchLaterToggle } = useFavoriteWatchLaterToggle(videoId)
-  const { isFavorite } = useFavoriteGetByVideoId(videoId)
+  const { isFavorite } = useIsWatchLater(videoId)
 
   const [hovered, setHovered] = useState(false)
   const [containerWidth, setContainerWidth] = useState(28)

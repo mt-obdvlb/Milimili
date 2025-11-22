@@ -3,9 +3,15 @@ import { useVideoList } from '@/features'
 import { Label, Separator } from '@/components'
 import { Switch } from '@/components/ui/switch'
 import VideoTinyItemTypeTwo from '@/features/video/components/VideoTinyItemTypeTwo'
-import { useEffect, useRef, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 
-const VideoRecommendList = () => {
+const VideoRecommendList = ({
+  isAutoPlayNext,
+  setIsAutoPlayNext,
+}: {
+  isAutoPlayNext: boolean
+  setIsAutoPlayNext: Dispatch<SetStateAction<boolean>>
+}) => {
   const { videoRecommendList } = useVideoList(20)
   const [isShow, setIsShow] = useState(false)
   const [maxHeight, setMaxHeight] = useState('0px')
@@ -26,7 +32,7 @@ const VideoRecommendList = () => {
           <div className={'text-[15px] font-medium text-text1'}>接下来播放</div>
           <Label className={'cursor-pointer flex items-center'}>
             <div className={'text-text3 text-[14px] mr-1'}>自动连播</div>
-            <Switch />
+            <Switch checked={isAutoPlayNext} onCheckedChange={setIsAutoPlayNext} />
           </Label>
         </div>
         <div className={'mb-3'}>

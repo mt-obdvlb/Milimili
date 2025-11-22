@@ -4,18 +4,17 @@ import { useDanmakuAdd } from '@/features'
 import { cn } from '@/lib'
 import { RefObject, useState } from 'react'
 import { DanmakuPosition } from '@mtobdvlb/shared-types'
-import DPlayer from 'dplayer'
 
 const VideoPlayerDanmakuPublish = ({
   videoId,
   showDanmaku,
-  dpRef,
   containerClassName,
+  videoRef,
 }: {
   videoId: string
   showDanmaku: boolean
-  dpRef: RefObject<DPlayer | null>
   containerClassName?: string
+  videoRef: RefObject<HTMLVideoElement | null>
 }) => {
   const { danmakuAdd } = useDanmakuAdd()
 
@@ -30,7 +29,7 @@ const VideoPlayerDanmakuPublish = ({
   }
 
   const handleDanmaku = async () => {
-    const video = dpRef.current?.video
+    const video = videoRef.current
     if (!input.trim() || !video) return
     await danmakuAdd({
       videoId,
@@ -62,7 +61,7 @@ const VideoPlayerDanmakuPublish = ({
   return (
     <div
       className={cn(
-        'rounded-[8px] h-8 ml-10 min-w-[300px] w-[calc(100%-72px)] items-center flex relative bg-[#f4f4f4] text-[#999] grow box-border!',
+        'rounded-[8px] h-8 ml-2 min-w-[300px] w-[calc(100%-72px)] items-center flex relative bg-[#f4f4f4] text-[#999] grow box-border!',
         containerClassName
       )}
     >

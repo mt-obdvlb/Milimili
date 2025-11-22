@@ -406,4 +406,17 @@ export const FavoriteService = {
       )
     }
   },
+  isWatchLater: async (userId: string, videoId: string) => {
+    const folder = await FavoriteFolderModel.findOne({
+      userId,
+      type: 'watch_later',
+    })
+    if (!folder) throw new HttpError(400, MESSAGE.FAVORITE_FOLDER_NOT_FOUND)
+    const favorite = await FavoriteModel.findOne({
+      videoId,
+      userId,
+      folderId: folder._id,
+    })
+    return favorite ? 1 : 0
+  },
 }

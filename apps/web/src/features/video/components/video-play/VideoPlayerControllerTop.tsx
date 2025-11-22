@@ -4,37 +4,27 @@ import { cn } from '@/lib'
 import {
   Dispatch,
   MouseEventHandler,
-  RefObject,
   SetStateAction,
   useCallback,
   useEffect,
   useRef,
   useState,
 } from 'react'
-import DPlayer from 'dplayer'
 import Image from 'next/image'
 import { formatTime, useThrottle } from '@/utils'
 import { useDebounce } from '@/utils/debounce'
+import { useVideoContext } from '@/features'
 
 // 🧩 新增：通用防抖与节流 hooks
 
 interface VideoPlayerControllerTopProps {
-  progressTranslate: number
-  dpRef: RefObject<DPlayer | null>
-  currentTime: number
   isDragging: boolean
   setIsDragging: Dispatch<SetStateAction<boolean>>
-  setCurrentTime: Dispatch<SetStateAction<number>>
 }
 
-const VideoPlayerControllerTop = ({
-  progressTranslate,
-  setCurrentTime,
-  dpRef,
-  isDragging,
-  setIsDragging,
-  currentTime,
-}: VideoPlayerControllerTopProps) => {
+const VideoPlayerControllerTop = ({ isDragging, setIsDragging }: VideoPlayerControllerTopProps) => {
+  const { currentTime, progress, videoRef, duration, seek } = useVideoContext()
+
   const containerRef = useRef<HTMLDivElement>(null)
   const [thumbTranslate, setThumbTranslate] = useState(0)
   const [moveIndicatorRaw, setMoveIndicatorRaw] = useState(0)
@@ -66,14 +56,13 @@ const VideoPlayerControllerTop = ({
   const { base, schedule, thumb, moveIndicator, popup } = controllerTopStyles()
 
   const containerWidth = containerRef.current?.offsetWidth || 0
-  const videoDuration = dpRef.current?.video?.duration || 1
-  const mainVideo = dpRef.current?.video
 
   // 初始化隐藏的视频实例
   useEffect(() => {
-    if (!mainVideo) return
+    const video = videoRef.current
+    if (duration <= 0 || !video) return
     const frameVideo = document.createElement('video')
-    frameVideo.src = mainVideo.src
+    frameVideo.src = video.src
     frameVideo.crossOrigin = 'anonymous'
     frameVideo.style.display = 'none'
     frameVideo.preload = 'metadata'
@@ -86,14 +75,14 @@ const VideoPlayerControllerTop = ({
         frameVideoRef.current = null
       }
     }
-  }, [mainVideo?.src, mainVideo])
+  }, [duration, videoRef])
 
   const captureFrame = useCallback(
     async (targetTime: number) => {
       const frameVideo = frameVideoRef.current
-      const mainVideo = dpRef.current?.video
-      if (!frameVideo || !mainVideo || mainVideo.duration <= 0) return null
-      const validTime = Math.max(0, Math.min(mainVideo.duration, targetTime))
+      const mainVideo = videoRef.current
+      if (!frameVideo || !mainVideo || duration <= 0) return null
+      const validTime = Math.max(0, Math.min(duration, targetTime))
       if (!isFinite(validTime)) return null
 
       if (frameVideo.readyState < 2) {
@@ -113,7 +102,7 @@ const VideoPlayerControllerTop = ({
       ctx.drawImage(frameVideo, 0, 0, canvas.width, canvas.height)
       return canvas.toDataURL('image/png')
     },
-    [dpRef]
+    [duration, videoRef]
   )
 
   // 🧩 用防抖函数包裹帧捕获，减少频繁调用
@@ -130,35 +119,35 @@ const VideoPlayerControllerTop = ({
   }, 150) // 150ms防抖间隔，可根据体验调整
 
   useEffect(() => {
-    if (!dpRef.current?.video || isDragging || !isFinite(hoverTime)) return
+    if (!videoRef.current || isDragging || !isFinite(hoverTime)) return
     debouncedFetchFrame(hoverTime)
-  }, [hoverTime, debouncedFetchFrame, isDragging, dpRef])
+  }, [hoverTime, debouncedFetchFrame, isDragging, videoRef])
 
   useEffect(() => {
-    if (!isDragging) setThumbTranslate(containerWidth * progressTranslate)
-  }, [progressTranslate, containerWidth, isDragging])
+    if (!isDragging) setThumbTranslate(containerWidth * progress)
+  }, [progress, containerWidth, isDragging])
 
   const updateVideoTime = useCallback(
     (x: number) => {
+      const mainVideo = videoRef.current
       if (!mainVideo) return
       const clampedX = Math.max(0, Math.min(containerWidth, x))
       setThumbTranslate(clampedX)
       const ratio = clampedX / containerWidth
-      mainVideo.currentTime = videoDuration * ratio
-      setCurrentTime(videoDuration * ratio)
+      seek(duration * ratio)
     },
-    [containerWidth, setCurrentTime, videoDuration, mainVideo]
+    [containerWidth, duration, seek, videoRef]
   )
 
   // 🧩 包装 mousemove 为节流版
   const handleMouseMove = useThrottle(
     (e: MouseEvent | React.MouseEvent) => {
-      if (!containerRef.current || videoDuration <= 0) return
+      if (!containerRef.current || duration <= 0) return
       const rect = containerRef.current.getBoundingClientRect()
       let x = e.clientX - rect.left
       x = Math.max(0, Math.min(containerWidth, x))
       setMoveIndicatorRaw(x)
-      const calculatedHoverTime = videoDuration * (x / containerWidth)
+      const calculatedHoverTime = duration * (x / containerWidth)
       setHoverTime(isFinite(calculatedHoverTime) ? calculatedHoverTime : 0)
       if (isDragging) updateVideoTime(x)
     },
@@ -171,7 +160,10 @@ const VideoPlayerControllerTop = ({
   }
 
   const handleClick: MouseEventHandler<HTMLDivElement> = (e) => {
-    handleMouseMove(e)
+    if (!containerRef.current) return
+    const rect = containerRef.current.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    updateVideoTime(x)
   }
 
   const handleMouseUp = useCallback(() => {
@@ -208,11 +200,11 @@ const VideoPlayerControllerTop = ({
             className={'bg-[hsla(0,0%,100%,.2)] rounded-[1.5px] inset-0 absolute overflow-hidden'}
           >
             <div
-              style={{ transform: `scaleX(${Math.min(progressTranslate + 0.05, 1)})` }}
+              style={{ transform: `scaleX(${Math.min(progress + 0.05, 1)})` }}
               className={'bg-[hsla(0,0%,100%,.3)] inset-0 absolute origin-[0_0]'}
             ></div>
             <div
-              style={{ transform: `scaleX(${progressTranslate})` }}
+              style={{ transform: `scaleX(${progress})` }}
               className={'bg-[#00a1d6] inset-0 absolute origin-[0_0]'}
             ></div>
           </div>

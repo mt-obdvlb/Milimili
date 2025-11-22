@@ -11,11 +11,18 @@ import {
 } from '@/components/ui/table'
 import { formatTime } from '@/utils'
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import { Fragment, useMemo, useRef, useState } from 'react'
-import { cn } from '@/lib'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import { cn, toast } from '@/lib'
 import VideoDanmakuScrollbar from './VideoDanmakuScrollbar'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { OverlayScrollbarsComponentRef } from 'overlayscrollbars-react'
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu'
+import { useCopyToClipboard } from 'react-use'
 
 type DanmakuItem = {
   id: string
@@ -27,6 +34,10 @@ const VideoDanmakuTable = ({ videoId }: { videoId: string }) => {
   const { danmakuList } = useDanmakuGet(videoId)
 
   const [sort, setSort] = useState<boolean | null>(null)
+
+  const [selectId, setSelectId] = useState('')
+
+  const [value, copy] = useCopyToClipboard()
 
   const parentRef = useRef<OverlayScrollbarsComponentRef>(null)
 
@@ -110,6 +121,12 @@ const VideoDanmakuTable = ({ videoId }: { videoId: string }) => {
 
   const virtualRows = rowVirtualizer.getVirtualItems()
 
+  useEffect(() => {
+    if (value.value) {
+      toast('已复制')
+    }
+  }, [value.value])
+
   return (
     <div className='max-h-[376px] relative overflow-hidden '>
       {/* 表头 */}
@@ -135,23 +152,46 @@ const VideoDanmakuTable = ({ videoId }: { videoId: string }) => {
               const row = table.getRowModel().rows[virtualRow.index]
               if (!row) return null
               return (
-                <TableRow
-                  key={row.id}
-                  style={{
-                    position: 'absolute',
-                    top: virtualRow.start, // 直接用top定位，避免transform
-                    left: 0,
-                    width: '100%',
-                    height: virtualRow.size, // 显式指定行高，避免布局抖动
-                  }}
-                  className='text-[#6d757a] cursor-pointer flex text-xs font-normal h-6 leading-6 relative select-none'
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <Fragment key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </Fragment>
-                  ))}
-                </TableRow>
+                <ContextMenu key={row.id}>
+                  <ContextMenuTrigger asChild>
+                    <TableRow
+                      style={{
+                        position: 'absolute',
+                        top: virtualRow.start, // 直接用top定位，避免transform
+                        left: 0,
+                        width: '100%',
+                        height: virtualRow.size, // 显式指定行高，避免布局抖动
+                      }}
+                      onClick={() => setSelectId(row.id)}
+                      className={cn(
+                        'text-[#6d757a] cursor-pointer flex text-xs font-normal h-6 leading-6 relative select-none',
+                        selectId === row.id && 'bg-[#9499a0]/10'
+                      )}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <Fragment key={cell.id}>
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </Fragment>
+                      ))}
+                    </TableRow>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent
+                    className={
+                      'bg-white border-line_regular shadow-[0_2px_4px_0] shadow-black/14 border text-shadow-[0_0_#e2e2e2] rounded-[4px] z-80 transition duration-100 outline-none'
+                    }
+                  >
+                    <ContextMenuItem
+                      onClick={() => {
+                        copy(row.original.content)
+                      }}
+                      className={
+                        'whitespace-nowrap text-ellipsis text-left py-1 px-5 leading-[30px] h-[30px] text-[12px] bg-transparent relative text-[#222] hover:bg-[#ddd] cursor-pointer'
+                      }
+                    >
+                      复制选中弹幕
+                    </ContextMenuItem>
+                  </ContextMenuContent>
+                </ContextMenu>
               )
             })}
           </TableBody>

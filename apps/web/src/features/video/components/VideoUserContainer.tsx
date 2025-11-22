@@ -15,7 +15,7 @@ const VideoUserContainer = ({ user }: { user: { id: string; name: string; avatar
         <UserHoverAvatar user={user}>
           <Link
             target={'_blank'}
-            href={`/apps/web/src/app/(with-auth)/space/${user.id}`}
+            href={`/space/${user.id}`}
             className={'size-12 rounded-full overflow-hidden cursor-pointer'}
           >
             <UserAvatar avatar={user.avatar} h={48} w={48} />
@@ -27,7 +27,7 @@ const VideoUserContainer = ({ user }: { user: { id: string; name: string; avatar
           <div className={'flex items-center '}>
             <UserHoverAvatar user={user}>
               <Link
-                href={`/apps/web/src/app/(with-auth)/space/${user.id}`}
+                href={`/space/${user.id}`}
                 className={
                   'text-text1 text-[15px] font-medium relative whitespace-nowrap text-ellipsis overflow-hidden mr-3 max-w-[calc(100%-12px-56px)]'
                 }

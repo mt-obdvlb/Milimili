@@ -232,3 +232,17 @@ export const favoriteWatchLaterAddOrDelete: RequestHandler<
     code: 0,
   })
 }
+
+export const favoriteIsWatchLater: RequestHandler<ParamsDictionary, Result> = async (req, res) => {
+  const userId = req.user?.id
+  const videoId = req.params.videoId
+  if (!userId || !videoId)
+    return res.status(401).json({
+      code: 401,
+      message: MESSAGE.INVALID_PARAMS,
+    })
+  const code = await FavoriteService.isWatchLater(userId, videoId)
+  return res.status(200).json({
+    code,
+  })
+}

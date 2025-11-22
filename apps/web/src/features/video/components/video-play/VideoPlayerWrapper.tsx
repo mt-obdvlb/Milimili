@@ -1,61 +1,38 @@
 'use client'
 
 import { VideoGetDetail } from '@mtobdvlb/shared-types'
-import DPlayer from 'dplayer'
 import { useEffect, useRef, useState } from 'react'
 import VideoPlayer from '@/features/video/components/video-play/VideoPlayer'
-import { createPortal } from 'react-dom'
-import { cn } from '@/lib'
 import { Input, Label } from '@/components'
 import VideoPlayerDanmakuPublish from '@/features/video/components/video-play/VideoPlayerDanmakuPublish'
 import { useShow } from '@/hooks'
+import { VideoProvider } from '@/features/video/components/video-play/VideoPlayerProvider'
+import VideoContainer from '@/features/video/components/video-play/VideoContainer'
 
-const VideoPlayerWrapper = ({ videoDetail }: { videoDetail: VideoGetDetail }) => {
-  const dplayerRef = useRef<HTMLDivElement>(null)
-  const dpRef = useRef<DPlayer | null>(null)
+const VideoPlayerWrapper = ({
+  videoDetail,
+  isAutoPlayNext,
+}: {
+  videoDetail: VideoGetDetail
+  isAutoPlayNext: boolean
+}) => {
+  const containerRef = useRef<HTMLDivElement>(null)
 
-  const [mounted, setMounted] = useState(false)
   const [isShowCursor, setIsShowCursor] = useState(true)
-  const [isWebFull, setIsWebFull] = useState(false)
   const [showDanmaku, setShowDanmaku] = useState(true)
   const { isShow } = useShow(500)
+  const videoRef = useRef<HTMLVideoElement>(null)
 
   /** 拖拽相关 */
   const [position, setPosition] = useState({ x: 100, y: 100 }) // 默认位置
   const [isDragging, setIsDragging] = useState(false)
   const dragOffset = useRef({ x: 0, y: 0 })
 
-  useEffect(() => {
-    import('dplayer').then(({ default: DPlayer }) => {
-      if (dplayerRef.current && !dpRef.current) {
-        dpRef.current = new DPlayer({
-          container: dplayerRef.current,
-          video: { url: videoDetail.video.url },
-          lang: 'zh-cn',
-          autoplay: false,
-          theme: '#1aad19',
-          screenshot: true,
-          preload: 'metadata',
-          volume: 0.75,
-        })
-        dplayerRef.current.querySelector('.dplayer-controller')?.remove()
-        dplayerRef.current.querySelector('.dplayer-controller-mask')?.remove()
-        dplayerRef.current.querySelector('.dplayer-info-panel')?.remove()
-        setMounted(true)
-      }
-    })
-
-    return () => {
-      dpRef.current?.destroy()
-      dpRef.current = null
-    }
-  }, [videoDetail])
-
   /** 拖拽逻辑 */
   useEffect(() => {
-    if (!isShow || !dplayerRef.current) return
+    if (!isShow || !containerRef.current) return
 
-    const el = dplayerRef.current
+    const el = containerRef.current
 
     const handleMouseDown = (e: MouseEvent) => {
       setIsDragging(true)
@@ -95,38 +72,37 @@ const VideoPlayerWrapper = ({ videoDetail }: { videoDetail: VideoGetDetail }) =>
           <div className={'size-full relative shadow-[0_0_8px_#e5e9ef]'}>
             <div className={'flex flex-col size-full flex-nowrap'}>
               {/**/}
-              <div
-                ref={dplayerRef}
-                className={cn(
-                  'flex-1 abp group/container dplayer relative overflow-hidden bg-[#000]',
-                  !isShowCursor && 'cursor-none',
-                  isWebFull && 'dplayer-fulled',
-                  isShow &&
-                    'fixed! z-100000 rounded-[4px] h-[180px] w-[320px] shadow-[0_0_8px_#e5e9ef]'
-                )}
-                style={
-                  isShow
-                    ? { left: `${position.x}px`, top: `${position.y}px` }
-                    : { left: '', top: '' }
-                }
-              >
-                {dpRef.current && dplayerRef.current && mounted
-                  ? createPortal(
-                      <VideoPlayer
-                        setShowDanmaku={setShowDanmaku}
-                        showDanmaku={showDanmaku}
-                        setIsWebFull={setIsWebFull}
-                        isWebFull={isWebFull}
-                        videoDetail={videoDetail}
-                        dpContainerRef={dplayerRef}
-                        dpRef={dpRef}
-                        isShowCursor={isShowCursor}
-                        setIsShowCursor={setIsShowCursor}
-                      />,
-                      dplayerRef.current
-                    )
-                  : null}
-              </div>
+              <VideoProvider containerRef={containerRef} videoRef={videoRef}>
+                <VideoContainer
+                  containerRef={containerRef}
+                  style={
+                    isShow
+                      ? { left: `${position.x}px`, top: `${position.y}px` }
+                      : { left: '', top: '' }
+                  }
+                  isShow={isShow}
+                  isShowCursor={isShowCursor}
+                >
+                  <VideoPlayer
+                    isAutoPlayNext={isAutoPlayNext}
+                    setShowDanmaku={setShowDanmaku}
+                    showDanmaku={showDanmaku}
+                    videoDetail={videoDetail}
+                    containerRef={containerRef}
+                    isShowCursor={isShowCursor}
+                    setIsShowCursor={setIsShowCursor}
+                  />
+                  <div className={'size-full'}>
+                    <video
+                      crossOrigin='anonymous'
+                      preload={'metadata'}
+                      ref={videoRef}
+                      className={'size-full'}
+                      src={videoDetail.video.url}
+                    ></video>
+                  </div>
+                </VideoContainer>
+              </VideoProvider>
               {/**/}
               <div>
                 <div className={'bg-[#f4f4f4] h-[1px] -mb-[1px] w-full'}></div>
@@ -137,7 +113,7 @@ const VideoPlayerWrapper = ({ videoDetail }: { videoDetail: VideoGetDetail }) =>
                 >
                   <div
                     className={
-                      'leading-4.5 mr-6 w-auto text-[#505050] items-center flex shrink h-4 overflow-hidden relative select-none whitespace-nowrap'
+                      'leading-4.5 w-[211px] mr-6  text-[#505050] items-center flex shrink h-4 overflow-hidden relative select-none whitespace-nowrap'
                     }
                   >
                     已装填{' '}
@@ -147,7 +123,7 @@ const VideoPlayerWrapper = ({ videoDetail }: { videoDetail: VideoGetDetail }) =>
                   <div className={'flex h-[34px] flex-1 items-center'}>
                     <div
                       className={
-                        'cursor-pointer leading-[30px] size-6 mr-8 relative items-center inline-flex justify-start fill-[#757575] hover:fill-brand_blue'
+                        'cursor-pointer leading-[30px] size-6  relative items-center inline-flex justify-start fill-[#757575] hover:fill-brand_blue'
                       }
                     >
                       <Label
@@ -203,7 +179,7 @@ const VideoPlayerWrapper = ({ videoDetail }: { videoDetail: VideoGetDetail }) =>
                       </Label>
                     </div>
                     <VideoPlayerDanmakuPublish
-                      dpRef={dpRef}
+                      videoRef={videoRef}
                       videoId={videoDetail.video.id}
                       showDanmaku={showDanmaku}
                     />

@@ -1,7 +1,6 @@
 'use client'
 
-import { Dispatch, RefObject, SetStateAction, useEffect, useMemo, useRef, useState } from 'react'
-import DPlayer from 'dplayer'
+import { Dispatch, RefObject, SetStateAction, useEffect, useRef, useState } from 'react'
 import { useDanmakuManager } from '@/features/video/useDanmakuManager'
 import { VideoGetDetail } from '@mtobdvlb/shared-types'
 import { cn } from '@/lib'
@@ -10,100 +9,83 @@ import VideoPlayerController from '@/features/video/components/video-play/VideoP
 import { formatTime } from '@/utils'
 import { useHistoryAdd } from '@/features'
 import { useShow } from '@/hooks'
+import { useVideoContext } from '@/features/video/components/video-play/VideoPlayerProvider'
+import VIdeoEndWrapper from '@/features/video/components/video-play/VIdeoEndWrapper'
 
 const VideoPlayer = ({
-  dpRef,
-  dpContainerRef,
   videoDetail,
   setIsShowCursor,
-  isWebFull,
-  setIsWebFull,
   showDanmaku,
   setShowDanmaku,
+  containerRef,
+  isAutoPlayNext,
 }: {
-  dpRef: RefObject<DPlayer | null>
-  dpContainerRef: RefObject<HTMLDivElement | null>
+  containerRef: RefObject<HTMLDivElement | null>
   videoDetail: VideoGetDetail
   isShowCursor: boolean
   setIsShowCursor: Dispatch<SetStateAction<boolean>>
-  isWebFull: boolean
-  setIsWebFull: Dispatch<SetStateAction<boolean>>
   showDanmaku: boolean
   setShowDanmaku: Dispatch<SetStateAction<boolean>>
+  isAutoPlayNext: boolean
 }) => {
-  const videoElRef = useRef<HTMLVideoElement | null>(null)
   const controllerRef = useRef<HTMLDivElement>(null)
-  const [paused, setPaused] = useState(false)
-  const [currentTime, setCurrentTime] = useState(0)
   const [isShowController, setIsShowController] = useState(true)
   const [isShowToast, setIsShowToast] = useState(false)
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const [isFullScreen, setIsFullScreen] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
   const { historyAdd } = useHistoryAdd()
   const { isShow } = useShow(500)
 
-  const progressTranslate = useMemo(
-    () => currentTime / (dpRef.current?.video.duration ?? currentTime),
-    [currentTime, dpRef]
-  )
-
-  useEffect(() => {
-    if (!dpRef.current) return
-    const videoEl = dpRef.current?.video
-    if (videoEl) videoElRef.current = videoEl
-  }, [dpRef])
+  const {
+    videoRef: videoElRef,
+    seek,
+    paused,
+    togglePlay,
+    progress,
+    isFullScreen,
+    isPlayed,
+    isEnded,
+    duration,
+    isWebFull,
+  } = useVideoContext()
 
   useEffect(() => {
     const video = videoElRef.current
-    if (!video) return
+    if (!video || !videoDetail.video.duration || !duration) return
 
-    setPaused(video.paused)
-    const onPlay = () => setPaused(false)
-    const onPause = () => setPaused(true)
-
-    video.addEventListener('play', onPlay)
-    video.addEventListener('pause', onPause)
-
-    return () => {
-      video.removeEventListener('play', onPlay)
-      video.removeEventListener('pause', onPause)
-    }
-  }, [])
-
-  useEffect(() => {
-    const dp = dpRef.current
-    const seekTime = videoDetail.video.duration
-    if (!dp || !seekTime) return
-
-    let timeout: NodeJS.Timeout | null = null
+    const seekTime = Math.max(Math.min(videoDetail.video.duration, duration - 5), 0)
+    const timeout: { id: NodeJS.Timeout | null } = { id: null }
 
     const showToast = () => {
       setIsShowToast(true)
-      timeout = setTimeout(() => setIsShowToast(false), 5000)
+      timeout.id = setTimeout(() => setIsShowToast(false), 5000)
     }
 
-    const handleLoaded = () => {
-      dp.seek(seekTime)
+    const handleLoadedMetadata = () => {
+      // metadata 加载完才 seek
+      seek(seekTime)
       showToast()
     }
 
-    if (dp.video.readyState >= 1) {
-      handleLoaded()
-    } else {
-      dp.video.addEventListener('loadedmetadata', handleLoaded, { once: true })
-    }
+    // 视频已加载 metadata，则立即执行
+    if (video.readyState >= 1) handleLoadedMetadata()
+    else video.addEventListener('loadedmetadata', handleLoadedMetadata, { once: true })
 
     return () => {
-      dp.video.removeEventListener('loadedmetadata', handleLoaded)
-      if (timeout) clearTimeout(timeout)
+      video.removeEventListener('loadedmetadata', handleLoadedMetadata)
+      if (timeout.id) clearTimeout(timeout.id)
     }
-  }, [videoDetail.video.duration, dpRef])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [videoDetail.video.duration, videoElRef, duration])
 
   useEffect(() => {
-    const container = dpContainerRef.current
+    const container = containerRef.current
     const controllerEl = controllerRef.current
-    if (!container || !controllerEl) return
+    if (!container || !controllerEl || !isPlayed) return
+
+    let isMouseInController = false
+    let lastMoveTime = 0
+    const THROTTLE_INTERVAL = 100
 
     const clearHideTimeout = () => {
       if (hideTimeoutRef.current) {
@@ -112,10 +94,15 @@ const VideoPlayer = ({
       }
     }
 
-    // 节流相关
-    let lastMoveTime = 0
-    const THROTTLE_INTERVAL = 100 // 节流间隔（ms）
-    let isMouseInController = false // 鼠标是否在控制条内
+    const scheduleHide = () => {
+      clearHideTimeout()
+      hideTimeoutRef.current = setTimeout(() => {
+        if (!isMouseInController) {
+          setIsShowController(false)
+          setIsShowCursor(false)
+        }
+      }, 1000)
+    }
 
     const onMouseMove = () => {
       const now = Date.now()
@@ -124,19 +111,10 @@ const VideoPlayer = ({
 
       setIsShowController(true)
       setIsShowCursor(true)
-      clearHideTimeout()
-
-      hideTimeoutRef.current = setTimeout(() => {
-        // 只有当鼠标不在控制条内才隐藏
-        if (!isMouseInController) {
-          setIsShowController(false)
-          setIsShowCursor(false)
-        }
-      }, 1000)
+      scheduleHide()
     }
 
     const onMouseLeave = () => {
-      // 鼠标离开 container 时仍然显示 cursor
       setIsShowController(false)
       setIsShowCursor(true)
       clearHideTimeout()
@@ -151,11 +129,7 @@ const VideoPlayer = ({
 
     const onControllerMouseLeave = () => {
       isMouseInController = false
-      // 离开控制条后，重新触发隐藏逻辑
-      hideTimeoutRef.current = setTimeout(() => {
-        setIsShowController(false)
-        setIsShowCursor(false)
-      }, 1000)
+      scheduleHide()
     }
 
     container.addEventListener('mousemove', onMouseMove)
@@ -170,45 +144,62 @@ const VideoPlayer = ({
       controllerEl.removeEventListener('mouseleave', onControllerMouseLeave)
       clearHideTimeout()
     }
-  }, [dpContainerRef, setIsShowController, setIsShowCursor])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [containerRef, isPlayed])
 
   useEffect(() => {
+    const videoId = videoDetail.video.id
+    if (!videoId) return
+
+    let interval: NodeJS.Timeout | null = null
+
     const saveProgress = () => {
-      if ((videoElRef.current?.currentTime ?? 0) < 5) return
-      void historyAdd({
-        videoId: videoDetail.video.id,
-        duration: videoElRef.current?.currentTime ?? 5,
-      })
+      const video = videoElRef.current
+      if (!video) return
+      const time = video.currentTime
+      if (time < 5) return
+      void historyAdd({ videoId, duration: time })
     }
 
+    const startInterval = () => {
+      if (interval) return
+      interval = setInterval(saveProgress, 3000)
+    }
+
+    const stopInterval = () => {
+      if (interval) {
+        clearInterval(interval)
+        interval = null
+      }
+    }
+
+    // 播放/暂停控制定时器
+    if (videoElRef.current && !paused) startInterval()
+
+    // 监听播放状态变化
+    const handlePlay = () => startInterval()
+    const handlePause = () => stopInterval()
+
+    const video = videoElRef.current
+    video?.addEventListener('play', handlePlay)
+    video?.addEventListener('pause', handlePause)
+
+    // 页面隐藏/刷新时立即保存
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'hidden') saveProgress()
     }
-
     window.addEventListener('beforeunload', saveProgress)
     document.addEventListener('visibilitychange', handleVisibilityChange)
 
     return () => {
+      stopInterval()
       saveProgress()
+      video?.removeEventListener('play', handlePlay)
+      video?.removeEventListener('pause', handlePause)
       window.removeEventListener('beforeunload', saveProgress)
       document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
-  }, [videoDetail.video.id, historyAdd])
-
-  useEffect(() => {
-    const video = videoElRef.current
-    if (!video) return
-
-    const handleTimeUpdate = () => {
-      setCurrentTime(video.currentTime)
-    }
-
-    video.addEventListener('timeupdate', handleTimeUpdate)
-
-    return () => {
-      video.removeEventListener('timeupdate', handleTimeUpdate)
-    }
-  }, [videoElRef])
+  }, [videoDetail.video.id, paused, historyAdd, videoElRef])
 
   const { bottomContainerRef, topContainerRef, scrollContainerRef } = useDanmakuManager({
     videoId: videoDetail.video.id,
@@ -218,18 +209,18 @@ const VideoPlayer = ({
 
   const videoPlayerStyles = tv({
     slots: {
-      dm: cn('absolute inset-0 z-2 pointer-events-none overflow-hidden'),
+      dm: cn('absolute inset-0 z-2 pointer-events-none overflow-hidden', isEnded && 'hidden'),
       state: cn(
         'absolute bottom-[62px] cursor-pointer pointer-events-none  right-[34px] z-48',
         isShow && 'hidden'
       ),
       controller: cn(
         'absolute bottom-0 left-0 w-full z-75',
-        isFullScreen && 'h-[73px] leading-[73px]',
+        (isFullScreen || isWebFull) && 'h-[73px] leading-[73px]',
         isShow && 'hidden'
       ),
       controllerMask: cn(
-        "opacity-0  w-full -z-1 transition-opacity duration-200 ease-in-out absolute bottom-0 left-0 h-25 bg-[url('/images/video-controller-mask.png')_repeat-x_bottom]",
+        "opacity-0  w-full -z-1 transition-opacity pointer-events-none duration-200 ease-in-out absolute bottom-0 left-0 h-25 bg-[url('/images/video-controller-mask.png')_repeat-x_bottom]",
         (isShowController || isDragging) && 'opacity-100',
         isShow && 'hidden'
       ),
@@ -268,7 +259,12 @@ const VideoPlayer = ({
         ></div>
       </div>
       <div className={state()}>
-        {paused && <div className={"bg-[url('/svgs/video-play.svg')] size-16 block"}></div>}
+        {paused && (
+          <div
+            onClick={() => togglePlay()}
+            className={"bg-[url('/svgs/video-play.svg')] size-16 block"}
+          ></div>
+        )}
       </div>
       <div ref={controllerRef} className={controller()}>
         <div className={controllerMask()}></div>
@@ -276,18 +272,10 @@ const VideoPlayer = ({
           videoDetail={videoDetail}
           setShowDanmaku={setShowDanmaku}
           showDanmaku={showDanmaku}
-          setCurrentTime={setCurrentTime}
           isDragging={isDragging}
           setIsDragging={setIsDragging}
-          dpContainerRef={dpContainerRef}
-          isWebFull={isWebFull}
-          setIsWebFull={setIsWebFull}
-          isFullScreen={isFullScreen}
-          setIsFullScreen={setIsFullScreen}
-          paused={paused}
-          dpRef={dpRef}
           isShowController={isShowController}
-          currentTime={currentTime}
+          containerRef={containerRef}
         />
       </div>
       <div className={toast()}>
@@ -315,7 +303,7 @@ const VideoPlayer = ({
               >{`已为您定位至${formatTime(videoDetail.video.duration)}`}</span>
               <span
                 onClick={() => {
-                  dpRef.current?.seek(0)
+                  seek(0)
                   setIsShowToast(false)
                 }}
                 className={
@@ -346,7 +334,7 @@ const VideoPlayer = ({
           className={
             'size-25 left-1/2 top-1/2 -mt-[50px] -ml-[50px] cursor-pointer opacity-0 absolute group-hover:opacity-100 transition-opacity duration-200 ease-in-out'
           }
-          onClick={() => dpRef.current?.toggle()}
+          onClick={() => togglePlay()}
         >
           <div
             className={'inset-0 absolute bg-[size:80px_80px] bg-no-repeat bg-center'}
@@ -361,15 +349,16 @@ const VideoPlayer = ({
           }
         >
           <div
-            style={{ transform: `scaleX(${Math.min(progressTranslate + 0.05, 1)})` }}
+            style={{ transform: `scaleX(${Math.min(progress + 0.05, 1)})` }}
             className={'bg-[hsla(0,0%,100%,.3)] inset-0 absolute origin-[0_0]'}
           ></div>
           <div
-            style={{ transform: `scaleX(${progressTranslate})` }}
+            style={{ transform: `scaleX(${progress})` }}
             className={'bg-[#00a1d6] inset-0 absolute origin-[0_0]'}
           ></div>
         </div>
       </div>
+      {!isShow && <VIdeoEndWrapper isAutoPlayNext={isAutoPlayNext} videoDetail={videoDetail} />}
     </>
   )
 }

@@ -17,7 +17,13 @@ import {
 import FavoriteAddModel from '@/components/layout/models/favorite-add-model/FavoriteAddModel'
 import { useState } from 'react'
 
-const VideoFavorite = ({ videoDetail }: { videoDetail: VideoGetDetail }) => {
+const VideoFavorite = ({
+  videoDetail,
+  className,
+}: {
+  videoDetail: VideoGetDetail
+  className?: string
+}) => {
   const { favoriteAdd } = useFavoriteAddBatch()
   const { isFavorite } = useFavoriteGetByVideoId(videoDetail.video.id)
   const { favoriteFolderList } = useFavoriteGetFolderList()
@@ -34,6 +40,7 @@ const VideoFavorite = ({ videoDetail }: { videoDetail: VideoGetDetail }) => {
             <div
               className={cn(
                 'relative flex hover:text-brand_blue items-center w-[92px] whitespace-nowrap transition-all duration-300 text-[13px] text-text2 font-medium cursor-pointer',
+                className,
                 isFavorite && 'text-brand_blue'
               )}
             >

@@ -11,6 +11,7 @@ import {
   favoriteFolderList,
   favoriteFolderUpdate,
   favoriteGetByVideoId,
+  favoriteIsWatchLater,
   favoriteList,
   favoriteMoveBatch,
   favoriteRecent,
@@ -67,5 +68,6 @@ router.put(
   asyncHandler(favoriteFolderUpdate)
 )
 router.put('/watch-later/:videoId', authMiddleware, asyncHandler(favoriteWatchLaterAddOrDelete))
+router.get('/watch-later/:videoId', authMiddleware, asyncHandler(favoriteIsWatchLater))
 
 export default router

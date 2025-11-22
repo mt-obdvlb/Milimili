@@ -1,6 +1,6 @@
 import { VideoGetWatchLaterRequest } from '@/types'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { favoriteCleanWatchLater, videoGetWatchLater } from '@/services'
+import { favoriteCleanWatchLater, favoriteIsWatchLater, videoGetWatchLater } from '@/services'
 
 export const useWatchLaterList = (params: VideoGetWatchLaterRequest) => {
   const { data: videoWatchLaterList } = useQuery({
@@ -22,4 +22,12 @@ export const useWatchLaterCleanUp = () => {
     },
   })
   return { cleanUp }
+}
+
+export const useIsWatchLater = (videoId: string) => {
+  const { data: isWatchLater } = useQuery({
+    queryKey: ['favorite', videoId],
+    queryFn: () => favoriteIsWatchLater(videoId),
+  })
+  return { isFavorite: isWatchLater?.code === 1 }
 }

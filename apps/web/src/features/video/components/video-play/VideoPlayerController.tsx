@@ -3,13 +3,13 @@
 import { tv } from 'tailwind-variants'
 import { cn } from '@/lib'
 import { Dispatch, RefObject, SetStateAction, useEffect, useMemo, useState } from 'react'
-import DPlayer from 'dplayer'
 import { formatTime } from '@/utils'
 import { HoverCard, HoverCardTrigger, Input, Label } from '@/components'
 import VideoPlayerControllerHoverContent from '@/features/video/components/video-play/VideoPlayerControllerHoverContent'
 import { Slider } from '@/components/ui/slider'
 import VideoPlayerControllerTop from '@/features/video/components/video-play/VideoPlayerControllerTop'
 import { VideoGetDetail } from '@mtobdvlb/shared-types'
+import { useVideoContext } from '@/features'
 
 const parseTimeInput = (input: string): number | null => {
   input = input.trim()
@@ -33,65 +33,62 @@ const parseTimeInput = (input: string): number | null => {
 
 const VideoPlayerController = ({
   isShowController,
-  dpRef,
-  paused,
-  isFullScreen,
-  setIsFullScreen,
-  isWebFull,
-  setIsWebFull,
-  currentTime,
   isDragging,
   setIsDragging,
-  setCurrentTime,
 }: {
   isShowController: boolean
-  dpRef: RefObject<DPlayer | null>
-  dpContainerRef: RefObject<HTMLDivElement | null>
-  paused: boolean
-  isFullScreen: boolean
-  setIsFullScreen: Dispatch<SetStateAction<boolean>>
-  isWebFull: boolean
-  setIsWebFull: Dispatch<SetStateAction<boolean>>
-  currentTime: number
+  containerRef: RefObject<HTMLDivElement | null>
   isDragging: boolean
   setIsDragging: Dispatch<SetStateAction<boolean>>
-  setCurrentTime: Dispatch<SetStateAction<number>>
   videoDetail: VideoGetDetail
   showDanmaku: boolean
   setShowDanmaku: Dispatch<SetStateAction<boolean>>
 }) => {
   const [inputTime, setInputTime] = useState(false)
   const [inputValue, setInputValue] = useState('0:00')
-  const [speed, setSpeed] = useState(1.0)
   const [speedOpen, setSpeedOpen] = useState(false)
-  const [volume, setVolume] = useState(75)
   const [volumeOpen, setVolumeOpen] = useState(false)
 
+  const {
+    videoRef,
+    currentTime,
+    paused,
+    duration,
+    isFullScreen,
+    isWebFull,
+    toggleFullScreen,
+    toggleWebFull,
+    togglePlay,
+    seek,
+    speed,
+    setSpeed,
+    volume,
+    setVolume,
+  } = useVideoContext()
+
   useEffect(() => {
-    const video = dpRef.current?.video
+    const video = videoRef.current
     if (!video) return
-    setInputValue(formatTime(video.currentTime))
-    const updateValue = () => setInputValue(formatTime(video.currentTime))
-    video.addEventListener('timeupdate', updateValue)
-    return () => video.removeEventListener('timeupdate', updateValue)
-  }, [dpRef])
+    setInputValue(formatTime(currentTime))
+  }, [currentTime, videoRef])
 
   const progressTranslate = useMemo(
-    () => currentTime / (dpRef.current?.video.duration ?? currentTime),
-    [currentTime, dpRef]
+    () => currentTime / (duration ?? currentTime),
+    [currentTime, duration]
   )
 
   const handleBlur = () => {
-    const video = dpRef.current?.video
+    const video = videoRef.current
     if (!video) return
 
     const seconds = parseTimeInput(inputValue)
-    if (seconds !== null && seconds <= video.duration) {
-      video.currentTime = seconds
-      setInputValue(formatTime(seconds)) // 确保格式化后显示
+
+    if (seconds !== null && seconds >= 0 && seconds <= video.duration) {
+      seek(seconds)
+      setInputValue(formatTime(seconds))
     } else {
-      // 输入不合法 → 回滚到视频当前时间
-      setInputValue(formatTime(video.currentTime))
+      // 回退当前播放位置
+      setInputValue(formatTime(currentTime))
     }
 
     setInputTime(false)
@@ -99,16 +96,16 @@ const VideoPlayerController = ({
 
   const videoControllerStyles = tv({
     slots: {
-      base: cn(isFullScreen && 'h-[73px] leading-[73px]'),
+      base: cn((isFullScreen || isWebFull) && 'h-[73px] leading-[73px]'),
       top: cn(
         ' bottom-11 inset-x-0 absolute px-3 transition-opacity duration-200 ease-out',
         isShowController || isDragging ? 'opacity-100 visible' : 'opacity-0 hidden',
-        isFullScreen && 'bottom-[68px]'
+        (isFullScreen || isWebFull) && 'bottom-[68px]'
       ),
       bottom: cn(
         'flex justify-between h-[35px] box-border! transition-all duration-200 ease-out leading-[22px] mt-5 px-3   w-full',
         isShowController || isDragging ? 'opacity-100' : 'opacity-0',
-        isFullScreen && 'h-[45px] leading-[34px] m-[20px_0_0]'
+        (isFullScreen || isWebFull) && 'h-[45px] leading-[34px] m-[20px_0_0]'
       ),
       progress: cn(
         'inset-x-0 absolute bottom-0 h-[2px] transition-opacity duration-400 ease-in',
@@ -117,11 +114,11 @@ const VideoPlayerController = ({
       pbp: cn(
         'bottom-[3px] cursor-pointer h-7 -left-3 leading-7  px-3 absolute w-[calc(100%+24px)] -z-1',
         isShowController || isDragging ? 'opacity-100 w-full bottom-full left-0' : 'opacity-0',
-        isFullScreen && 'bottom-[calc(100%+7px)]'
+        (isFullScreen || isWebFull) && 'bottom-[calc(100%+7px)]'
       ),
       btn: cn(
         'fill-white hover:text-white  text-[hsla(0,0%,100%,.8)]  leading-[22px] h-[22px] outline-none relative text-center w-9 z-2',
-        isFullScreen && 'h-[43px] leading-[32px] w-[54px]'
+        (isFullScreen || isWebFull) && 'h-[43px] leading-[32px] w-[54px]'
       ),
     },
   })
@@ -131,18 +128,11 @@ const VideoPlayerController = ({
   return (
     <div className={cn(base())}>
       <div className={top()}>
-        <VideoPlayerControllerTop
-          setCurrentTime={setCurrentTime}
-          setIsDragging={setIsDragging}
-          isDragging={isDragging}
-          dpRef={dpRef}
-          currentTime={currentTime}
-          progressTranslate={progressTranslate}
-        />
+        <VideoPlayerControllerTop setIsDragging={setIsDragging} isDragging={isDragging} />
       </div>
 
       <div style={{ boxSizing: 'border-box' }} className={bottom()}>
-        <div className={cn('inline-flex', isFullScreen && 'min-w-[316px]')}>
+        <div className={cn('inline-flex', (isFullScreen || isWebFull) && 'min-w-[316px]')}>
           <div
             className={
               'fill-white hover:text-white text-[hsla(0,0%,100%,.8)]  leading-[22px] h-[22px] outline-none relative text-center w-9 z-2'
@@ -152,7 +142,7 @@ const VideoPlayerController = ({
               className={
                 'select-none w-full cursor-pointer inline-flex align-middle opacity-90 h-[22px]'
               }
-              onClick={() => dpRef.current?.toggle()}
+              onClick={() => togglePlay()}
             >
               <span className={'size-full transition-[fill] duration-150 ease-in-out'}>
                 {paused ? (
@@ -377,14 +367,12 @@ const VideoPlayerController = ({
             >
               <span className={'text-center'}>{formatTime(currentTime ?? 0)}</span>
               <span className={'px-[2px] text-center'}>/</span>
-              <span className={'text-center'}>
-                {formatTime(dpRef.current?.video.duration ?? 0)}
-              </span>
+              <span className={'text-center'}>{formatTime(duration ?? 0)}</span>
             </div>
           </Label>
         </div>
         <div></div>
-        <div className={cn('flex justify-end', isFullScreen && 'min-w-[370px]')}>
+        <div className={cn('flex justify-end', (isFullScreen || isWebFull) && 'min-w-[370px]')}>
           <HoverCard open={speedOpen} onOpenChange={setSpeedOpen} openDelay={50}>
             <HoverCardTrigger asChild>
               <div className={cn(btn(), 'text-sm w-[50px]')}>
@@ -401,7 +389,6 @@ const VideoPlayerController = ({
                 <div
                   onClick={() => {
                     setSpeed(item)
-                    dpRef.current?.speed(item)
                     setSpeedOpen(false)
                   }}
                   key={item}
@@ -536,20 +523,16 @@ const VideoPlayerController = ({
               <div
                 className={cn('text-[#e5e9ef] text-xs leading-7 h-7 mb-[2px] text-center w-full')}
               >
-                {volume}
+                {Math.round(volume * 100)}
               </div>
               <div className={cn('h-15 mx-auto cursor-pointer')}>
                 <Slider
-                  value={[volume]}
-                  max={100}
+                  value={[volume * 100]}
                   min={0}
-                  onValueChange={(value) => setVolume(value[0] ?? 0)}
-                  onValueCommit={(value) => {
-                    const v = value[0]
-                    if (v === undefined) return
-                    dpRef.current?.volume(v / 100, true, true)
-                  }}
-                  orientation={'vertical'}
+                  max={100}
+                  onValueChange={(val) => setVolume(val[0]! / 100)}
+                  onValueCommit={(val) => setVolume(val[0]! / 100)}
+                  orientation='vertical'
                 />
               </div>
             </VideoPlayerControllerHoverContent>
@@ -560,13 +543,7 @@ const VideoPlayerController = ({
               <div className={cn(btn())}>
                 <div
                   onClick={() => {
-                    if (isWebFull) {
-                      setIsWebFull(false)
-                      dpRef.current?.fullScreen.cancel('web')
-                    } else {
-                      setIsWebFull(true)
-                      dpRef.current?.fullScreen.request('web')
-                    }
+                    toggleWebFull()
                   }}
                   className={cn('cursor-pointer w-full')}
                 >
@@ -613,13 +590,7 @@ const VideoPlayerController = ({
                 <div
                   className={cn('w-full cursor-pointer')}
                   onClick={() => {
-                    if (isFullScreen) {
-                      dpRef.current?.fullScreen.cancel('browser')
-                      setIsFullScreen(false)
-                    } else {
-                      dpRef.current?.fullScreen.request('browser')
-                      setIsFullScreen(true)
-                    }
+                    toggleFullScreen()
                   }}
                 >
                   <span

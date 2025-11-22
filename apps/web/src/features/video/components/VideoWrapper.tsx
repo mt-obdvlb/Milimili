@@ -11,8 +11,10 @@ import VideoPlayerWrapper from '@/features/video/components/video-play/VideoPlay
 import { VideoGetDetail } from '@mtobdvlb/shared-types'
 import WithAt from '@/components/hoc/WithAt'
 import { formatPlayCount, formatWatchAt } from '@/utils'
+import { useState } from 'react'
 
 const VideoWrapper = ({ videoDetail }: { videoDetail: VideoGetDetail }) => {
+  const [isAutoPlayNext, setIsAutoPlayNext] = useState(false)
   return (
     <div className={'flex justify-center relative w-auto px-2.5'}>
       <div className={'sticky h-fit z-1 w-[668px]'}>
@@ -87,9 +89,15 @@ const VideoWrapper = ({ videoDetail }: { videoDetail: VideoGetDetail }) => {
           </div>
         </div>
         {/*//header*/}
-        <VideoPlayerWrapper videoDetail={videoDetail} />
+        <VideoPlayerWrapper isAutoPlayNext={isAutoPlayNext} videoDetail={videoDetail} />
         {/*//player*/}
-        <VideoToolbar videoDetail={videoDetail} />
+        <div
+          className={
+            'flex items-center justify-between pt-4 pb-3 leading-4.5 border-b border-b-line_regular'
+          }
+        >
+          <VideoToolbar videoDetail={videoDetail} />
+        </div>
         {/*//toolbar*/}
         {(videoDetail.video.description.length || videoDetail.tags.length) && (
           <div className={'my-4'}>
@@ -113,7 +121,10 @@ const VideoWrapper = ({ videoDetail }: { videoDetail: VideoGetDetail }) => {
         <div className={'sticky pb-[250px]'}>
           <VideoUserContainer user={videoDetail.user} />
           <VideoDanmakuBox videoId={videoDetail.video.id} />
-          <VideoRecommendList />
+          <VideoRecommendList
+            isAutoPlayNext={isAutoPlayNext}
+            setIsAutoPlayNext={setIsAutoPlayNext}
+          />
         </div>
       </div>
       <div className={'fixed right-1.5 z-6 bottom-[50px]'}>
