@@ -14,7 +14,7 @@ services:
       - redis
 
   mongo:
-    image: mongo:6.0
+    image: registry.cn-beijing.aliyuncs.com/official/mongo:6.0
     container_name: milimili-mongo
     restart: always
     ports:
@@ -23,7 +23,7 @@ services:
       - mongo-data:/data/db
 
   redis:
-    image: redis:7-alpine
+    image: registry.cn-beijing.aliyuncs.com/official/redis:7-alpine
     container_name: milimili-redis
     restart: always
     ports:
