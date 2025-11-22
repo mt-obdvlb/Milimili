@@ -2,22 +2,24 @@
 
 import { ReactNode, useState } from 'react'
 import CommonDialog from '@/components/layout/models/common/CommonDialog'
-import { useFavoriteGetFolderList, WatchLaterIds } from '@/features'
+import { FavoriteIds, useFavoriteGetFolderList } from '@/features'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { cn } from '@/lib'
 import FavoriteAddModel from '@/components/layout/models/favorite-add-model/FavoriteAddModel'
-import WatchLaterFilterBtn from '@/features/watch-later/components/WatchLaterFilterBtn'
+import FavoriteFilterBtn from '@/features/favorite/components/FavoriteFilterBtn'
 
-const WatchLaterFavoriteFolderDialog = ({
+const FavoriteFolderDialog = ({
   handleConfirm,
   svg,
   title,
   ids,
+  inFolderId,
 }: {
   handleConfirm: (folder: string | void) => Promise<void>
   svg: ReactNode
   title: string
-  ids: WatchLaterIds
+  ids: FavoriteIds
+  inFolderId: string
 }) => {
   const { favoriteFolderList } = useFavoriteGetFolderList()
 
@@ -26,12 +28,7 @@ const WatchLaterFavoriteFolderDialog = ({
   return (
     <CommonDialog
       trigger={
-        <WatchLaterFilterBtn
-          label={`${title}到`}
-          disabled={!ids.length}
-          svg={svg}
-          isExpend={true}
-        />
+        <FavoriteFilterBtn label={`${title}到`} disabled={!ids.length} svg={svg} isExpend={true} />
       }
       title={`将${ids.length}个视频${title}至`}
       handleConfirm={() => handleConfirm(folderId)}
@@ -62,7 +59,7 @@ const WatchLaterFavoriteFolderDialog = ({
           <div>
             <RadioGroup value={folderId} onValueChange={(v) => setFolderId(v)}>
               {favoriteFolderList
-                ?.filter((item) => item.type !== 'watch_later')
+                ?.filter((item) => item.id !== inFolderId)
                 .map((item) => (
                   <label
                     key={item.id}
@@ -125,4 +122,4 @@ const WatchLaterFavoriteFolderDialog = ({
   )
 }
 
-export default WatchLaterFavoriteFolderDialog
+export default FavoriteFolderDialog

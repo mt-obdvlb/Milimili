@@ -5,9 +5,9 @@ import TinyVideoItem from '@/components/layout/video/TinyVideoItem'
 import { cn } from '@/lib'
 import WatchLaterVideoDetailItem from '@/features/watch-later/components/WatchLaterVideoDetailItem'
 import WatchLaterDeleteBtn from '@/features/watch-later/components/WatchLaterDeleteBtn'
-import WatchLaterCheckBox from '@/features/watch-later/components/WatchLaterCheckBox'
+import FavoriteCheckBox from '@/features/favorite/components/FavoriteCheckBox'
 import { Dispatch, SetStateAction } from 'react'
-import { WatchLaterIds } from '@/features/watch-later/components/WatchLaterWrapper'
+import { FavoriteIds } from '@/features/watch-later/components/WatchLaterWrapper'
 
 const WatchLaterVideoList = ({
   videoWatchLaterList,
@@ -18,9 +18,9 @@ const WatchLaterVideoList = ({
 }: {
   videoWatchLaterList?: VideoGetWaterLaterList
   isDetail: boolean
-  setIds: Dispatch<SetStateAction<WatchLaterIds>>
+  setIds: Dispatch<SetStateAction<FavoriteIds>>
   isSelect: boolean
-  ids: WatchLaterIds
+  ids: FavoriteIds
 }) => {
   return (
     <section
@@ -44,7 +44,7 @@ const WatchLaterVideoList = ({
               </div>
             )}
             {isSelect && (
-              <WatchLaterCheckBox
+              <FavoriteCheckBox
                 setIds={setIds}
                 id={{
                   videoId: video.id,

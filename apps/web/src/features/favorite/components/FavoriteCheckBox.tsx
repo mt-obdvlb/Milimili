@@ -1,17 +1,17 @@
 'use client'
 
-import { WatchLaterIds } from '@/features/watch-later/components/WatchLaterWrapper'
+import { FavoriteIds } from '@/features/watch-later/components/WatchLaterWrapper'
 import { cn } from '@/lib'
 import { Dispatch, SetStateAction, useMemo } from 'react'
 
-const WatchLaterCheckBox = ({
+const FavoriteCheckBox = ({
   setIds,
   id,
   ids,
 }: {
-  setIds: Dispatch<SetStateAction<WatchLaterIds>>
+  setIds: Dispatch<SetStateAction<FavoriteIds>>
   id: { favoriteId: string; videoId: string }
-  ids: WatchLaterIds
+  ids: FavoriteIds
 }) => {
   const handleChange = (value: boolean) => {
     if (value) {
@@ -66,4 +66,4 @@ const WatchLaterCheckBox = ({
   )
 }
 
-export default WatchLaterCheckBox
+export default FavoriteCheckBox

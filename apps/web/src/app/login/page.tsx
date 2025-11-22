@@ -1,11 +1,16 @@
 import LoginWrapper from '@/features/login/components/LoginWrapper'
 import { Metadata } from 'next'
+import { getUserHomeInfo } from '@/features'
+import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {
   title: '登录',
 }
 
-const Login = () => {
+const Login = async () => {
+  const { userHomeInfo } = await getUserHomeInfo()
+  if (userHomeInfo?.user.id) redirect('/')
+
   return (
     <div className={'mx-auto min-w-[1100px] max-w-[2560px] min-h-[calc(100vh-540px)] bg-white'}>
       <div className={'w-full h-[106px] bg-[linear-gradient(#2ca0d8,#2ca0d8_86px,#fff_0,#fff)]'}>

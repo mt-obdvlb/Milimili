@@ -1,5 +1,6 @@
 export type FavoriteListItem = {
   id: string
+  favoriteAt: string
   video: {
     id: string
     title: string

@@ -16,6 +16,7 @@ import {
   FavoriteList,
   FavoriteListDTO,
   FavoriteListItem,
+  FavoriteListSort,
   FavoriteMoveBatchDTO,
   FavoriteRecentItem,
 } from '@mtobdvlb/shared-types'
@@ -51,10 +52,26 @@ export const FavoriteService = {
     pageSize,
     page,
     favoriteFolderId,
+    sort,
+    kw,
   }: FavoriteListDTO): Promise<{ list: FavoriteList; total: number }> => {
     const match: Record<string, unknown> = {}
+
     if (favoriteFolderId) {
       match.folderId = new Types.ObjectId(favoriteFolderId)
+    }
+
+    if (kw && kw.trim() !== '') {
+      match.$or = [
+        { title: { $regex: kw, $options: 'i' } },
+        { description: { $regex: kw, $options: 'i' } },
+      ]
+    }
+
+    const sortMap: Record<FavoriteListSort, Record<string, 1 | -1>> = {
+      favoriteAt: { createdAt: -1 },
+      views: { 'videostat.viewsCount': -1 },
+      publishedAt: { 'video.publishedAt': -1 },
     }
 
     const [result] = await FavoriteModel.aggregate<{
@@ -62,7 +79,34 @@ export const FavoriteService = {
       list: FavoriteListItem[]
     }>([
       { $match: match },
-      { $sort: { createdAt: -1 } },
+      {
+        $lookup: {
+          from: 'videos',
+          localField: 'videoId',
+          foreignField: '_id',
+          as: 'video',
+        },
+      },
+      { $unwind: { path: '$video', preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'video.userId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: 'videostats',
+          localField: 'videoId',
+          foreignField: 'videoId',
+          as: 'videostat',
+        },
+      },
+      { $unwind: { path: '$videostat', preserveNullAndEmptyArrays: true } },
+      { $sort: sortMap[sort] },
       {
         $facet: {
           total: [{ $count: 'count' }],
@@ -70,50 +114,9 @@ export const FavoriteService = {
             { $skip: (page - 1) * pageSize },
             { $limit: pageSize },
             {
-              $lookup: {
-                from: 'videos',
-                localField: 'videoId',
-                foreignField: '_id',
-                as: 'video',
-              },
-            },
-            {
-              $unwind: {
-                path: '$video',
-                preserveNullAndEmptyArrays: true,
-              },
-            },
-            {
-              $lookup: {
-                from: 'users',
-                localField: 'video.userId',
-                foreignField: '_id',
-                as: 'user',
-              },
-            },
-            {
-              $unwind: {
-                path: '$user',
-                preserveNullAndEmptyArrays: true,
-              },
-            },
-            {
-              $lookup: {
-                from: 'videostats',
-                localField: 'videoId',
-                foreignField: 'videoId',
-                as: 'videostat',
-              },
-            },
-            {
-              $unwind: {
-                path: '$videostat',
-                preserveNullAndEmptyArrays: true,
-              },
-            },
-            {
               $project: {
                 id: '$_id',
+                favoriteAt: '$createdAt',
                 video: {
                   id: '$video._id',
                   title: { $ifNull: ['$video.title', '[已删除]'] },
@@ -146,6 +149,7 @@ export const FavoriteService = {
       total: result?.total ?? 0,
       list: (result?.list ?? []).map((item) => ({
         id: item.id.toString(),
+        favoriteAt: item.favoriteAt,
         video: {
           ...item.video,
           id: item.video.id?.toString() ?? '',
@@ -166,6 +170,7 @@ export const FavoriteService = {
           favoriteFolderId: folder._id.toString(),
           page: 1,
           pageSize: 20,
+          sort: 'favoriteAt',
         })
 
         const item: FavoriteRecentItem = {

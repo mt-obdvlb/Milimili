@@ -30,11 +30,13 @@ const TinyVideoItem = ({
   isRounded = true,
   hiddenPlayerTime,
   showWatchLater,
+  showFavoriteAt,
 }: {
   video: VideoListItem & {
     duration?: number
     watchAt?: string
     isFavorite?: boolean
+    favoriteAt?: string
   }
   margin?: boolean
   hiddenUser?: boolean
@@ -52,6 +54,7 @@ const TinyVideoItem = ({
   isRounded?: boolean
   hiddenPlayerTime?: boolean
   showWatchLater?: boolean
+  showFavoriteAt?: boolean
 }) => {
   const [time, setTime] = useState(0)
   const [hover, setHover] = useState(false)
@@ -290,6 +293,11 @@ const TinyVideoItem = ({
                 {!hiddenPublishAt && (
                   <span className={'ml-[4px] leading-[17px]'}>
                     {'· ' + dayjs(video.publishedAt).format('M-D')}
+                  </span>
+                )}
+                {showFavoriteAt && !!video.favoriteAt && (
+                  <span className={'ml-[4px] leading-[17px]'}>
+                    {'· ' + '收藏于' + dayjs(video.favoriteAt).format('M-D')}
                   </span>
                 )}
               </Link>

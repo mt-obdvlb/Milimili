@@ -13,7 +13,7 @@ import WatchLaterTitle from '@/features/watch-later/components/WatchLaterTitle'
 import WatchLaterFilterWrapper from '@/features/watch-later/components/WatchLaterFilterWrapper'
 import WatchLaterVideoList from '@/features/watch-later/components/WatchLaterVideoList'
 
-export type WatchLaterIds = {
+export type FavoriteIds = {
   videoId: string
   favoriteId: string
 }[]
@@ -27,7 +27,7 @@ const WatchLaterWrapper = () => {
   const [range, setRange] = useState<DateRange | undefined>()
   const [isDetail, setIsDetail] = useState(false)
   const [isSelect, setIsSelect] = useState(false)
-  const [ids, setIds] = useState<WatchLaterIds>([])
+  const [ids, setIds] = useState<FavoriteIds>([])
   const { videoWatchLaterList } = useWatchLaterList({
     sort,
     type,

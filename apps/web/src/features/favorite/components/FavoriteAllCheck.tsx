@@ -1,34 +1,29 @@
 'use client'
 import { Checkbox } from '@/components/ui/checkbox'
 import { cn } from '@/lib'
-import { VideoGetWaterLaterList } from '@mtobdvlb/shared-types'
 import { Dispatch, MouseEvent, SetStateAction, useMemo } from 'react'
-import { WatchLaterIds } from '@/features/watch-later/components/WatchLaterWrapper'
+import { FavoriteIds } from '@/features/watch-later/components/WatchLaterWrapper'
+import { Label } from '@/components'
 
-const WatchLaterAllCheck = ({
-  videoWatchLaterList,
+const FavoriteAllCheck = ({
   setIds,
   ids,
+  allIds,
+  totalNumber,
 }: {
-  videoWatchLaterList?: VideoGetWaterLaterList
-  setIds: Dispatch<SetStateAction<WatchLaterIds>>
-  ids: WatchLaterIds
+  totalNumber: number
+  allIds: FavoriteIds
+  setIds: Dispatch<SetStateAction<FavoriteIds>>
+  ids: FavoriteIds
 }) => {
   // 是否全选
-  const check = useMemo(
-    () => !!videoWatchLaterList?.length && ids.length === videoWatchLaterList.length,
-    [ids, videoWatchLaterList]
-  )
+  const check = useMemo(() => !!totalNumber && ids.length === totalNumber, [ids, totalNumber])
 
   // 点击全选 / 取消全选
   const handleCheck = (value: boolean) => {
     if (value) {
       // 全选
-      const allIds =
-        videoWatchLaterList?.map((item) => ({
-          videoId: item.id,
-          favoriteId: item.favoriteId,
-        })) ?? []
+
       setIds(allIds)
     } else {
       // 全不选
@@ -42,7 +37,7 @@ const WatchLaterAllCheck = ({
   }
 
   return (
-    <label
+    <Label
       onClick={handleLabelClick}
       className='text-4 group leading-md text-text1 relative inline-flex cursor-pointer items-center'
     >
@@ -67,8 +62,8 @@ const WatchLaterAllCheck = ({
         </span>
       </span>
       <span className='px-smx select-none'>全选</span>
-    </label>
+    </Label>
   )
 }
 
-export default WatchLaterAllCheck
+export default FavoriteAllCheck

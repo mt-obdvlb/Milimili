@@ -13,12 +13,13 @@ import {
 } from '@mtobdvlb/shared-types'
 import DatePickerWrapper from '@/components/layout/date-picker/DatePickerWrapper'
 import { useWatchLaterCleanUp } from '@/features/watch-later/api'
-import WatchLaterAllCheck from '@/features/watch-later/components/WatchLaterAllCheck'
-import { WatchLaterIds } from '@/features/watch-later/components/WatchLaterWrapper'
+import FavoriteAllCheck from '@/features/favorite/components/FavoriteAllCheck'
+import { FavoriteIds } from '@/features/watch-later/components/WatchLaterWrapper'
 import CommonDialog from '@/components/layout/models/common/CommonDialog'
-import WatchLaterSelectFilterBtnWrapper from '@/features/watch-later/components/WatchLaterSelectFilterBtnWrapper'
+import FavoriteSelectFilterBtnWrapper from '@/features/favorite/components/FavoriteSelectFilterBtnWrapper'
 import { useInView } from 'react-intersection-observer'
-import WatchLaterFilterBtn from '@/features/watch-later/components/WatchLaterFilterBtn'
+import FavoriteFilterBtn from '@/features/favorite/components/FavoriteFilterBtn'
+import { useFavoriteGetFolderList } from '@/features'
 
 type WatchLaterFilterProps = {
   setTime: Dispatch<SetStateAction<VideoGetWatchLaterTime>>
@@ -34,8 +35,8 @@ type WatchLaterFilterProps = {
   isSelect: boolean
   setIsSelect: Dispatch<SetStateAction<boolean>>
   videoWatchLaterList?: VideoGetWaterLaterList
-  setIds: Dispatch<SetStateAction<WatchLaterIds>>
-  ids: WatchLaterIds
+  setIds: Dispatch<SetStateAction<FavoriteIds>>
+  ids: FavoriteIds
 }
 
 const timeList = [
@@ -87,6 +88,8 @@ const WatchLaterFilterWrapper = ({
     () => !!(!isDetail || isFocus || currenInput),
     [isDetail, isFocus, currenInput]
   )
+
+  const { favoriteFolderList } = useFavoriteGetFolderList()
 
   const { cleanUp } = useWatchLaterCleanUp()
 
@@ -142,10 +145,16 @@ const WatchLaterFilterWrapper = ({
             <div className={'flex w-full items-center gap-2'}>
               {isSelect ? (
                 <>
-                  <WatchLaterAllCheck
+                  <FavoriteAllCheck
                     ids={ids}
                     setIds={setIds}
-                    videoWatchLaterList={videoWatchLaterList}
+                    allIds={
+                      videoWatchLaterList?.map((item) => ({
+                        videoId: item.id,
+                        favoriteId: item.favoriteId,
+                      })) ?? []
+                    }
+                    totalNumber={videoWatchLaterList?.length ?? 0}
                   />
                   <span className={'text-text2 text-sm leading-[1.5]'}>
                     {videoWatchLaterList?.length === ids.length
@@ -167,7 +176,10 @@ const WatchLaterFilterWrapper = ({
                     orientation={'vertical'}
                     className={'bg-line_regular mx-3 h-[18px] w-[0.5px]'}
                   ></Separator>
-                  <WatchLaterSelectFilterBtnWrapper ids={ids} />
+                  <FavoriteSelectFilterBtnWrapper
+                    folder={favoriteFolderList?.find((item) => item.type === 'watch_later')}
+                    ids={ids}
+                  />
                 </>
               ) : (
                 <div className={'relative mr-4 pl-6'}>
@@ -289,7 +301,7 @@ const WatchLaterFilterWrapper = ({
                   </label>
                   <CommonDialog
                     trigger={
-                      <WatchLaterFilterBtn
+                      <FavoriteFilterBtn
                         isExpend={isExpend}
                         label={'清除已看完'}
                         svg={

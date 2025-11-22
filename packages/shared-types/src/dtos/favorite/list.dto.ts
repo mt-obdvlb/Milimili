@@ -1,5 +1,7 @@
 import { z } from 'zod/v4'
 
+export type FavoriteListSort = 'favoriteAt' | 'views' | 'publishedAt'
+
 export const favoriteListDTO = z.object({
   page: z.coerce.number().min(1, { message: '页码不能小于 1' }).default(1),
   pageSize: z.coerce
@@ -12,6 +14,11 @@ export const favoriteListDTO = z.object({
     .trim()
     .min(1, { message: '收藏夹 ID 不能为空' })
     .regex(/^[a-f\d]{24}$/i, { message: '收藏夹 ID 格式不正确，必须是有效的 MongoDB ObjectId' }),
+  sort: z
+    .enum(['favoriteAt', 'views', 'publishedAt'] satisfies FavoriteListSort[])
+    .optional()
+    .default('favoriteAt'),
+  kw: z.string().trim().optional(),
 })
 
 export type FavoriteListDTO = z.infer<typeof favoriteListDTO>

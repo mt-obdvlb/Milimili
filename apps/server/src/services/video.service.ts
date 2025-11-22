@@ -510,7 +510,7 @@ export const VideoService = {
     const sortOptions: Record<string, 1 | -1> = {}
     switch (sort) {
       case 'publishedAt':
-        sortOptions['createdAt'] = -1 // 最新发布在前
+        sortOptions['publishedAt'] = -1 // 最新发布在前
         break
       case 'views':
         sortOptions['videostat.viewsCount'] = -1 // 最多观看在前

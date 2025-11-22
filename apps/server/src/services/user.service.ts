@@ -11,7 +11,7 @@ import {
   UserGetInfo,
   UserUpdateDTO,
 } from '@mtobdvlb/shared-types'
-import { Types } from 'mongoose'
+import mongoose, { Types } from 'mongoose'
 
 export const UserService = {
   loginByPassword: async (email: string, password: string) => {
@@ -24,35 +24,69 @@ export const UserService = {
       refreshToken: signToken({ id: user._id.toString() }, 'refresh'),
     }
   },
+
   loginByCode: async (email: string, code: string) => {
     const key = `email_code:${email}`
-    if (!(await redis.exists(key)) || (await redis.get(key)) !== code)
+    if (!(await redis.exists(key)) || (await redis.get(key)) !== code) {
       throw new Error(MESSAGE.INVALID_CODE)
-    let user = await UserModel.findOne({ email })
-    if (!user) {
-      await UserModel.create({ email })
-      user = await UserModel.findOne({ email })
-      await FavoriteFolderModel.create({
-        userId: user!._id,
-        type: 'default',
-        name: '默认文件夹',
-      })
-      await FavoriteFolderModel.create({
-        userId: user!._id,
-        type: 'watch_later',
-        name: '稍后再看',
-      })
-      await MessageModel.create({
-        userId: user!._id,
-        type: 'system',
-        content: `尊敬的${user!.name} 欢迎来到仿照bilibili的milimili`,
-      })
     }
-    if (!user) throw new Error(MESSAGE.UNKNOWN_ERROR)
 
-    return {
-      accessToken: signToken({ id: user._id.toString() }, 'access'),
-      refreshToken: signToken({ id: user._id.toString() }, 'refresh'),
+    const user = await UserModel.findOne({ email })
+    if (user) {
+      return {
+        accessToken: signToken({ id: user._id.toString() }, 'access'),
+        refreshToken: signToken({ id: user._id.toString() }, 'refresh'),
+      }
+    }
+
+    // ---------------------
+    // 开启事务
+    // ---------------------
+    const session = await mongoose.startSession()
+    session.startTransaction()
+
+    try {
+      const [newUser] = await UserModel.create([{ email }], { session })
+
+      await FavoriteFolderModel.create(
+        [
+          {
+            userId: newUser!._id,
+            type: 'default',
+            name: '默认文件夹',
+          },
+          {
+            userId: newUser!._id,
+            type: 'watch_later',
+            name: '稍后再看',
+          },
+        ],
+        { session }
+      )
+
+      await MessageModel.create(
+        [
+          {
+            userId: newUser!._id,
+            type: 'system',
+            content: `尊敬的${newUser!.name} 欢迎来到仿照bilibili的milimili`,
+          },
+        ],
+        { session }
+      )
+
+      await session.commitTransaction()
+      await session.endSession()
+
+      return {
+        accessToken: signToken({ id: newUser!._id.toString() }, 'access'),
+        refreshToken: signToken({ id: newUser!._id.toString() }, 'refresh'),
+      }
+    } catch (err) {
+      await session.abortTransaction()
+      await session.endSession()
+      const message = err instanceof Error ? err.message : MESSAGE.UNKNOWN_ERROR
+      throw new HttpError(400, message)
     }
   },
   getInfoHome: async (id: string) => {

@@ -10,7 +10,7 @@ const SpaceFavorite = async ({ params }: { params: Promise<{ userId: string }> }
         <SpaceFavoriteAside userId={userId} />
       </aside>
       <main className={'mt-[30px] flex-1 pb-10'}>
-        <SpaceFavoriteWrapper />
+        <SpaceFavoriteWrapper userId={userId} />
       </main>
     </div>
   )

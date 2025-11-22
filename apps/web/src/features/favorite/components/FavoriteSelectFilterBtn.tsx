@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components'
 
-const WatchLaterSelectFilterBtn = ({
+const FavoriteSelectFilterBtn = ({
   isSelect,
   children,
 }: {
@@ -26,4 +26,4 @@ const WatchLaterSelectFilterBtn = ({
   )
 }
 
-export default WatchLaterSelectFilterBtn
+export default FavoriteSelectFilterBtn

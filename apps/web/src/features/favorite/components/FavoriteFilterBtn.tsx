@@ -2,7 +2,7 @@ import { cn } from '@/lib'
 import { Button } from '@/components'
 import { ReactNode } from 'react'
 
-const WatchLaterFilterBtn = ({
+const FavoriteFilterBtn = ({
   isExpend,
   label,
   svg,
@@ -36,4 +36,4 @@ const WatchLaterFilterBtn = ({
   )
 }
 
-export default WatchLaterFilterBtn
+export default FavoriteFilterBtn
