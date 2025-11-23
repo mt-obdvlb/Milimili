@@ -40,14 +40,12 @@ export const userLogin: RequestHandler<ParamsDictionary, Result, UserLoginDTO> =
   res.cookie('refresh_token', refreshToken, {
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24 * 7,
-    sameSite: 'strict',
-    secure: true,
+    sameSite: 'lax',
   })
   res.cookie('access_token', accessToken, {
     httpOnly: true,
     maxAge: 1000 * 60 * 15,
-    sameSite: 'strict',
-    secure: true,
+    sameSite: 'lax',
   })
   return res.status(200).json({ code: 0 })
 }
