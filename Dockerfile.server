@@ -1,43 +1,30 @@
-# ================================
-# 1. Build Stage
-# ================================
-FROM node:20-alpine AS builder
-
-WORKDIR /app
-
-# 复制依赖文件
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY apps ./apps
-COPY packages ./packages
-
-# 安装 pnpm 并安装依赖
-RUN npm install -g pnpm
-RUN pnpm install --frozen-lockfile --shamefully-hoist
-
-# 构建后端
-RUN pnpm -F server build
-
-# ================================
-# 2. Production Runtime
-# ================================
+# 使用官方的 Node.js 20 Alpine 镜像作为基础
 FROM node:20-alpine
 
+# 设置工作目录
 WORKDIR /app
 
-# 复制必要文件
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+# 复制 package 文件和项目配置文件
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY apps ./apps
 COPY packages ./packages
 
-# 安装生产依赖
+# 安装 pnpm
 RUN npm install -g pnpm
-RUN pnpm install --prod --frozen-lockfile
 
-# 拷贝构建产物
-COPY --from=builder /app/apps/server/dist ./apps/server/dist
+# 安装所有依赖（包括 devDependencies，因为构建可能需要它们）
+RUN pnpm install --frozen-lockfile --shamefully-hoist
 
-# 设置生产环境变量
+# 批准构建脚本（如果项目需要）
+
+# 构建应用
+RUN pnpm build
+
+# 现在构建完成了，可以安全地设置为生产环境，并清理不必要的文件以减小镜像体积
 ENV NODE_ENV=production
 
-# 启动服务
-CMD ["node", "apps/server/dist/index.js"]
+# 暴露端口
+EXPOSE 3000
+
+# 启动命令
+CMD ["node", "apps/server/dist/server.js"]
