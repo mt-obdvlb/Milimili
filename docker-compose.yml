@@ -1,34 +1,47 @@
 version: '3.9'
 
 services:
-  backend:
-    build: ./apps/server
+  server:
     container_name: milimili-server
-    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile.server
     env_file:
       - .env.production
     ports:
       - "3000:3000"
+    restart: always
     depends_on:
       - mongo
       - redis
 
   mongo:
-    image: registry.cn-beijing.aliyuncs.com/official/mongo:6.0
+    image: mongo:6.0
     container_name: milimili-mongo
-    restart: always
-    ports:
-      - "27017:27017"
     volumes:
-      - mongo-data:/data/db
+      - mongo_data:/data/db
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE: milimili
 
   redis:
-    image: registry.cn-beijing.aliyuncs.com/official/redis:7-alpine
+    image: redis:7-alpine
     container_name: milimili-redis
+    volumes:
+      - redis_data:/data
     restart: always
+
+  nginx:
+    image: nginx:alpine
+    container_name: milimili-nginx
     ports:
-      - "6379:6379"
-    command: [ "redis-server", "--requirepass", "68562520" ]
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - server
+    restart: always
 
 volumes:
-  mongo-data:
+  mongo_data:
+  redis_data:

@@ -1,3 +1,4 @@
+'use client'
 import { FeedDetailTabsType } from '@/features/feed/components/detail/FeedDetailMainWrapper'
 
 import { Dispatch, SetStateAction } from 'react'

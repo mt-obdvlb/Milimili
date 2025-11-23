@@ -14,7 +14,7 @@
     "dev": "concurrently \"pnpm dev:barrels\" \"pnpm dev:tsup\"",
     "dev:tsup": "tsup --watch --dts",
     "dev:barrels": "chokidar 'src/**/*.ts' -i 'src/**/*.d.ts' -i 'src/index.ts' -c 'pnpm barrels' --events add,unlink --debounce 500",
-    "build": "pnpm barrels && tsup",
+    "build": "pnpm barrels && tsup --no-watch",
     "barrels": "barrelsby -d src --delete --recurse -l all -q -S -H --exclude \\\\.d\\\\.ts$"
   },
   "dependencies": {

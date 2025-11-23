@@ -16,7 +16,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  swcMinify: true, // 开启 SWC 压缩
   compiler: {
     // 生产环境去掉 console
     removeConsole: process.env.NODE_ENV === 'production',
