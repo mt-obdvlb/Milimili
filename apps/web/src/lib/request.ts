@@ -33,7 +33,7 @@ const processQueue = (error: unknown, cookieHeader: string | null = null) => {
 
 const request: AxiosInstance = (() => {
   const instance = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL,
+    baseURL: '/api/proxy',
     withCredentials: true,
     timeout: 15000,
   })
