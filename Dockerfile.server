@@ -14,6 +14,8 @@ COPY packages ./packages
 RUN npm install -g pnpm
 
 # 安装所有依赖（包括 devDependencies 用于构建）
+RUN npm config set registry https://npm.aliyun.com/
+
 RUN pnpm install --frozen-lockfile --shamefully-hoist
 
 # 构建后端 server（TypeScript 编译）
@@ -33,6 +35,7 @@ COPY packages ./packages
 
 # 安装仅生产依赖
 RUN npm install -g pnpm
+RUN npm config set registry https://npm.aliyun.com/
 RUN pnpm install --ignore-scripts --frozen-lockfile --shamefully-hoist
 
 # 复制构建好的后端产物
