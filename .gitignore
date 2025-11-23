@@ -17,6 +17,7 @@ build/
 dist/
 .turbo/
 coverage/
+**/.open-next/
 
 # ========================
 # Environment variables

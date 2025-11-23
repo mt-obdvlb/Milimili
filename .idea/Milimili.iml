@@ -8,6 +8,11 @@
       <excludeFolder url="file://$MODULE_DIR$/.idea/dataSources" />
       <excludeFolder url="file://$MODULE_DIR$/.turbo" />
       <excludeFolder url="file://$MODULE_DIR$/apps/web/public/comment-core-library/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/apps/server/.turbo" />
+      <excludeFolder url="file://$MODULE_DIR$/apps/web/.open-next" />
+      <excludeFolder url="file://$MODULE_DIR$/apps/web/.open-next/assets/comment-core-library/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/apps/web/.turbo" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/shared-types/.turbo" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

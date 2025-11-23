@@ -11,7 +11,10 @@
     "lint": "next lint --max-warnings 0",
     "check-types": "tsc --noEmit",
     "barrels": "barrelsby -d src --delete --recurse -l all -q -S -H --exclude 'src/app' --exclude '\\.d\\.ts$'",
-    "vercel-build": "HUSKY_SKIP_INSTALL=1 cd ../../ && pnpm --filter @mtobdvlb/shared-types build && cd apps/web && pnpm build"
+    "vercel-build": "HUSKY_SKIP_INSTALL=1 cd ../../ && pnpm --filter @mtobdvlb/shared-types build && cd apps/web && pnpm build",
+    "preview": "pnpm vercel-build &&  opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "pnpm vercel-build && opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "cf-typegen": "pnpm vercel-build &&  wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -19,6 +22,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@hookform/resolvers": "^5.1.1",
+    "@opennextjs/cloudflare": "^1.13.1",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-checkbox": "^1.3.3",
     "@radix-ui/react-collapsible": "^1.1.12",
@@ -107,6 +111,7 @@
     "postcss": "^8.5.3",
     "tailwindcss": "^4.1.5",
     "tw-animate-css": "^1.3.6",
-    "typescript": "5.8.2"
+    "typescript": "5.8.2",
+    "wrangler": "^4.50.0"
   }
 }
