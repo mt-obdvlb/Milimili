@@ -19,13 +19,15 @@ export const authRefresh: RequestHandler<ParamsDictionary, Result<AuthRefresh>> 
   const { accessToken, newRefreshToken } = await AuthService.refreshToken(refreshToken)
   res.cookie('refresh_token', newRefreshToken, {
     httpOnly: true,
-    sameSite: 'lax',
-    maxAge: 7 * 24 * 60 * 60 * 1000,
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+    sameSite: 'strict',
+    secure: process.env.NODE_ENV === 'production',
   })
   res.cookie('access_token', accessToken, {
     httpOnly: true,
-    sameSite: 'lax',
-    maxAge: 15 * 60 * 1000,
+    maxAge: 1000 * 60 * 15,
+    sameSite: 'strict',
+    secure: process.env.NODE_ENV === 'production',
   })
   return res.status(200).json({
     code: 0,
