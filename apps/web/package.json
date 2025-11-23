@@ -10,7 +10,7 @@
     "start": "next start",
     "lint": "next lint --max-warnings 0",
     "check-types": "tsc --noEmit",
-    "barrels": "barrelsby -d src --delete --recurse -l all -q -S -H --exclude 'src/app'"
+    "barrels": "barrelsby -d src --delete --recurse -l all -q -S -H --exclude 'src/app' --exclude '\\.d\\.ts$'"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
