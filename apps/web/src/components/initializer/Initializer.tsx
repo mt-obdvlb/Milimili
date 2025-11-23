@@ -2,7 +2,6 @@ import { StoreInitializer } from '@/components/initializer/StoreInitializer'
 import { Toaster } from '@/components/ui/sonner'
 import { getUser } from '@/services/user'
 import { DanmakuInitializer } from '@/components/initializer/DanmakuInitializer'
-import { SocketInitializer } from '@/components/initializer/SocketInitializer'
 
 const Initializer = async () => {
   const [{ data }] = await Promise.all([getUser()])
@@ -11,7 +10,7 @@ const Initializer = async () => {
       <DanmakuInitializer />
       <StoreInitializer initialUser={{ user: data }} />
       <Toaster />
-      <SocketInitializer />
+      {/*<SocketInitializer />*/}
     </>
   )
 }

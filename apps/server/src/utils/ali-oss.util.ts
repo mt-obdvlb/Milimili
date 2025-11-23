@@ -8,6 +8,7 @@ const ossClient = new Oss({
   accessKeyId: ossConfig.accessKeyId,
   accessKeySecret: ossConfig.accessKeySecret,
   region: ossConfig.region,
+  secure: true,
 })
 
 export const getUploadURL = async (fileName: string) => {
