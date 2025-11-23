@@ -147,7 +147,7 @@ const SpaceUploadFeedList = ({ userId }: { userId: string }) => {
             <Link
               target={'_blank'}
               href={`/feed/${item.id}`}
-              className='line-clamp-2 text-ellipsis block text-sm py-1.5 text-text1 transition-all duration-300 hover:text-brand_blue'
+              className='line-clamp-2 text-ellipsis  text-sm py-1.5 text-text1 transition-all duration-300 hover:text-brand_blue'
             >
               {item.content}
             </Link>
