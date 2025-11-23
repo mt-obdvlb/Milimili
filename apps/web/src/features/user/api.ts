@@ -29,13 +29,12 @@ export const useUserLogin = () => {
 }
 
 export const useUserLogout = () => {
-  const queryClient = useQueryClient()
   const logoutUserStore = useUserStore((state) => state.logoutUser)
   const { mutateAsync: logout, error } = useMutation({
     mutationFn: () => logoutUser(),
     onSuccess: async () => {
       logoutUserStore()
-      await queryClient.invalidateQueries({ queryKey: ['user'] })
+      window.location.reload()
     },
   })
   return { logout, error }
