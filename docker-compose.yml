@@ -17,6 +17,7 @@ services:
 
   mongo:
     image: mongo:6.0
+    platform: linux/amd64  # 新增：指定平台为 amd64
     container_name: milimili-mongo
     volumes:
       - mongo_data:/data/db
@@ -26,6 +27,7 @@ services:
 
   redis:
     image: redis:7-alpine
+    platform: linux/amd64  # 新增：指定平台为 amd64
     container_name: milimili-redis
     volumes:
       - redis_data:/data
