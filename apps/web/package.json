@@ -7,7 +7,7 @@
     "dev": "next dev --port 3001 --turbopack",
     "dev:barrels": "chokidar 'src/**/*.{ts,tsx}' -i 'src/app/**/*' -c 'pnpm barrels' --events add,unlink --debounce 300 --silent",
     "build": "pnpm barrels && next build",
-    "start": "next start",
+    "start": "next start -p 3001 -H 0.0.0.0",
     "lint": "next lint --max-warnings 0",
     "check-types": "tsc --noEmit",
     "barrels": "barrelsby -d src --delete --recurse -l all -q -S -H --exclude 'src/app' --exclude '\\.d\\.ts$'",

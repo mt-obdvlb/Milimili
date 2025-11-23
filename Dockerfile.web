@@ -1,0 +1,54 @@
+# ================================
+# 1. Build Stage
+# ================================
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# 复制 monorepo 必须的依赖文件
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
+COPY apps/web ./apps/web
+COPY packages ./packages
+
+# 安装 pnpm
+RUN npm install -g pnpm
+RUN npm config set registry https://registry.npmmirror.com/
+
+# 安装依赖
+RUN pnpm install --frozen-lockfile --shamefully-hoist
+
+RUN pnpm -F @mtobdvlb/shared-types build
+# 构建前端
+RUN pnpm -F web build
+
+# ================================
+# 2. Production Stage
+# ================================
+FROM node:20-alpine AS production
+
+WORKDIR /app
+
+# 安装生产依赖
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
+COPY apps/web/package.json ./apps/web/
+COPY packages ./packages
+
+RUN npm install -g pnpm
+RUN npm config set registry https://registry.npmmirror.com/
+RUN pnpm install --ignore-scripts --frozen-lockfile --shamefully-hoist
+
+# 复制构建好的前端产物
+COPY --from=builder /app/packages/shared-types/dist ./packages/shared-types/dist
+COPY --from=builder /app/apps/web/.next ./.next
+COPY --from=builder /app/apps/web/public ./public
+COPY --from=builder /app/apps/web/package.json ./apps/web/package.json
+
+# 设置生产环境
+ENV NODE_ENV=production
+ENV PORT=3001
+
+# 暴露端口
+EXPOSE 3001
+
+# 启动前端
+CMD ["pnpm", "start", "-F", "web"]
