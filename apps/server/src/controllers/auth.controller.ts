@@ -20,13 +20,13 @@ export const authRefresh: RequestHandler<ParamsDictionary, Result<AuthRefresh>> 
   res.cookie('refresh_token', newRefreshToken, {
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24 * 7,
-    sameSite: 'strict',
+    sameSite: 'none',
     secure: process.env.NODE_ENV === 'production',
   })
   res.cookie('access_token', accessToken, {
     httpOnly: true,
     maxAge: 1000 * 60 * 15,
-    sameSite: 'strict',
+    sameSite: 'none',
     secure: process.env.NODE_ENV === 'production',
   })
   return res.status(200).json({

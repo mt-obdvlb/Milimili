@@ -40,14 +40,14 @@ export const userLogin: RequestHandler<ParamsDictionary, Result, UserLoginDTO> =
   res.cookie('refresh_token', refreshToken, {
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24 * 7,
-    sameSite: 'strict',
+    sameSite: 'none',
     secure: process.env.NODE_ENV === 'production',
     path: '/',
   })
   res.cookie('access_token', accessToken, {
     httpOnly: true,
     maxAge: 1000 * 60 * 15,
-    sameSite: 'strict',
+    sameSite: 'none',
     secure: process.env.NODE_ENV === 'production',
     path: '/',
   })
@@ -57,14 +57,14 @@ export const userLogin: RequestHandler<ParamsDictionary, Result, UserLoginDTO> =
 export const userLogout: RequestHandler<ParamsDictionary, Result, void> = async (_, res) => {
   res.clearCookie('access_token', {
     httpOnly: true,
-    sameSite: 'strict',
+    sameSite: 'none',
     secure: process.env.NODE_ENV === 'production',
     path: '/',
   })
 
   res.clearCookie('refresh_token', {
     httpOnly: true,
-    sameSite: 'strict',
+    sameSite: 'none',
     secure: process.env.NODE_ENV === 'production',
     path: '/',
   })
