@@ -1,38 +1,47 @@
 version: '3.9'
 
 services:
-  app:
+  # =============================
+  # Milimili 容器（前后端 + Nginx）
+  # =============================
+  milimili:
+    image: milimili-app:latest    # 先在本地构建并上传镜像
     container_name: milimili-app
-    build:
-      context: .
-      dockerfile: Dockerfile.app
     env_file:
       - .env.production
     ports:
-      - "80:80"
+      - "80:80"                   # 外网访问 80 端口
     restart: always
     depends_on:
-      - milimili-mongo
-      - milimili-redis
+      - mongo
+      - redis
+    links:
+      - mongo
+      - redis
 
-  milimili-mongo:
+  # =============================
+  # MongoDB
+  # =============================
+  mongo:
     image: mongo:6.0
-    platform: linux/amd64
     container_name: milimili-mongo
     volumes:
       - mongo_data:/data/db
     restart: always
-    environment:
-      MONGO_INITDB_DATABASE: milimili
 
-  milimili-redis:
+  # =============================
+  # Redis
+  # =============================
+  redis:
     image: redis:7-alpine
-    platform: linux/amd64
     container_name: milimili-redis
     volumes:
       - redis_data:/data
     restart: always
 
+# =============================
+# 数据卷
+# =============================
 volumes:
   mongo_data:
   redis_data:
