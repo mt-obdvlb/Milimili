@@ -16,17 +16,10 @@ RUN pnpm config set registry https://registry.npmmirror.com/
 # ⭐ 安装所有依赖（只执行一次！）
 RUN pnpm install --frozen-lockfile --shamefully-hoist
 
-# 构建 shared-types
-RUN pnpm -F @mtobdvlb/shared-types build
-
-# 构建后端
-RUN pnpm -F server build
-
-# 构建前端
-RUN pnpm -F web build
+RUN pnpm run build
 
 # 安装 nginx
-RUN apk add --no-cache nginx
+RUN apt install --no-cache nginx
 RUN rm /etc/nginx/conf.d/default.conf
 
 # 将 nginx 配置复制进去
