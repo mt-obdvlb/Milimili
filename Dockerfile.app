@@ -3,7 +3,7 @@ FROM node:20-alpine
 WORKDIR /app
 
 # -------------------------
-# 1. 复制项目文件
+# 1. 复制项目
 # -------------------------
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY apps ./apps
@@ -14,7 +14,6 @@ COPY packages ./packages
 # -------------------------
 RUN npm install -g pnpm
 RUN pnpm config set registry https://registry.npmmirror.com/
-# 安装所有依赖（仅一次）
 RUN pnpm install --frozen-lockfile --shamefully-hoist
 
 # -------------------------
@@ -25,32 +24,35 @@ RUN pnpm -F server build
 RUN pnpm -F web build
 
 # -------------------------
-# 4. 安装 Nginx
+# 4. 安装 nginx
 # -------------------------
 RUN apk add --no-cache nginx
-# 不删 default.conf，alpine nginx 默认没有
-COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 
 # -------------------------
-# 5. 前端构建产物放到 nginx
+# 5. 配置 nginx
+# -------------------------
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
+
+# -------------------------
+# 6. 前端构建产物放到 nginx 目录
 # -------------------------
 RUN mkdir -p /var/www/milimili
 RUN cp -r apps/web/.next /var/www/milimili/.next
 RUN cp -r apps/web/public /var/www/milimili/public
 
 # -------------------------
-# 6. 启动脚本
+# 7. 启动脚本
 # -------------------------
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
 # -------------------------
-# 7. 环境变量 + 端口
+# 8. 环境变量 + 端口
 # -------------------------
 ENV NODE_ENV=production
 EXPOSE 80
 
 # -------------------------
-# 8. 启动容器
+# 9. 启动容器
 # -------------------------
 CMD ["/start.sh"]
