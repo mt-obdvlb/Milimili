@@ -1,21 +1,19 @@
-# ================================
-# 1. Build Stage
-# ================================
-FROM node:20-alpine AS builder
+FROM node:20-alpine
 
 WORKDIR /app
 
-# 复制 monorepo 必需文件
+# 复制 monorepo 必须的文件
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
-COPY apps/server ./apps/server
-COPY apps/web ./apps/web
+COPY apps ./apps
 COPY packages ./packages
 
 # 安装 pnpm
 RUN npm install -g pnpm
+
+# 使用淘宝源，加快安装
 RUN pnpm config set registry https://registry.npmmirror.com/
 
-# 安装依赖
+# ⭐ 安装所有依赖（只执行一次！）
 RUN pnpm install --frozen-lockfile --shamefully-hoist
 
 # 构建 shared-types
@@ -27,50 +25,22 @@ RUN pnpm -F server build
 # 构建前端
 RUN pnpm -F web build
 
-# ================================
-# 2. Production Stage
-# ================================
-FROM node:20-alpine
-
-WORKDIR /app
-
-# 安装生产依赖
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
-COPY apps/server/package.json ./apps/server/
-COPY apps/web/package.json ./apps/web/
-COPY packages ./packages
-
-RUN npm install -g pnpm
-RUN pnpm config set registry https://registry.npmmirror.com/
-RUN pnpm install --ignore-scripts --frozen-lockfile --shamefully-hoist
-
-# 复制构建产物
-COPY --from=builder /app/apps/server/dist ./apps/server/dist
-COPY --from=builder /app/packages/shared-types/dist ./packages/shared-types/dist
-COPY --from=builder /app/apps/web/.next ./apps/web/.next
-COPY --from=builder /app/apps/web/public ./apps/web/public
-
-# 安装 Nginx
+# 安装 nginx
 RUN apk add --no-cache nginx
-
-# 删除默认配置
 RUN rm /etc/nginx/conf.d/default.conf
-COPY nginx/default.conf /etc/nginx/conf.d/
 
-# 创建前端静态目录
+# 将 nginx 配置复制进去
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+
+# 前端构建产物复制到 nginx 的 root
 RUN mkdir -p /var/www/milimili
-COPY --from=builder /app/apps/web/.next /var/www/milimili/.next
-COPY --from=builder /app/apps/web/public /var/www/milimili/public
-
-# 设置环境变量
-ENV NODE_ENV=production
-ENV PORT=3000
-
-# 暴露端口
-EXPOSE 80
+RUN cp -r apps/web/.next /var/www/milimili/.next
+RUN cp -r apps/web/public /var/www/milimili/public
 
 # 启动脚本
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
+
+EXPOSE 80
 
 CMD ["/start.sh"]
