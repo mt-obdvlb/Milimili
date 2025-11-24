@@ -24,7 +24,7 @@ RUN pnpm -F server build
 RUN pnpm -F web build
 
 # -------------------------
-# 4. 安装 nginx
+# 4. 安装 nginx（可选，只反代 /api）
 # -------------------------
 RUN apk add --no-cache nginx
 
@@ -34,25 +34,19 @@ RUN apk add --no-cache nginx
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 
 # -------------------------
-# 6. 前端构建产物放到 nginx 目录
-# -------------------------
-RUN mkdir -p /var/www/milimili
-RUN cp -r apps/web/.next /var/www/milimili/.next
-RUN cp -r apps/web/public /var/www/milimili/public
-
-# -------------------------
-# 7. 启动脚本
+# 6. 启动脚本
 # -------------------------
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
 # -------------------------
-# 8. 环境变量 + 端口
+# 7. 环境变量 + 端口
 # -------------------------
 ENV NODE_ENV=production
-EXPOSE 80
+EXPOSE 80 3000 3001
+ # 3000 后端, 3001 前端 SSR
 
 # -------------------------
-# 9. 启动容器
+# 8. 启动容器
 # -------------------------
 CMD ["/start.sh"]
