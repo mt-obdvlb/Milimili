@@ -12,7 +12,7 @@ services:
       - redis
 
   mongo:
-    image: mongo:latest
+    image: mongo:6.0
     container_name: milimili-mongo
     volumes:
       - mongo_data:/data/db

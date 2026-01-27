@@ -32,7 +32,8 @@ const processQueue = (error: unknown, cookieHeader: string | null = null) => {
 }
 
 const request: AxiosInstance = (() => {
-  const baseURL = `${process.env.NEXT_PUBLIC_API_URL}`
+  // const baseURL = `${process.env.NEXT_PUBLIC_API_URL}`
+  const baseURL = isServer() ? 'http://localhost:3000/api/v1' : '/api/v1'
   const instance = axios.create({
     baseURL,
     withCredentials: true,
