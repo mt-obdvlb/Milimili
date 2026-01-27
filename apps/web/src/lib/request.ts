@@ -32,9 +32,7 @@ const processQueue = (error: unknown, cookieHeader: string | null = null) => {
 }
 
 const request: AxiosInstance = (() => {
-  const baseURL = isServer()
-    ? `${process.env.NEXT_PUBLIC_API_URL}` // SSR 阶段必须是完整 URL
-    : '/api/v1' // 浏览器端可用相对 URL
+  const baseURL = `${process.env.NEXT_PUBLIC_API_URL}`
   const instance = axios.create({
     baseURL,
     withCredentials: true,

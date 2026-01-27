@@ -4,9 +4,6 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   images: {
     remotePatterns: [
       {
@@ -15,11 +12,15 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
     ],
+    // 禁用 IP 检查（关键配置）
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   compiler: {
     // 生产环境去掉 console
-    removeConsole: process.env.NODE_ENV === 'production',
+    removeConsole: true,
   },
+  reactCompiler: true,
 }
 
 export default nextConfig

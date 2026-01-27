@@ -12,6 +12,7 @@ import {
   useFormContext,
   useFormState,
 } from 'react-hook-form'
+import * as NextForm from 'next/form'
 
 import { cn } from '@/lib/utils'
 import { Label } from '@/components/ui/label'
@@ -149,4 +150,6 @@ export {
   FormDescription,
   FormMessage,
   FormField,
+  NextForm,
+  FormProvider,
 }
