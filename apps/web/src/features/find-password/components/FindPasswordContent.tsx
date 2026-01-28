@@ -2,9 +2,9 @@
 
 import { tv } from 'tailwind-variants'
 import { cn, toast } from '@/lib'
-import { Button, Input, Separator } from '@/components'
+import { Button, formErrorHandler, Input, Separator } from '@/components'
 import { useEffect, useState } from 'react'
-import { SubmitErrorHandler, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
@@ -72,12 +72,14 @@ const FindPasswordContent = () => {
 
   useEffect(() => {
     if (routerCountDown === 0) {
-      window.location.href = '/'
+      window.location.href = '/login'
     }
   }, [routerCountDown])
 
   const { findPassword } = useUserFindPassword()
-  const { getByEmail } = useUserGetByEmail(emailForm.getValues('email'))
+  const emailValue = emailForm.watch('email')
+  const { getByEmail } = useUserGetByEmail(emailValue)
+
   const { handleSendCode, countdown } = useSendCode()
 
   const handleEmailSubmit = async () => {
@@ -96,15 +98,6 @@ const FindPasswordContent = () => {
     }
     toast('修改成功')
     setCurrentStep(3)
-  }
-
-  const onError: SubmitErrorHandler<EmailValues | PasswordValues> = (errors) => {
-    toast(
-      Object.values(errors)
-        .map((error) => error?.message)
-        .filter(Boolean)
-        .join(',')
-    )
   }
 
   return (
@@ -141,7 +134,10 @@ const FindPasswordContent = () => {
 
       {currentStep === 1 && (
         <Form {...emailForm}>
-          <form onSubmit={emailForm.handleSubmit(handleEmailSubmit, onError)} className={itemWp()}>
+          <form
+            onSubmit={emailForm.handleSubmit(handleEmailSubmit, formErrorHandler)}
+            className={itemWp()}
+          >
             <div className={inputWp()}>
               <span className='pr-5 text-sm leading-5 font-normal text-[#18191c]'>邮箱</span>
               <FormField
@@ -175,7 +171,7 @@ const FindPasswordContent = () => {
       {currentStep === 2 && (
         <Form {...passwordForm}>
           <form
-            onSubmit={passwordForm.handleSubmit(handlePasswordSubmit, onError)}
+            onSubmit={passwordForm.handleSubmit(handlePasswordSubmit, formErrorHandler)}
             className={itemWp()}
           >
             <div className={inputWp()}>
@@ -187,9 +183,9 @@ const FindPasswordContent = () => {
                   <FormItem className='flex-1'>
                     <FormControl>
                       <Input
-                        className='flex-1'
+                        className='flex-1 placeholder:text-xs'
                         type='password'
-                        placeholder='请输入新密码'
+                        placeholder='密码8-20位,需包含大写小写字母、数字和特殊字符'
                         {...field}
                       />
                     </FormControl>
@@ -289,7 +285,7 @@ const FindPasswordContent = () => {
           </div>
           <Button
             onClick={() => {
-              window.location.href = '/'
+              window.location.href = '/login'
             }}
             className={cn(btn())}
           >

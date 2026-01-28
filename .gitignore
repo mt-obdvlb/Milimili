@@ -86,3 +86,4 @@ Thumbs.db
 *.swo
 
 *.tar
+!/apps/web/next-env.d.ts
