@@ -20,7 +20,8 @@ export const useSendCode = () => {
         return
       }
 
-      await sendCode({ email })
+      const { code } = await sendCode({ email })
+      if (code) return
       toast('验证码已发送')
       setCountdown(60)
     },

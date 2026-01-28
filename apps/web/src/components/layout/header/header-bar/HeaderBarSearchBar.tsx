@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/cn'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { SearchLogTop10List } from '@mtobdvlb/shared-types'

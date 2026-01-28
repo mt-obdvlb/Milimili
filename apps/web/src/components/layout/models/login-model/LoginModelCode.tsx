@@ -1,13 +1,20 @@
 'use client'
 
 import { Separator } from '@/components/ui/separator'
-import { cn, toast } from '@/lib'
+import { cn } from '@/lib'
 import { Button } from '@/components/ui/button'
 import { LoginModelFormStyles } from '@/components/layout/models/login-model/LoginModel'
 import { z } from 'zod'
-import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form'
+import {
+  Form,
+  FormControl,
+  formErrorHandler,
+  FormField,
+  FormItem,
+  FormLabel,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Dispatch, SetStateAction } from 'react'
 import { useUserLogin } from '@/features/user/api'
@@ -45,28 +52,14 @@ const LoginModelCode = ({
   const emailValue = form.watch('email')
   const emailValid = z.email().safeParse(emailValue).success
   const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
-    const { error, success } = await schema.safeParseAsync(data)
-    if (!success) {
-      toast(error.message)
-      return
-    }
     const res = await login(data)
     if (res.code) return
     window.location.reload()
   }
 
-  const onError: SubmitErrorHandler<FormData> = (errors) => {
-    toast(
-      Object.values(errors)
-        .map((error) => error?.message)
-        .filter(Boolean)
-        .join(',')
-    )
-  }
-
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit, onError)}>
+      <form onSubmit={form.handleSubmit(onSubmit, formErrorHandler)}>
         <div className='h-[90px] w-full rounded-[8px] border border-[#e3e5e7] leading-5 text-[#212121]'>
           <FormField
             control={form.control}

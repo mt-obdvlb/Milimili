@@ -48,8 +48,4 @@ export const debounce = <Args extends unknown[], R>(
   }
 }
 
-/**
- * React 环境下可直接当 hook 用
- * 用法： const handleChange = useCallback(useDebounce(fn, 300), [])
- */
 export const useDebounce = debounce

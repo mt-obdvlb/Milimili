@@ -12,7 +12,6 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
     ],
-    // 禁用 IP 检查（关键配置）
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },

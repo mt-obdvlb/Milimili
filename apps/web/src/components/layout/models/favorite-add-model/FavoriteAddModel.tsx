@@ -25,11 +25,10 @@ import { fileToBlobUrl } from '@/utils'
 import { Textarea } from '@/components/ui/textarea'
 import { z } from 'zod/v4'
 import { SubmitErrorHandler, useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
 import { cn } from '@/lib'
+import { zodResolver } from '@hookform/resolvers/zod'
 
-// zod schema（保留并导出以便复用）
 export const favoriteFolderAddDTO = z.object({
   name: z.string().min(1, '名称不能为空').max(20, '长度最多 20 字'),
   description: z.string().optional(),

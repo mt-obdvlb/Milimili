@@ -1,7 +1,7 @@
 'use client'
 
 import { RefObject } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'motion/react'
 import { createRoot, Root } from 'react-dom/client'
 
 interface ParabolaOptions {

@@ -1,3 +1,5 @@
+'use client'
+
 import { toast as sonnerToast } from 'sonner'
 import { throttle } from '@/utils/throttle'
 

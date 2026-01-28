@@ -3,7 +3,7 @@ import * as React from 'react'
 import { Dispatch, SetStateAction } from 'react'
 import { MoreHorizontalIcon } from 'lucide-react'
 
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/cn'
 import { Button } from '@/components/ui/button'
 
 function Pagination({ className, ...props }: React.ComponentProps<'nav'>) {

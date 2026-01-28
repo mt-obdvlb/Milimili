@@ -31,8 +31,11 @@ export const UserService = {
       throw new Error(MESSAGE.INVALID_CODE)
     let user = await UserModel.findOne({ email })
     if (!user) {
-      await UserModel.create({ email })
-      user = await UserModel.findOne({ email })
+      user = await UserModel.findOneAndUpdate(
+        { email },
+        { email },
+        { upsert: true, new: true, runValidators: true }
+      )
       await FavoriteFolderModel.create({
         userId: user!._id,
         type: 'default',

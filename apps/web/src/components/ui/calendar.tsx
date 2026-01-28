@@ -11,7 +11,7 @@ import {
   getDefaultClassNames,
 } from 'react-day-picker'
 import { zhCN } from 'react-day-picker/locale'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/cn'
 import { Button } from '@/components/ui/button'
 import { DatePickerSelectMode } from '@/components'
 

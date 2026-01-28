@@ -9,13 +9,14 @@ import {
   type FieldPath,
   type FieldValues,
   FormProvider,
+  SubmitErrorHandler,
   useFormContext,
   useFormState,
 } from 'react-hook-form'
-import * as NextForm from 'next/form'
 
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/cn'
 import { Label } from '@/components/ui/label'
+import { toast } from '@/lib'
 
 const Form = FormProvider
 
@@ -141,15 +142,23 @@ function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
   )
 }
 
+const formErrorHandler: SubmitErrorHandler<FormData> = (errors) => {
+  toast(
+    Object.values(errors)
+      .map((error) => error?.message)
+      .filter(Boolean)
+      .join(',')
+  )
+}
+
 export {
   useFormField,
-  Form,
   FormItem,
   FormLabel,
   FormControl,
   FormDescription,
   FormMessage,
   FormField,
-  NextForm,
-  FormProvider,
+  Form,
+  formErrorHandler,
 }
