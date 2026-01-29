@@ -6,6 +6,7 @@ import { motion } from 'motion/react'
 import Link from 'next/link'
 import { cn, toastBuilding } from '@/lib'
 import { Badge } from '@/components'
+import WithAuth from '@/components/hoc/WithAuth'
 
 const HeaderBarHoverCardWithBounce = ({
   title,
@@ -42,49 +43,50 @@ const HeaderBarHoverCardWithBounce = ({
   return (
     <HoverCard openDelay={150} closeDelay={150}>
       <HoverCardTrigger asChild>
-        <Link
-          target={'_blank'}
-          href={href}
-          onClick={(e) => {
-            if (building) {
-              e.preventDefault()
-              toastBuilding()
-            } else {
-              if (!href.length) {
+        <WithAuth none={building}>
+          <Link
+            target={'_blank'}
+            href={href}
+            onClick={(e) => {
+              if (building) {
                 e.preventDefault()
+                toastBuilding()
+              } else {
+                if (!href.length) {
+                  e.preventDefault()
+                }
               }
+            }}
+            onMouseEnter={handleMouseEnter}
+            className={
+              'relative flex min-w-[50px] cursor-pointer flex-col items-center justify-center'
             }
-          }}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={() => {}}
-          className={
-            'relative flex min-w-[50px] cursor-pointer flex-col items-center justify-center'
-          }
-        >
-          <motion.div
-            animate={hovered ? { y: [0, -5, 0] } : { y: 0 }}
-            transition={{
-              duration: 0.3,
-              ease: 'easeOut',
-            }}
-            onAnimationComplete={() => {
-              setHovered(false)
-              setAnimating(false)
-            }}
           >
-            {Svg}
-          </motion.div>
-          <span className={'text-[13px] whitespace-nowrap'}>{title}</span>
+            <motion.div
+              animate={hovered ? { y: [0, -5, 0] } : { y: 0 }}
+              transition={{
+                duration: 0.3,
+                ease: 'easeOut',
+              }}
+              onAnimationComplete={() => {
+                setHovered(false)
+                setAnimating(false)
+              }}
+            >
+              {Svg}
+            </motion.div>
+            <span className={'text-[13px] whitespace-nowrap'}>{title}</span>
 
-          {badge && (
-            <Badge
-              variant='destructive'
-              className={
-                'absolute top-0 left-[35px] z-1 size-1.5 p-0 rounded-full bg-[#fa5a57] text-white'
-              }
-            />
-          )}
-        </Link>
+            {badge && (
+              <Badge
+                variant='destructive'
+                className={
+                  'absolute top-0 left-[35px] z-1 size-1.5 p-0 rounded-full bg-[#fa5a57] text-white'
+                }
+              />
+            )}
+          </Link>
+        </WithAuth>
       </HoverCardTrigger>
       <HoverCardContent
         alignOffset={alignOffset}

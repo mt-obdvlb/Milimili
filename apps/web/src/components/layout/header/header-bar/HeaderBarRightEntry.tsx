@@ -255,7 +255,8 @@ const HeaderBarRightEntry = ({
                   </div>
                   <div>
                     <Link
-                      href={'/feeds'}
+                      href={'/feed'}
+                      target={'_blank'}
                       className={
                         'bg-bg2 text-text2 mx-5 my-4 flex h-9 w-[330px] cursor-pointer items-center justify-center rounded-[4px] text-sm leading-9 transition-colors duration-300'
                       }

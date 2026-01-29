@@ -11,10 +11,10 @@ import {
 import React, { useEffect, useState } from 'react'
 import { cn, toastBuilding } from '@/lib'
 import Link from 'next/link'
-import Image from 'next/image'
 import HeaderBarLinkItemWithBounce from '@/components/layout/header/header-bar/item/HeaderBarLinkItemWithBounce'
 import { useCategoryGetBy } from '@/features'
 import { useRouter } from 'next/navigation'
+import CoverImage from '@/components/ui/CoverImage'
 
 const headerBarLeftLinks = ['番剧', '直播', '游戏中心', '会员购', '漫画', '赛事']
 
@@ -134,7 +134,7 @@ const HeaderBarLeftEntry = ({ type }: { type: 'first' | 'second' }) => {
                             'text-text1 hover:bg-graph_bg_thick my-[3px] flex h-[32px] cursor-pointer items-center rounded-[4px] p-[6px] text-sm leading-[20px] font-normal transition-colors duration-300'
                           }
                         >
-                          <Image
+                          <CoverImage
                             width={24}
                             height={24}
                             src={`/svgs/category/icon_${beforeCount + index2 + 1}.svg`}

@@ -10,18 +10,18 @@ interface WithAuthProps {
   none?: boolean
 }
 
-const WithAuth = ({ children, none }: WithAuthProps) => {
+const WithAuth = ({ children, none, ...props }: WithAuthProps) => {
   const user = useUserStore((state) => state.user)
   const { openLoginModel } = useModel()
 
   const child = children as ReactElement<{ onClick?: (e: MouseEvent) => void }>
 
-  if (isServer()) return cloneElement(child, { ...child.props })
-  if (none) return cloneElement(child, { ...child.props })
-  if (user) return cloneElement(child, { ...child.props })
+  if (isServer()) return cloneElement(child, { ...child.props, ...props })
+  if (none) return cloneElement(child, { ...child.props, ...props })
+  if (user) return cloneElement(child, { ...child.props, ...props })
 
   // 不是有效 ReactElement → 原样返回（比如字符串）
-  if (!isValidElement(children)) return cloneElement(child, { ...child.props })
+  if (!isValidElement(children)) return cloneElement(child, { ...child.props, ...props })
 
   // 强制限制 children 必须是能接受 onClick 的元素
 
@@ -34,6 +34,7 @@ const WithAuth = ({ children, none }: WithAuthProps) => {
   return cloneElement(child, {
     ...child.props,
     onClick: handleClick,
+    ...props,
   })
 }
 

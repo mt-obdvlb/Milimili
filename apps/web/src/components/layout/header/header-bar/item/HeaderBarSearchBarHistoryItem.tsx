@@ -1,14 +1,13 @@
 import { tv } from 'tailwind-variants'
 import { cn } from '@/lib'
-import { Dispatch, SetStateAction } from 'react'
 import Link from 'next/link'
 
 const HeaderBarSearchBarHistoryItem = ({
   history,
-  setHistorys,
+  handleHistoryDelete,
 }: {
   history: string
-  setHistorys: Dispatch<SetStateAction<string[] | undefined>>
+  handleHistoryDelete: (history: string) => void
 }) => {
   const historyItemStyles = tv({
     slots: {
@@ -26,9 +25,8 @@ const HeaderBarSearchBarHistoryItem = ({
       <div className={text()}>{history}</div>
       <div
         className={close()}
-        onMouseDown={(e) => {
-          e.stopPropagation()
-          setHistorys((prev) => prev?.filter((item) => item !== history))
+        onMouseDown={() => {
+          handleHistoryDelete(history)
         }}
       >
         <svg className={svg()} viewBox='0 0 1024 1024' width='14' height='14'>

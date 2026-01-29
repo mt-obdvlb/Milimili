@@ -38,10 +38,16 @@ export const videoCreateOrUpdate: RequestHandler<ParamsDictionary, Result, Video
   req,
   res
 ) => {
-  if (!req.user) {
+  if (!req.user?.id) {
     return res.status(401).json({
       code: 401,
       message: MESSAGE.AUTH_ERROR,
+    })
+  }
+  if (Array.isArray(req.params.videoId)) {
+    return res.status(400).json({
+      code: 400,
+      message: MESSAGE.INVALID_PARAMS,
     })
   }
   await VideoService.createOrUpdate(req.body, req.user!.id, req.params.videoId)
@@ -111,7 +117,7 @@ export const videoGetDetail: RequestHandler<ParamsDictionary, Result<VideoGetDet
 ) => {
   const videoId = req.params.videoId
   const userId = req.user?.id
-  if (!videoId || !userId) {
+  if (typeof videoId !== 'string' || !userId) {
     return res.status(400).json({
       code: 400,
       message: MESSAGE.INVALID_PARAMS,
@@ -146,7 +152,7 @@ export const videoListLike: RequestHandler<ParamsDictionary, Result<VideoList>> 
   res
 ) => {
   const userId = req.params.userId
-  if (!userId)
+  if (typeof userId !== 'string')
     return res.status(401).json({
       code: 400,
       message: MESSAGE.INVALID_PARAMS,
@@ -173,7 +179,7 @@ export const videoListSpace: RequestHandler<
 export const videoDelete: RequestHandler<ParamsDictionary, Result> = async (req, res) => {
   const videoId = req.params.videoId
   const userId = req.user?.id
-  if (!videoId || !userId)
+  if (typeof videoId !== 'string' || !userId)
     return res.status(401).json({
       code: 400,
       message: MESSAGE.INVALID_PARAMS,

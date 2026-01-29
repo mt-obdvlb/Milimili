@@ -4,6 +4,7 @@ import { tv } from 'tailwind-variants'
 import Link from 'next/link'
 import { formatTime } from '@/utils'
 import { FavoriteListItem } from '@mtobdvlb/shared-types'
+import CoverImage from '@/components/ui/CoverImage'
 
 const HeaderBarRightEntryFavoriteVideoItem = ({ favorite }: { favorite: FavoriteListItem }) => {
   const favoriteStyles = tv({
@@ -33,7 +34,13 @@ const HeaderBarRightEntryFavoriteVideoItem = ({ favorite }: { favorite: Favorite
     <Link target={'_blank'} href={`/video/${favorite.video.id}`} className={base()}>
       <div className={image()}>
         <picture className={image()}>
-          <img className={img()} src={favorite.video.thumbnail} alt={favorite.video.title} />
+          <CoverImage
+            width={250}
+            height={150}
+            className={img()}
+            src={favorite.video.thumbnail}
+            alt={favorite.video.title}
+          />
         </picture>
         <div className={duration()}>
           <span className={durationText()}>{formatTime(favorite.video.time)}</span>

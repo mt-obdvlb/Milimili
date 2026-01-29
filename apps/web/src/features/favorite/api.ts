@@ -90,7 +90,7 @@ export const useFavoriteGetByVideoId = (videoId: string) => {
   const { data } = useQuery({
     queryKey: ['favorite', videoId],
     queryFn: () => favoriteGetByVideoId(videoId),
-    enabled: !!videoId,
+    enabled: !!videoId?.length,
   })
   return {
     isFavorite: !data?.code,

@@ -26,7 +26,6 @@ const HeaderBarLinkItemWithBounce = ({
       <NavigationMenuLink onClick={toastBuilding} type={type}>
         <motion.div
           onMouseEnter={handleMouseEnter}
-          onMouseLeave={() => {}}
           animate={hovered ? { y: [0, -5, 0] } : { y: 0 }}
           transition={{ duration: 0.3, ease: 'easeOut' }}
           onAnimationComplete={() => {

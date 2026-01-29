@@ -51,7 +51,7 @@ const HeaderBarSearchBar = ({
   return (
     <div
       className={
-        'max-w[500px] relative min-h-[38px] min-w-[181px] flex-1 ' + cn({ 'border-b-none': open })
+        'max-w-[500px] relative min-h-[38px] min-w-[181px] flex-1 ' + cn({ 'border-b-none': open })
       }
       hidden={hidden}
       ref={containerRef}

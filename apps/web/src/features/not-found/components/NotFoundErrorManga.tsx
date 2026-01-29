@@ -1,9 +1,9 @@
 'use client'
 
-import Image from 'next/image'
 import { getRandomIndex } from '@/utils/getRandomIndex'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import CoverImage from '@/components/ui/CoverImage'
 
 const number = 10
 
@@ -30,10 +30,10 @@ const NotFoundErrorManga = () => {
 
   return (
     <div className={'p-[30px] text-center'}>
-      <Image
+      <CoverImage
         src={`/images/mangas/manga_${index}.png`}
         alt={`manga`}
-        className={'size-auto max-w-200 bg-white'}
+        className={'size-auto max-w-200 mx-auto bg-white'}
         unoptimized
         width={1}
         height={1}
@@ -45,13 +45,14 @@ const NotFoundErrorManga = () => {
         }}
       />
       <Link
-        href={'#up'}
+        href={''}
         className={
           'bg-brand_blue mx-auto mt-[30px] block h-12 w-[150px] rounded-[4px] text-center align-middle text-[16px] leading-12 text-white transition duration-200'
         }
         onClick={(e) => {
           e.preventDefault()
           getRandom()
+          window.scrollTo({ top: 0, behavior: 'smooth' })
         }}
       >
         换一张

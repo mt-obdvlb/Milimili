@@ -29,7 +29,9 @@ const HeaderBarSearchBarHistory = ({
         <div className={'mt-3 -mr-2.5 mb-1 flex flex-wrap'}>
           {historys?.map((item, index) => (
             <HeaderBarSearchBarHistoryItem
-              setHistorys={setHistorys}
+              handleHistoryDelete={(history) => {
+                setHistorys(historys?.filter((h) => h !== history))
+              }}
               history={item}
               key={item + index}
             />

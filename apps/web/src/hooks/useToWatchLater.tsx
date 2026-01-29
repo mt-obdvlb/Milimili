@@ -38,10 +38,10 @@ export const useToWatchLater = (
     document.body.appendChild(container)
     const root: Root = createRoot(container)
 
-    const Dot = () => (
+    const Dot = ({ root }: { root: Root }) => (
       <AnimatePresence>
         <motion.div
-          className='size-2 bg-red-500 rounded-full fixed top-0 left-0 z-9999999999999 pointer-events-none'
+          className='size-2 bg-[#fa5a57] rounded-full fixed top-0 left-0 z-9999999999999 pointer-events-none'
           initial={{ x: startX, y: startY }}
           animate={{
             x: [startX, controlX, endX],
@@ -57,7 +57,7 @@ export const useToWatchLater = (
       </AnimatePresence>
     )
 
-    root.render(<Dot />)
+    root.render(<Dot root={root} />)
   }
 
   return { trigger }

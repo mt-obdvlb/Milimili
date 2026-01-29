@@ -1,14 +1,14 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import CoverImage from '@/components/ui/CoverImage'
 
 const NotFoundErrorPanel = () => {
   const router = useRouter()
   return (
-    <div className={'overflow-hidden'}>
-      <Image src={'/images/very_sorry.png'} width={980} height={211} alt={'very_sorry'} />
+    <div className={'overflow-hidden text-center'}>
+      <CoverImage src={'/images/very_sorry.png'} width={980} height={211} alt={'very_sorry'} />
       <div className={'pb-10 text-center'}>
         <Link
           className={

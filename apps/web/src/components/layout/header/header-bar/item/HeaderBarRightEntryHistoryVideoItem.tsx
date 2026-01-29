@@ -5,6 +5,7 @@ import { HistoryListItem } from '@mtobdvlb/shared-types'
 import { tv } from 'tailwind-variants'
 import { formatTime, formatWatchAt } from '@/utils'
 import { cn } from '@/lib'
+import CoverImage from '@/components/ui/CoverImage'
 
 const HeaderBarRightEntryHistoryVideoItem = ({ history }: { history: HistoryListItem }) => {
   const historyStyles = tv({
@@ -47,7 +48,13 @@ const HeaderBarRightEntryHistoryVideoItem = ({ history }: { history: HistoryList
     <Link href={`/video/${history.video.id}`} target={'_blank'} className={base()}>
       <div className={image()}>
         <picture className={image()}>
-          <img className={img()} src={history.video.thumbnail} alt={history.video.title} />
+          <CoverImage
+            width={250}
+            height={150}
+            className={img()}
+            src={history.video.thumbnail}
+            alt={history.video.title}
+          />
         </picture>
         <div className={duration()}>
           <span className={durationText()}>

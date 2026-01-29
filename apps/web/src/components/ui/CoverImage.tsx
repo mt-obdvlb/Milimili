@@ -23,7 +23,6 @@ const CoverImage = ({
   const handleError = () => {
     if (retryCount < maxRetry) {
       setRetryCount((c) => c + 1)
-      // 更换 src 才能强制 <Image> 重新加载
       setImgSrc(`${src}?retry=${retryCount}`)
     } else {
       setImgSrc(fallbackSrc)

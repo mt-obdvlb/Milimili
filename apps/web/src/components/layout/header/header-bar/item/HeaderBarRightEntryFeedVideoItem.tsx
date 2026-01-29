@@ -6,6 +6,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { formatWatchAt, openNewTab } from '@/utils'
 import { cn, toastBuilding } from '@/lib'
+import CoverImage from '@/components/ui/CoverImage'
 
 const HeaderBarRightEntryFeedVideoItem = ({ feed }: { feed: FeedRecentItem }) => {
   const feedStyles = tv({
@@ -88,7 +89,13 @@ const HeaderBarRightEntryFeedVideoItem = ({ feed }: { feed: FeedRecentItem }) =>
           <div className={boxRight()}>
             <div className={cn(boxRightCover(), 'group')}>
               <picture className={image()}>
-                <img src={feed.video.thumbnail} className={img()} alt={feed.video.title} />
+                <CoverImage
+                  width={250}
+                  height={150}
+                  src={feed.video.thumbnail}
+                  className={img()}
+                  alt={feed.video.title}
+                />
               </picture>
               <div onClick={toastBuilding} className={cn(watchLater(), 'cursor-pointer')}>
                 <svg

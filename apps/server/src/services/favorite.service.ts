@@ -417,6 +417,6 @@ export const FavoriteService = {
       userId,
       folderId: folder._id,
     })
-    return favorite ? 1 : 0
+    return !favorite
   },
 }

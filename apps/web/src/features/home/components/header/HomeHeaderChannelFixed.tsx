@@ -1,20 +1,14 @@
 'use client'
 
-import { useWindowScroll } from 'react-use'
 import { cn } from '@/lib'
 import { Separator } from '@/components'
 import { CategoryGetAllList } from '@mtobdvlb/shared-types'
 import Link from 'next/link'
 import { tv } from 'tailwind-variants'
-import { useEffect, useState } from 'react'
+import { useShow } from '@/hooks'
 
 const HomeHeaderChannelFixed = ({ categoryList }: { categoryList?: CategoryGetAllList }) => {
-  const { y } = useWindowScroll()
-  const [show, setShow] = useState(false)
-
-  useEffect(() => {
-    setShow(y >= 165)
-  }, [y])
+  const { isShow } = useShow(165)
 
   const layoutStyles = tv({
     slots: {
@@ -32,8 +26,8 @@ const HomeHeaderChannelFixed = ({ categoryList }: { categoryList?: CategoryGetAl
   return (
     <div
       className={cn(
-        'bg-bg1_float fixed top-[63px] z-1001 w-full max-w-[2560px] min-w-[1100px] justify-center text-sm leading-[1.6] font-normal opacity-0 shadow-[0_2px_4px_rgba(0,0,0,0.08)] transition-opacity duration-200 ease-linear',
-        show && 'opacity-100'
+        'bg-bg1_float fixed top-[63px] z-1001 w-full max-w-[2560px] min-w-[1100px] justify-center text-sm leading-[1.6] font-normal opacity-0 shadow-[0_2px_4px_rgba(0,0,0,0.08)] transition-opacity duration-200 ease-linear pointer-events-none',
+        isShow && 'opacity-100 pointer-events-auto'
       )}
     >
       <div className={cn(base())}>

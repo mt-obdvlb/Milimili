@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { cn } from '@/lib'
 import { CategoryGetAllList } from '@mtobdvlb/shared-types'
 import { usePathname } from 'next/navigation'
+import WithAuth from '@/components/hoc/WithAuth'
 
 const headerChannelIcons = [
   {
@@ -51,6 +52,7 @@ const headerChannelIcons = [
     ),
     title: '动态',
     bgc: 'bg-[#ff9212]',
+    noAuth: false,
   },
   {
     link: '/hot',
@@ -73,6 +75,7 @@ const headerChannelIcons = [
     ),
     title: '热门',
     bgc: 'bg-[#f07775]',
+    noAuth: true,
   },
 ]
 
@@ -245,22 +248,24 @@ const HeaderChannel = ({
     >
       <div className={'mr-[8px] flex items-center'}>
         {headerChannelIcons.map((item) => (
-          <Link
-            href={item.link}
-            key={item.title}
-            target={'_blank'}
-            className={'text-text1 relative mr-[24px] flex flex-col'}
-          >
-            <div
-              className={cn(
-                'mb-[6px] flex size-[46px] items-center justify-center rounded-full transition-colors duration-300',
-                item.bgc
-              )}
+          <WithAuth key={item.title} none={item.noAuth}>
+            <Link
+              href={item.link}
+              key={item.title}
+              target={'_blank'}
+              className={'text-text1 relative mr-[24px] flex flex-col'}
             >
-              {item.icon}
-            </div>
-            <span className={'text-center text-sm leading-[20px]'}>{item.title}</span>
-          </Link>
+              <div
+                className={cn(
+                  'mb-[6px] flex size-[46px] items-center justify-center rounded-full transition-colors duration-300',
+                  item.bgc
+                )}
+              >
+                {item.icon}
+              </div>
+              <span className={'text-center text-sm leading-[20px]'}>{item.title}</span>
+            </Link>
+          </WithAuth>
         ))}
       </div>
       <div className={'flex w-full justify-between'}>
@@ -287,7 +292,7 @@ const HeaderChannel = ({
           <HoverCard openDelay={300} closeDelay={300} onOpenChange={(open) => setHoverOpen(open)}>
             <HoverCardTrigger
               className={
-                'order-line_light hover:bg-graph_bg_thick hover:text-text1 text-text2 bg-graph_bg_thin box-content inline-flex h-[26px] w-full cursor-default items-center justify-center rounded-[6px] border text-center text-sm leading-[26px] transition duration-300'
+                'order-line_light hover:bg-graph_bg_thick hover:text-text1 text-text2 bg-graph_bg_thin box-content inline-flex h-[26px] w-full cursor-default items-center justify-center rounded-[6px] border text-center text-sm leading-[26px] transition duration-300 '
               }
             >
               <span className={'mr-[5px] text-center text-sm leading-[26px]'}>更多</span>
