@@ -1,10 +1,10 @@
 'use client'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components'
-import Image from 'next/image'
 import { useVideoList } from '@/features'
 import HotVideoItem from '@/features/hot/components/HotVideoItem'
 import InfiniteScroll from 'react-infinite-scroll-component'
+import CoverImage from '@/components/ui/CoverImage'
 
 const HotTabs = () => {
   const { videoRandomList, fetchNextPage } = useVideoList()
@@ -18,7 +18,7 @@ const HotTabs = () => {
           }
         >
           <div className={'flex items-center'}>
-            <Image
+            <CoverImage
               src={'/images/icon_popular.png'}
               alt={'hot'}
               height={36}

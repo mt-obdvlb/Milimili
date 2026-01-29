@@ -2,8 +2,8 @@ import { getCategoryList, getCategoryName, getVideoList } from '@/features'
 import HeaderBanner from '@/components/layout/header/header-banner/HeaderBanner'
 import HeaderBarWrapper from '@/components/layout/header/header-bar/HeaderBarWrapper'
 import HeaderChannel from '@/components/layout/header/header-channel/HeaderChannel'
-import Image from 'next/image'
 import CategoryMainVideoList from '@/features/category/components/CateogryMainVideoList'
+import CoverImage from '@/components/ui/CoverImage'
 
 const Category = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params
@@ -26,7 +26,7 @@ const Category = async ({ params }: { params: Promise<{ id: string }> }) => {
       >
         <div>
           <div className={'mb-6 flex items-center'}>
-            <Image
+            <CoverImage
               src={`/svgs/category/icon_${(Math.random() * 44).toFixed(0)}.svg`}
               alt={'logo'}
               width={36}

@@ -4,7 +4,7 @@ import React from 'react'
 import { cn } from '@/lib'
 
 type VideoSkeletonProps = React.SVGProps<SVGSVGElement> & {
-  ref?: React.Ref<SVGSVGElement> // React 19 可以直接作为 prop
+  ref?: React.Ref<SVGSVGElement>
 }
 
 const VideoSkeleton = ({
