@@ -4,6 +4,7 @@ import {
   Button,
   Form,
   FormControl,
+  formErrorHandler,
   FormField,
   FormItem,
   FormLabel,
@@ -20,6 +21,7 @@ import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import UserAvatar from '@/components/ui/UserAvatar'
 import UploadImage from '@/components/layout/models/upload/uploadImage'
+import CoverImage from '@/components/ui/CoverImage'
 
 const accountUpdateSchema = userUpdateDTO
 type AccountUpdateForm = z.infer<typeof accountUpdateSchema>
@@ -83,15 +85,7 @@ const AccountWrapper = () => {
       </div>
       <main className={'px-5 pt-5'}>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit, (errors) => {
-              toast(
-                Object.values(errors)
-                  .map((error) => error.message)
-                  .join(';')
-              )
-            })}
-          >
+          <form onSubmit={form.handleSubmit(onSubmit, formErrorHandler)}>
             {isUpload ? (
               <>
                 <div className={'mx-auto pt-20 flex px-5 w-100 pb-[56px]'}>
@@ -108,7 +102,7 @@ const AccountWrapper = () => {
                           'cursor-pointer bg-[#f1f2f5] relative hover:bg-[#e5e9ef] w-[178px] h-21 border border-line_regular rounded-[4px] transition-all duration-600 ease flex items-center pl-2.5'
                         }
                       >
-                        <Image
+                        <CoverImage
                           src={'/images/account-upload.png'}
                           alt={'上传头像'}
                           width={36}

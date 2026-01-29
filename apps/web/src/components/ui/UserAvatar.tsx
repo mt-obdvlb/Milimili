@@ -1,12 +1,12 @@
 'use client'
 
-import Image from 'next/image'
 import { cloneElement, ReactElement, ReactNode } from 'react'
 import { Button, HoverCard, HoverCardContent, HoverCardTrigger } from '@/components'
 import Link from 'next/link'
 import { useMessageConversation, useUserGetByName } from '@/features'
 import { openNewTab } from '@/utils'
 import FollowBtn from '@/components/ui/follow-btn'
+import CoverImage from '@/components/ui/CoverImage'
 
 const UserAvatar = ({ h, w, avatar }: { avatar: string; h: number; w: number }) => {
   return (
@@ -17,7 +17,7 @@ const UserAvatar = ({ h, w, avatar }: { avatar: string; h: number; w: number }) 
       }}
       className={'rounded-full overflow-hidden'}
     >
-      <Image src={avatar} alt={'avatar'} height={h} width={w} />
+      <CoverImage src={avatar} alt={'avatar'} height={h} width={w} />
     </div>
   )
 }

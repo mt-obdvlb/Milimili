@@ -1,3 +1,5 @@
+'use client'
+
 import { cn, toast } from '@/lib'
 import { Button } from '@/components'
 import { useFollow, useFollowGet } from '@/features'
