@@ -39,6 +39,7 @@ const DatePicker = ({
       required
       selected={range}
       onSelect={(val) => {
+        console.log(selectMode, val)
         if (!val) return
 
         if (selectMode === 'normal') {
@@ -50,11 +51,19 @@ const DatePicker = ({
             onComplete()
           }
         } else if (selectMode === 'start') {
-          if (val.from) {
-            setRange({ from: val.from, to: range?.to })
-            setOpen(false)
-            onComplete()
-          }
+          if (!range?.from || !val.from) return
+
+          const newStart = val.from.getTime() === range.from.getTime() ? val.to : val.from
+
+          if (!newStart) return
+
+          setRange({
+            from: newStart,
+            to: range.to,
+          })
+
+          setOpen(false)
+          onComplete()
         } else if (selectMode === 'end') {
           if (val.to) {
             setRange({ from: range?.from, to: val.to })
