@@ -88,8 +88,8 @@ const TinyVideoItem = ({
                 <CoverImage
                   src={video.thumbnail}
                   alt={video.title}
-                  width={100}
-                  height={100}
+                  width={250}
+                  height={150}
                   className={'block size-full overflow-clip'}
                 />
               </picture>

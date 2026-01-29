@@ -16,7 +16,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  formErrorHandler,
   Input,
+  Label,
 } from '@/components'
 import DialogFooterBtnWrapper from '@/components/layout/models/common/DialogFooterBtnWrapper'
 import { useFavoriteDetail, useFavoriteFolderAdd, useFavoriteFolderUpdate } from '@/features'
@@ -24,10 +26,11 @@ import UploadImage from '@/components/layout/models/upload/uploadImage'
 import { fileToBlobUrl } from '@/utils'
 import { Textarea } from '@/components/ui/textarea'
 import { z } from 'zod/v4'
-import { SubmitErrorHandler, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
 import { cn } from '@/lib'
 import { zodResolver } from '@hookform/resolvers/zod'
+import CoverImage from '@/components/ui/CoverImage'
 
 export const favoriteFolderAddDTO = z.object({
   name: z.string().min(1, '名称不能为空').max(20, '长度最多 20 字'),
@@ -108,10 +111,6 @@ const FavoriteAddModel: React.FC<{
     setUploadOpen(false)
   }
 
-  const onError: SubmitErrorHandler<FavoriteFolderAddDTO> = () => {
-    // 错误处理
-  }
-
   const nameValue = form.watch('name')
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -130,7 +129,7 @@ const FavoriteAddModel: React.FC<{
         {/* 使用 shadcn 的 Form 包裹 RHF */}
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit, onError)}
+            onSubmit={form.handleSubmit(onSubmit, formErrorHandler)}
             className={'text-text1 mt-2 mb-6 pt-6 pb-[22px] text-left text-sm font-normal'}
           >
             <div>
@@ -149,11 +148,17 @@ const FavoriteAddModel: React.FC<{
                     <div>
                       {url && (
                         <picture className={'inline-block size-full align-middle'}>
-                          <img src={url} className={'block size-full'} alt={url} />
+                          <CoverImage
+                            width={250}
+                            height={150}
+                            src={url}
+                            className={'block size-full'}
+                            alt={url}
+                          />
                         </picture>
                       )}
                     </div>
-                    <label
+                    <Label
                       className={
                         'absolute top-1/2 left-1/2 size-full -translate-1/2 cursor-pointer'
                       }
@@ -183,7 +188,7 @@ const FavoriteAddModel: React.FC<{
                           ></path>
                         </svg>
                       )}
-                    </label>
+                    </Label>
                   </div>
                   <div
                     className={
