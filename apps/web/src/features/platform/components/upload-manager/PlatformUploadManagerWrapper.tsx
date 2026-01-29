@@ -19,6 +19,7 @@ import { SquarePen, Trash2 } from 'lucide-react'
 import { Button } from '@/components'
 import CommonDialog from '@/components/layout/models/common/CommonDialog'
 import { toast } from '@/lib'
+import CoverImage from '@/components/ui/CoverImage'
 
 const PlatformUploadManagerWrapper = () => {
   const [sort, setSort] = useState<VideoListSort>('publishedAt')
@@ -75,7 +76,7 @@ const PlatformUploadManagerWrapper = () => {
                 target={'_blank'}
               >
                 {item.thumbnail && (
-                  <Image
+                  <CoverImage
                     src={item.thumbnail}
                     alt={'视频'}
                     className={'size-full rounded-[4px]'}

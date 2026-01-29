@@ -8,6 +8,7 @@ import { cn } from '@/lib'
 import Link from 'next/link'
 import { VideoList } from '@mtobdvlb/shared-types'
 import WithAuth from '@/components/hoc/WithAuth'
+import CoverImage from '@/components/ui/CoverImage'
 
 const RecommendedSwiper = ({
   videoSwiperList,
@@ -107,10 +108,12 @@ const RecommendedSwiper = ({
                                 'bg-graph_bg_regular relative inline-block size-full align-middle'
                               }
                             >
-                              <img
+                              <CoverImage
                                 className={'  object-fit size-full block'}
                                 src={item.thumbnail}
                                 alt={item.title}
+                                width={500}
+                                height={500}
                               />
                             </picture>
                           </Link>

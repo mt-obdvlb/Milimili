@@ -1,7 +1,7 @@
 'use client'
 
 import { cloneElement, useCallback, useEffect, useState } from 'react'
-import { cn } from '@/lib'
+import { cn, toast } from '@/lib'
 import { Button, Input, Separator } from '@/components'
 import PlatformUploadVideoDetail from '@/features/platform/components/upload/PlatformUploadVideoDetail'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -24,13 +24,17 @@ const PlatformUploadWrapper = () => {
       'video/quicktime': ['.mov'],
       'video/x-matroska': ['.mkv'],
     },
-    maxSize: 28 * 1024 * 1024, // 28MB
+    // 50MB
     maxFiles: 1,
     onDrop: useCallback(
       async (acceptedFiles: File[]) => {
         const file = acceptedFiles[0]
 
         if (file) {
+          if (file.size > 50 * 1024 * 1024) {
+            toast('视频大小不能超过50MB')
+            return
+          }
           const [{ thumbnail, time }, { fileUrl }] = await Promise.all([
             getVideoMeta(file),
             uploadFile(file),
@@ -197,7 +201,7 @@ const PlatformUploadWrapper = () => {
                     </svg>
                   ),
                   title: '视频大小',
-                  desc: '视频大小28MB以内，时长15分钟以内',
+                  desc: '视频大小50MB以内，时长30分钟以内',
                 },
                 {
                   title: '视频格式',

@@ -49,7 +49,6 @@ const PlatformUploadVideoForm = ({
   const { categoryList } = useCategoryList()
   const initialDescription = useRef<string>(video.description ?? '')
   const [coverList, { push }] = useList<string>(video.thumbnail ? [video.thumbnail] : [])
-  const [tags, { push: tagsPush, filter: tagsFilter }] = useList<string>([])
 
   const formStyles = tv({
     slots: {
@@ -321,76 +320,76 @@ const PlatformUploadVideoForm = ({
             </FormItem>
           )}
         />
-        <div className={item()}>
-          <div className={'flex items-center'}>
-            <Title title={'标签'} />
-            <div className={'flex-1 mt-3'}>
-              <div
-                className={
-                  'border border-[#ccd0d7] bg-[hsla(0,0%,84.7%,0)] rounded-[4px] px-3 flex items-center flex-wrap transition-colors duration-300 ease-in-out focus-within:border-brand_blue hover:border-brand_blue'
-                }
-              >
-                <div className={'flex flex-wrap'}>
-                  {tags.map((tag) => (
-                    <div
-                      className={
-                        'my-1 mr-1.5 bg-brand_blue rounded-[4px] flex items-center cursor-pointer pr-[9px] pl-[11px]'
-                      }
-                      key={tag}
-                      onClick={() => {
-                        tagsFilter((item) => item !== tag)
-                      }}
-                    >
-                      <span
-                        className={
-                          'leading-[30px] max-w-60 text-white text-xs overflow-hidden text-ellipsis whitespace-nowrap select-none'
-                        }
-                      >
-                        {tag}
-                      </span>
-                      <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        viewBox='0 0 1024 1024'
-                        className={'size-[9px] text-white fill-current ml-1 text-xs leading-[14px]'}
-                      >
-                        <defs>
-                          <style type='text/css'></style>
-                        </defs>
-                        <path
-                          fill='currentColor'
-                          d='M507 457.2l348.8-348.8c16.5-16.5 43.3-16.5 59.8 0s16.5 43.3 0 59.8L566.8 517l338.8 338.8c16.5 16.5 16.5 43.3 0 59.8s-43.3 16.5-59.8 0L507 576.8 178.1 905.6c-16.5 16.5-43.3 16.5-59.8 0s-16.5-43.3 0-59.8L447.2 517 108.4 178.1c-16.5-16.5-16.5-43.3 0-59.8s43.3-16.5 59.8 0L507 457.2z'
-                          p-id='25745'
-                        ></path>
-                      </svg>
-                    </div>
-                  ))}
-                </div>
-                <div className={'flex-1 min-w-[200px] my-1.5'}>
-                  <Input
-                    className={'block w-full text-[#222] leading-5.5 h-5.5 text-sm outline-none'}
-                    maxLength={20}
-                    placeholder={'按回车键Enter创建标签'}
-                    type={'text'}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.stopPropagation()
-                        e.preventDefault()
-                        const value = (e.target as HTMLInputElement).value.trim()
-                        if (value && tags.length < 10 && !tags.includes(value)) {
-                          tagsPush(value)
-                          ;(e.target as HTMLInputElement).value = ''
-                        }
-                      }
-                    }}
-                  />
-                </div>
-                <div
-                  className={'text-sm text-[#858585] my-2 ml-3 cursor-default'}
-                >{`还可以添加${10 - tags.length}个标签`}</div>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/*<div className={item()}>*/}
+        {/*  <div className={'flex items-center'}>*/}
+        {/*    <Title title={'标签'} />*/}
+        {/*    <div className={'flex-1 mt-3'}>*/}
+        {/*      <div*/}
+        {/*        className={*/}
+        {/*          'border border-[#ccd0d7] bg-[hsla(0,0%,84.7%,0)] rounded-[4px] px-3 flex items-center flex-wrap transition-colors duration-300 ease-in-out focus-within:border-brand_blue hover:border-brand_blue'*/}
+        {/*        }*/}
+        {/*      >*/}
+        {/*        <div className={'flex flex-wrap'}>*/}
+        {/*          {tags.map((tag) => (*/}
+        {/*            <div*/}
+        {/*              className={*/}
+        {/*                'my-1 mr-1.5 bg-brand_blue rounded-[4px] flex items-center cursor-pointer pr-[9px] pl-[11px]'*/}
+        {/*              }*/}
+        {/*              key={tag}*/}
+        {/*              onClick={() => {*/}
+        {/*                tagsFilter((item) => item !== tag)*/}
+        {/*              }}*/}
+        {/*            >*/}
+        {/*              <span*/}
+        {/*                className={*/}
+        {/*                  'leading-[30px] max-w-60 text-white text-xs overflow-hidden text-ellipsis whitespace-nowrap select-none'*/}
+        {/*                }*/}
+        {/*              >*/}
+        {/*                {tag}*/}
+        {/*              </span>*/}
+        {/*              <svg*/}
+        {/*                xmlns='http://www.w3.org/2000/svg'*/}
+        {/*                viewBox='0 0 1024 1024'*/}
+        {/*                className={'size-[9px] text-white fill-current ml-1 text-xs leading-[14px]'}*/}
+        {/*              >*/}
+        {/*                <defs>*/}
+        {/*                  <style type='text/css'></style>*/}
+        {/*                </defs>*/}
+        {/*                <path*/}
+        {/*                  fill='currentColor'*/}
+        {/*                  d='M507 457.2l348.8-348.8c16.5-16.5 43.3-16.5 59.8 0s16.5 43.3 0 59.8L566.8 517l338.8 338.8c16.5 16.5 16.5 43.3 0 59.8s-43.3 16.5-59.8 0L507 576.8 178.1 905.6c-16.5 16.5-43.3 16.5-59.8 0s-16.5-43.3 0-59.8L447.2 517 108.4 178.1c-16.5-16.5-16.5-43.3 0-59.8s43.3-16.5 59.8 0L507 457.2z'*/}
+        {/*                  p-id='25745'*/}
+        {/*                ></path>*/}
+        {/*              </svg>*/}
+        {/*            </div>*/}
+        {/*          ))}*/}
+        {/*        </div>*/}
+        {/*        <div className={'flex-1 min-w-[200px] my-1.5'}>*/}
+        {/*          <Input*/}
+        {/*            className={'block w-full text-[#222] leading-5.5 h-5.5 text-sm outline-none'}*/}
+        {/*            maxLength={20}*/}
+        {/*            placeholder={'按回车键Enter创建标签'}*/}
+        {/*            type={'text'}*/}
+        {/*            onKeyDown={(e) => {*/}
+        {/*              if (e.key === 'Enter') {*/}
+        {/*                e.stopPropagation()*/}
+        {/*                e.preventDefault()*/}
+        {/*                const value = (e.target as HTMLInputElement).value.trim()*/}
+        {/*                if (value && tags.length < 10 && !tags.includes(value)) {*/}
+        {/*                  tagsPush(value)*/}
+        {/*                  ;(e.target as HTMLInputElement).value = ''*/}
+        {/*                }*/}
+        {/*              }*/}
+        {/*            }}*/}
+        {/*          />*/}
+        {/*        </div>*/}
+        {/*        <div*/}
+        {/*          className={'text-sm text-[#858585] my-2 ml-3 cursor-default'}*/}
+        {/*        >{`还可以添加${10 - tags.length}个标签`}</div>*/}
+        {/*      </div>*/}
+        {/*    </div>*/}
+        {/*  </div>*/}
+        {/*</div>*/}
         <FormField
           name={'description'}
           control={form.control}
@@ -456,7 +455,14 @@ const PlatformUploadVideoForm = ({
 const Title = ({ title, required = true }: { title: string; required?: boolean }) => {
   return (
     <div className={cn('mt-1.5 inline-flex items-center relative flex-wrap w-[134px]')}>
-      {required && <span className={'text-[16px] text-[#ff3b30] leading-4 w-3'}>*</span>}
+      <span
+        className={cn(
+          'text-[16px] text-[#ff3b30] leading-4 w-3 opacity-0 select-none',
+          required && 'select-auto opacity-100'
+        )}
+      >
+        *
+      </span>
       <span className={'text-sm font-normal text-[#212121] leading-[21px]'}>{title}</span>
     </div>
   )
