@@ -1,7 +1,7 @@
 'use client'
 
 import { VideoGetDetail } from '@mtobdvlb/shared-types'
-import { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import VideoPlayer from '@/features/video/components/video-play/VideoPlayer'
 import { Input, Label } from '@/components'
 import VideoPlayerDanmakuPublish from '@/features/video/components/video-play/VideoPlayerDanmakuPublish'
@@ -28,30 +28,47 @@ const VideoPlayerWrapper = ({
   const [isDragging, setIsDragging] = useState(false)
   const dragOffset = useRef({ x: 0, y: 0 })
 
-  /** 拖拽逻辑 */
+  /** 拖拽逻辑（限制在浏览器窗口内） */
   useEffect(() => {
     if (!isShow || !containerRef.current) return
 
     const el = containerRef.current
 
     const handleMouseDown = (e: MouseEvent) => {
+      e.preventDefault()
       setIsDragging(true)
       dragOffset.current = {
         x: e.clientX - position.x,
         y: e.clientY - position.y,
       }
+      // 拖拽开始时阻止选中文字
+      document.body.style.userSelect = 'none'
     }
 
     const handleMouseMove = (e: MouseEvent) => {
+      e.preventDefault()
       if (!isDragging) return
+      if (!containerRef.current) return
+      const containerWidth = containerRef.current.offsetWidth
+      const containerHeight = containerRef.current.offsetHeight
+      const winWidth = window.innerWidth
+      const winHeight = window.innerHeight
+      let newX = e.clientX - dragOffset.current.x
+      let newY = e.clientY - dragOffset.current.y
+      // 限制边界，上边界空出 64px
+      newX = Math.max(0, Math.min(newX, winWidth - containerWidth))
+      newY = Math.max(64, Math.min(newY, winHeight - containerHeight))
       setPosition({
-        x: e.clientX - dragOffset.current.x,
-        y: e.clientY - dragOffset.current.y,
+        x: newX,
+        y: newY,
       })
     }
 
-    const handleMouseUp = () => {
+    const handleMouseUp = (e: MouseEvent) => {
+      e.preventDefault()
       setIsDragging(false)
+      // 拖拽结束时恢复选中文字
+      document.body.style.userSelect = ''
     }
 
     el.addEventListener('mousedown', handleMouseDown)
@@ -62,8 +79,12 @@ const VideoPlayerWrapper = ({
       el.removeEventListener('mousedown', handleMouseDown)
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('mouseup', handleMouseUp)
+      // 确保卸载时恢复 userSelect
+      document.body.style.userSelect = ''
     }
-  }, [isShow, isDragging, position])
+    // 依赖只需要 isShow 和 isDragging
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isShow, isDragging])
 
   return (
     <div className={'h-[422px] relative'}>

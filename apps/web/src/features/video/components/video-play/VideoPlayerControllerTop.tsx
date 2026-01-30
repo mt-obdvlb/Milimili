@@ -1,7 +1,8 @@
 'use client'
 import { tv } from 'tailwind-variants'
 import { cn } from '@/lib'
-import {
+import React, {
+  Activity,
   Dispatch,
   MouseEventHandler,
   SetStateAction,
@@ -10,10 +11,10 @@ import {
   useRef,
   useState,
 } from 'react'
-import Image from 'next/image'
 import { formatTime, useThrottle } from '@/utils'
 import { useDebounce } from '@/utils/debounce'
 import { useVideoContext } from '@/features'
+import CoverImage from '@/components/ui/CoverImage'
 
 // 🧩 新增：通用防抖与节流 hooks
 
@@ -105,7 +106,6 @@ const VideoPlayerControllerTop = ({ isDragging, setIsDragging }: VideoPlayerCont
     [duration, videoRef]
   )
 
-  // 🧩 用防抖函数包裹帧捕获，减少频繁调用
   const debouncedFetchFrame = useDebounce(async (time: number) => {
     const frameUrl = await captureFrame(time)
     if (frameUrl) {
@@ -116,7 +116,7 @@ const VideoPlayerControllerTop = ({ isDragging, setIsDragging }: VideoPlayerCont
       setError(true)
       setLoaded(false)
     }
-  }, 150) // 150ms防抖间隔，可根据体验调整
+  }, 300)
 
   useEffect(() => {
     if (!videoRef.current || isDragging || !isFinite(hoverTime)) return
@@ -356,16 +356,17 @@ const VideoPlayerControllerTop = ({ isDragging, setIsDragging }: VideoPlayerCont
             className={cn(popup())}
           >
             <div className={'h-[90px] w-40 relative'}>
-              {url && !loaded && !error && (
-                <Image
+              <Activity mode={url && !loaded && !error ? 'visible' : 'hidden'}>
+                <CoverImage
                   src={url}
                   alt={'cover'}
-                  fill
+                  height={90}
+                  width={160}
                   className={
                     'size-full relative mx-auto transition-[filter_.3s_ease] align-[inherit] '
                   }
                 />
-              )}
+              </Activity>
               <div
                 className={
                   'bg-[hsla(0,0%,8%,.9)] rounded-[2px] bottom-0 text-white text-xs h-4.5 left-1/2 leading-4.5 px-[5px] absolute -translate-x-1/2 align-bottom'

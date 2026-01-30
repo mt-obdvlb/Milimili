@@ -112,7 +112,10 @@ export const VideoProvider = ({
     return currentTime / duration
   }, [currentTime, duration])
 
-  const toggleWebFull = () => setIsWebFull((prev) => !prev)
+  const toggleWebFull = () => {
+    setIsWebFull((prev) => !prev)
+    setIsFullScreen(false)
+  }
 
   const toggleFullScreen = () => {
     const target = containerRef?.current

@@ -4,7 +4,7 @@ import { tv } from 'tailwind-variants'
 import { cn } from '@/lib'
 import { Dispatch, RefObject, SetStateAction, useEffect, useMemo, useState } from 'react'
 import { formatTime } from '@/utils'
-import { HoverCard, HoverCardTrigger, Input, Label } from '@/components'
+import { HoverCardPure, HoverCardPureTrigger, Input, Label } from '@/components'
 import VideoPlayerControllerHoverContent from '@/features/video/components/video-play/VideoPlayerControllerHoverContent'
 import { Slider } from '@/components/ui/slider'
 import VideoPlayerControllerTop from '@/features/video/components/video-play/VideoPlayerControllerTop'
@@ -373,8 +373,8 @@ const VideoPlayerController = ({
         </div>
         <div></div>
         <div className={cn('flex justify-end', (isFullScreen || isWebFull) && 'min-w-[370px]')}>
-          <HoverCard open={speedOpen} onOpenChange={setSpeedOpen} openDelay={50}>
-            <HoverCardTrigger asChild>
+          <HoverCardPure open={speedOpen} onOpenChange={setSpeedOpen} openDelay={50}>
+            <HoverCardPureTrigger asChild>
               <div className={cn(btn(), 'text-sm w-[50px]')}>
                 <div
                   className={cn('cursor-pointer  font-[600] whitespace-nowrap w-full')}
@@ -383,7 +383,7 @@ const VideoPlayerController = ({
                   {speed === 1.0 ? '倍速' : `${speed}x`}
                 </div>
               </div>
-            </HoverCardTrigger>
+            </HoverCardPureTrigger>
             <VideoPlayerControllerHoverContent className={cn(' w-[70px] ')}>
               {[0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0].reverse().map((item) => (
                 <div
@@ -399,10 +399,10 @@ const VideoPlayerController = ({
                 >{`${item}x`}</div>
               ))}
             </VideoPlayerControllerHoverContent>
-          </HoverCard>
+          </HoverCardPure>
 
-          <HoverCard open={volumeOpen} onOpenChange={setVolumeOpen} openDelay={50}>
-            <HoverCardTrigger asChild>
+          <HoverCardPure open={volumeOpen} onOpenChange={setVolumeOpen} openDelay={50}>
+            <HoverCardPureTrigger asChild>
               <div className={cn(btn())}>
                 <div onClick={() => setVolumeOpen(true)} className={cn('cursor-pointer w-full')}>
                   <span className={cn('h-[22px] opacity-90 inline-flex select-none w-full')}>
@@ -518,7 +518,7 @@ const VideoPlayerController = ({
                   </span>
                 </div>
               </div>
-            </HoverCardTrigger>
+            </HoverCardPureTrigger>
             <VideoPlayerControllerHoverContent className={cn('h-25 w-8 rounded-[2px] ')}>
               <div
                 className={cn('text-[#e5e9ef] text-xs leading-7 h-7 mb-[2px] text-center w-full')}
@@ -536,10 +536,10 @@ const VideoPlayerController = ({
                 />
               </div>
             </VideoPlayerControllerHoverContent>
-          </HoverCard>
+          </HoverCardPure>
 
-          <HoverCard openDelay={50}>
-            <HoverCardTrigger asChild>
+          <HoverCardPure openDelay={50}>
+            <HoverCardPureTrigger asChild>
               <div className={cn(btn())}>
                 <div
                   onClick={() => {
@@ -576,16 +576,16 @@ const VideoPlayerController = ({
                   </span>
                 </div>
               </div>
-            </HoverCardTrigger>
+            </HoverCardPureTrigger>
             <VideoPlayerControllerHoverContent className={''}>
-              <div className={cn('flex items-center justify-center text-xs px-2 py-1')}>
+              <div className={cn('text-center w-20 text-xs px-2 py-1')}>
                 {isWebFull ? '退出网页全屏' : '网页全屏'}
               </div>
             </VideoPlayerControllerHoverContent>
-          </HoverCard>
+          </HoverCardPure>
 
-          <HoverCard openDelay={50}>
-            <HoverCardTrigger asChild>
+          <HoverCardPure openDelay={50}>
+            <HoverCardPureTrigger asChild>
               <div className={cn(btn())}>
                 <div
                   className={cn('w-full cursor-pointer')}
@@ -782,13 +782,13 @@ const VideoPlayerController = ({
                   </span>
                 </div>
               </div>
-            </HoverCardTrigger>
-            <VideoPlayerControllerHoverContent className={'pointer-events-none'}>
-              <div className={cn('flex items-center justify-center text-xs px-2 py-1')}>
-                {isFullScreen ? '退出全屏' : '进入全屏'}
-              </div>
+            </HoverCardPureTrigger>
+            <VideoPlayerControllerHoverContent
+              className={'pointer-events-none  text-xs px-2 py-1 w-20'}
+            >
+              {isFullScreen ? '退出全屏' : '进入全屏(f)'}
             </VideoPlayerControllerHoverContent>
-          </HoverCard>
+          </HoverCardPure>
         </div>
       </div>
 

@@ -1,7 +1,7 @@
 'use client'
 import { Button, HoverCard, HoverCardContent, HoverCardTrigger, Input } from '@/components'
 import { useDanmakuAdd } from '@/features'
-import { cn } from '@/lib'
+import { cn, toast } from '@/lib'
 import { RefObject, useState } from 'react'
 import { DanmakuPosition } from '@mtobdvlb/shared-types'
 
@@ -31,14 +31,16 @@ const VideoPlayerDanmakuPublish = ({
   const handleDanmaku = async () => {
     const video = videoRef.current
     if (!input.trim() || !video) return
-    await danmakuAdd({
+    const { code } = await danmakuAdd({
       videoId,
       content: input,
       color: selectColor,
       time: video.currentTime,
       position,
     })
+    if (code) return
     setInput('')
+    toast('发送成功')
   }
 
   const colors = [
@@ -71,7 +73,7 @@ const VideoPlayerDanmakuPublish = ({
         }
       >
         {showDanmaku && (
-          <HoverCard openDelay={50}>
+          <HoverCard openDelay={50} closeDelay={250}>
             <HoverCardTrigger>
               <div
                 className={
@@ -98,7 +100,7 @@ const VideoPlayerDanmakuPublish = ({
             </HoverCardTrigger>
             <HoverCardContent
               className={
-                'bg-[hsla(0,0%,8%,.9)] border-none rounded-[2px]  h-auto -ml-[108px] pt-[2px] w-[216px] z-1001 select-none'
+                'bg-[hsla(0,0%,8%,.9)] border-none rounded-[2px]  h-auto  pt-[2px] w-[216px] z-1001 select-none'
               }
               side={'top'}
             >
@@ -242,7 +244,6 @@ const VideoPlayerDanmakuPublish = ({
             placeholder={'发个友善的弹幕见证当下'}
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onClick={handleDanmaku}
             onKeyDown={async (e) => {
               if (e.key === 'Enter') {
                 e.preventDefault()
