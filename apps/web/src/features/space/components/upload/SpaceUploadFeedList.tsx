@@ -1,11 +1,11 @@
 'use client'
 import { useFeedGetList } from '@/features'
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { formatPlayCount } from '@/utils'
 import { useInfiniteScroll } from '@/hooks'
 import SpaceUploadVideoEmpty from '@/features/space/components/upload/SpaceUploadVideoEmpty'
+import CoverImage from '@/components/ui/CoverImage'
 
 const GAP = 16
 const COLUMNS = 5
@@ -41,7 +41,6 @@ const SpaceUploadFeedList = ({ userId }: { userId: string }) => {
         })),
     [rawFeedList]
   )
-
   useLayoutEffect(() => {
     const container = containerRef.current
     if (!container) return
@@ -80,7 +79,7 @@ const SpaceUploadFeedList = ({ userId }: { userId: string }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [itemWidth, Object.keys(imageHeights).length, feedList.length])
 
-  // ✅ 图片加载后更新高度（仅在高度改变时）
+  // 图片加载后更新高度（仅在高度改变时）
   const handleImageLoad = (id: string, e: React.SyntheticEvent<HTMLImageElement>) => {
     const img = e.currentTarget
     const ratio = img.naturalHeight / img.naturalWidth
@@ -92,69 +91,83 @@ const SpaceUploadFeedList = ({ userId }: { userId: string }) => {
     })
   }
 
+  if (!itemWidth) {
+    return (
+      <>
+        <div className={'text-[24px] font-semibold text-text1'}>全部图文</div>
+        <div ref={containerRef} className='mt-[30px] w-full relative' />
+      </>
+    )
+  }
   if (!feedList.length) return <SpaceUploadVideoEmpty title={'动态'} />
 
   return (
-    <div
-      className='mt-[30px] w-full relative transition-all'
-      ref={containerRef}
-      style={{ height: containerHeight }}
-    >
-      {feedList.map((item, index) => {
-        const { top, left } = positions[index] || { top: 0, left: 0 }
-        const imgHeight = imageHeights[item.id] ?? itemWidth * 0.56
+    <>
+      <div className={'text-[24px] font-semibold text-text1'}>全部图文</div>
+      <div
+        className='mt-[30px] w-full relative transition-all'
+        ref={containerRef}
+        style={{ height: containerHeight }}
+      >
+        {feedList.map((item, index) => {
+          const { top, left } = positions[index] || { top: 0, left: 0 }
+          const imgHeight = imageHeights[item.id] ?? itemWidth * 0.56
 
-        return (
-          <div
-            key={item.id}
-            className='absolute rounded-md  overflow-hidden transition-all'
-            style={{ width: itemWidth, left, top }}
-            ref={index === feedList.length - 1 ? fetchRef : null}
-          >
-            <Link
-              target={'_blank'}
-              className={'relative w-full rounded-[6px]'}
-              href={`/feed/${item.id}`}
+          return (
+            <div
+              key={item.id}
+              className='absolute rounded-md  overflow-hidden transition-all'
+              style={{
+                width: itemWidth,
+                transform: `translate3d(${left}px, ${top}px, 0)`,
+              }}
+              ref={index === feedList.length - 1 ? fetchRef : null}
             >
-              <div className={'rounded-[6px] size-full'}>
-                <Image
-                  width={itemWidth}
-                  height={imgHeight}
-                  src={item.image}
-                  alt=''
-                  className='w-full object-cover rounded-[6px]'
-                  style={{ height: imgHeight }}
-                  onLoad={(e) => handleImageLoad(item.id, e)}
-                />
-              </div>
-              <div
-                className={
-                  'absolute bottom-0 left-0 z-2 w-full px-2 pt-3.5 pb-1 rounded-b-[6px] bg-[linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.8))] text-white opacity-100 flex items-center justify-between pointer-events-none transition-all duration-200'
-                }
+              <Link
+                target={'_blank'}
+                className={'relative w-full rounded-[6px]'}
+                href={`/feed/${item.id}`}
               >
+                <div className={'rounded-[6px] size-full'}>
+                  <CoverImage
+                    width={500}
+                    height={500}
+                    src={item.image}
+                    alt=''
+                    className='w-full object-cover rounded-[6px]'
+                    style={{ height: imgHeight }}
+                    onLoad={(e) => handleImageLoad(item.id, e)}
+                  />
+                </div>
                 <div
                   className={
-                    'flex items-center justify-center mr-3 text-[18px] shrink-0 h-4.5 leading-[1]'
+                    'absolute bottom-0 left-0 z-2 w-full px-2 pt-3.5 pb-1 rounded-b-[6px] bg-[linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.8))] text-white opacity-100 flex items-center justify-between pointer-events-none transition-all duration-200'
                   }
                 >
-                  <i
-                    className={'sic-BDC-hand_thumbsup_line mr-0.5 size-4 font-normal text-[16px]'}
-                  ></i>
-                  <span className={'text-xs'}>{formatPlayCount(item.likes)}</span>
+                  <div
+                    className={
+                      'flex items-center justify-center mr-3 text-[18px] shrink-0 h-4.5 leading-[1]'
+                    }
+                  >
+                    <i
+                      className={'sic-BDC-hand_thumbsup_line mr-0.5 size-4 font-normal text-[16px]'}
+                    ></i>
+                    <span className={'text-xs'}>{formatPlayCount(item.likes)}</span>
+                  </div>
                 </div>
-              </div>
-            </Link>
-            <Link
-              target={'_blank'}
-              href={`/feed/${item.id}`}
-              className='line-clamp-2 text-ellipsis  text-sm py-1.5 text-text1 transition-all duration-300 hover:text-brand_blue'
-            >
-              {item.content}
-            </Link>
-          </div>
-        )
-      })}
-    </div>
+              </Link>
+              <Link
+                target={'_blank'}
+                href={`/feed/${item.id}`}
+                className='line-clamp-2 text-ellipsis  text-sm my-1.5 text-text1 transition-all duration-300 hover:text-brand_blue overflow-hidden'
+              >
+                {item.content}
+              </Link>
+            </div>
+          )
+        })}
+      </div>
+    </>
   )
 }
 

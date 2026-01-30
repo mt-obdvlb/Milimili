@@ -182,11 +182,12 @@ export const userGetById: RequestHandler<ParamsDictionary, Result<UserGetInfo>> 
   res
 ) => {
   const { id } = req.params
-  if (!id)
+  if (typeof id !== 'string' || !id)
     return res.status(400).json({
       message: MESSAGE.INVALID_PARAMS,
       code: 1,
     })
+
   const data = await UserService.getById(id)
   return res.status(200).json({
     data,

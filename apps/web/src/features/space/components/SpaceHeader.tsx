@@ -2,12 +2,12 @@
 
 import { UserGetInfo } from '@mtobdvlb/shared-types'
 import Link from 'next/link'
-import Image from 'next/image'
 import { useUserStore } from '@/stores'
 import FollowBtn from '@/components/ui/follow-btn'
 import { openNewTab } from '@/utils'
 import { Button } from '@/components'
 import { useMessageConversation } from '@/features'
+import CoverImage from '@/components/ui/CoverImage'
 
 const SpaceHeader = ({ user }: { user: UserGetInfo }) => {
   const meUser = useUserStore((state) => state.user)
@@ -42,7 +42,7 @@ const SpaceHeader = ({ user }: { user: UserGetInfo }) => {
           <div className={'shrink-0 h-[1px] mr-[22px] flex items-center justify-center'}>
             <div className={'relative border-2 cursor-pointer border-white/40 rounded-full '}>
               <div className={'size-16 overflow-hidden'}>
-                <Image
+                <CoverImage
                   className={'rounded-full'}
                   src={user.avatar}
                   alt={'头像'}

@@ -31,25 +31,28 @@ const SapceRelationWrapper = ({
             <UserHoverAvatar user={item.user}>
               <Link
                 className={'size-20 cursor-pointer'}
-                href={`/apps/web/src/app/(with-auth)/space/${item.user.id}`}
+                target={'_blank'}
+                href={`/space/${item.user.id}`}
               >
                 <UserAvatar avatar={item.user.avatar} h={80} w={80} />
               </Link>
             </UserHoverAvatar>
             <div className={'ml-4 flex flex-col flex-1'}>
-              <div
+              <Link
+                href={`/space/${item.user.id}`}
+                target={'_blank'}
                 className={
-                  'text-text1 text-[16px] font-medium transition-colors duration-200 overflow-hidden line-clamp-1 text-ellipsis'
+                  'text-text1 text-[16px] font-medium transition-colors duration-200 overflow-hidden line-clamp-1 text-ellipsis hover:text-brand_blue '
                 }
               >
                 {item.user.name}
+              </Link>
+              <div className={'w-full mt-2 items-center flex'}>
+                <FollowBtn
+                  followingId={item.user.id}
+                  className={'w-[96px] h-[35px] ml-0 font-bold text-sm rounded-[6px]'}
+                />
               </div>
-            </div>
-            <div className={'w-full items-center flex'}>
-              <FollowBtn
-                followingId={item.user.id}
-                className={'w-[96px] h-[35px] font-bold text-sm rounded-[6px]'}
-              />
             </div>
           </div>
         ))}

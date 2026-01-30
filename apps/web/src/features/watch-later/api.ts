@@ -28,6 +28,7 @@ export const useIsWatchLater = (videoId: string) => {
   const { data: isWatchLater } = useQuery({
     queryKey: ['favorite', videoId],
     queryFn: () => favoriteIsWatchLater(videoId),
+    enabled: !!videoId?.length,
   })
   return { isFavorite: !isWatchLater?.code }
 }

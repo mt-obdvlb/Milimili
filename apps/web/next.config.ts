@@ -19,7 +19,6 @@ const nextConfig: NextConfig = {
     // 生产环境去掉 console
     removeConsole: true,
   },
-  reactCompiler: true,
 }
 
 export default nextConfig

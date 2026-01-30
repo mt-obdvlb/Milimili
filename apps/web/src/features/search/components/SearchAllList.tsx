@@ -2,7 +2,6 @@ import { SearchGetItem, SearchRecommendUser } from '@mtobdvlb/shared-types'
 import { tv } from 'tailwind-variants'
 import { cn } from '@/lib'
 import Link from 'next/link'
-import { Button } from '@/components'
 import SearchUserVideoItem from '@/features/search/components/SearchUserVideoItem'
 import SearchVideoItem from '@/features/search/components/SearchVideoItem'
 import { Dispatch, SetStateAction } from 'react'
@@ -111,10 +110,12 @@ const SearchAllList = ({
             </div>
             <div className={'ma-w-[2200px] relative mx-auto w-full px-16'}>
               <div className={'border-b-line_light border-b'}></div>
-              <Button
+              <Link
                 className={
                   'text-brand_blue bg-bg1 hover:bg-brand_blue_thin absolute top-[50%] left-[50%] z-1 inline-flex h-8 min-w-[100px] -translate-[50%] cursor-pointer items-center rounded-[8px] border-none px-[15px] text-sm leading-[1] whitespace-nowrap transition-all duration-200 select-none'
                 }
+                href={`/space/${searchUser.user.id}/upload/video`}
+                target={'_blank'}
               >
                 查看TA的所有稿件
                 <svg
@@ -129,7 +130,7 @@ const SearchAllList = ({
                     fill='currentColor'
                   ></path>
                 </svg>
-              </Button>
+              </Link>
             </div>
           </>
         )}

@@ -50,7 +50,7 @@ export const UserHoverAvatar = ({
         <Link
           className={'size-12 absolute top-[95px] left-2.5'}
           target={'_blank'}
-          href={`/space/${id}/feed`}
+          href={`/space/${id}`}
         >
           {<UserAvatar avatar={avatar} h={48} w={48} />}
         </Link>
