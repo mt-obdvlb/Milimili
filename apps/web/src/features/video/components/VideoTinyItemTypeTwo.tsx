@@ -29,7 +29,7 @@ const VideoTinyItemTypeTwo = ({ video }: { video: VideoListItem }) => {
         </Link>
         <Link
           target={'_blank'}
-          href={`/space/${video.id}`}
+          href={`/space/${video.userId}`}
           className={
             'text-text3 transition-colors duration-300 inline-flex items-center size-full cursor-pointer my-[2px] h-5 hover:text-brand_blue'
           }

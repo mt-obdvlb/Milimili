@@ -87,15 +87,13 @@ export const LikeService = {
       targetType,
     })
 
-    if (userId !== String(targetOwnerId)) {
-      await MessageModel.create({
-        userId: targetOwnerId, // 接收者（被点赞者）
-        fromUserId: new Types.ObjectId(userId), // 发送者（点赞者）
-        type: 'like',
-        sourceId: targetId,
-        sourceType: targetType,
-      })
-    }
+    await MessageModel.create({
+      userId: targetOwnerId, // 接收者（被点赞者）
+      fromUserId: new Types.ObjectId(userId), // 发送者（点赞者）
+      type: 'like',
+      sourceId: targetId,
+      sourceType: targetType,
+    })
   },
 
   unlike: async (userId: string, dto: UnlikeDTO) => {
