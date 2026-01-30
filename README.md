@@ -93,7 +93,7 @@ mtobdvlb-milimili/
 
 ### 开发工具链
 
-- 包管理：pnpm（高效、快速的包管理器）
+- 包管理：pnpm（高效、快速地包管理器）
 - 构建工具：Turborepo（Monorepo 构建优化）
 - 代码检查：ESLint（代码规范校验）
 - 类型检查：TypeScript（静态类型校验）

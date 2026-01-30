@@ -22,7 +22,7 @@ export const favoriteFolderList: RequestHandler<
   Result<FavoriteFolderList>
 > = async (req, res) => {
   const userId = req.params.userId || req.user?.id
-  if (!userId)
+  if (typeof userId !== 'string')
     return res.status(401).json({
       code: 401,
       message: MESSAGE.AUTH_ERROR,
@@ -155,7 +155,7 @@ export const favoriteGetByVideoId: RequestHandler<
 > = async (req, res) => {
   const videoId = req.params.videoId
   const userId = req.user?.id
-  if (!userId || !videoId)
+  if (!userId || typeof videoId !== 'string')
     return res.status(401).json({
       code: 400,
       message: MESSAGE.AUTH_ERROR,
@@ -171,7 +171,7 @@ export const favoriteDetailGetByFolderId: RequestHandler<
   Result<FavoriteFolderListItem>
 > = async (req, res) => {
   const folderId = req.params.folderId
-  if (!folderId)
+  if (typeof folderId !== 'string')
     return res.status(401).json({
       code: 400,
       message: MESSAGE.INVALID_PARAMS,
@@ -186,7 +186,7 @@ export const favoriteDetailGetByFolderId: RequestHandler<
 export const favoriteFolderDelete: RequestHandler<ParamsDictionary, Result> = async (req, res) => {
   const folderId = req.params.folderId
   const userId = req.user?.id
-  if (!folderId || !userId)
+  if (typeof folderId !== 'string' || !userId)
     return res.status(401).json({
       code: 400,
       message: MESSAGE.INVALID_PARAMS,
@@ -204,7 +204,7 @@ export const favoriteFolderUpdate: RequestHandler<
 > = async (req, res) => {
   const folderId = req.params.folderId
   const userId = req.user?.id
-  if (!folderId || !userId)
+  if (typeof folderId !== 'string' || !userId)
     return res.status(401).json({
       code: 400,
       message: MESSAGE.INVALID_PARAMS,
@@ -222,7 +222,7 @@ export const favoriteWatchLaterAddOrDelete: RequestHandler<
 > = async (req, res) => {
   const userId = req.user?.id
   const videoId = req.params.videoId
-  if (!userId || !videoId)
+  if (!userId || typeof videoId !== 'string')
     return res.status(401).json({
       code: 401,
       message: MESSAGE.INVALID_PARAMS,
@@ -236,7 +236,7 @@ export const favoriteWatchLaterAddOrDelete: RequestHandler<
 export const favoriteIsWatchLater: RequestHandler<ParamsDictionary, Result> = async (req, res) => {
   const userId = req.user?.id
   const videoId = req.params.videoId
-  if (!userId || !videoId)
+  if (!userId || typeof videoId !== 'string')
     return res.status(401).json({
       code: 401,
       message: MESSAGE.INVALID_PARAMS,
