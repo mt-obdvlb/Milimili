@@ -21,7 +21,6 @@ import React, {
 } from 'react'
 import DialogFooterBtnWrapper from '@/components/layout/models/common/DialogFooterBtnWrapper'
 import { useUploadFile } from '@/features'
-import CoverImage from '@/components/ui/CoverImage'
 
 type Props = {
   children: ReactNode
@@ -562,12 +561,11 @@ const UploadImage: React.FC<Props> = ({
               >
                 {/* 底图（按 display 计算放置） */}
                 {localSrc ? (
-                  <CoverImage
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
                     src={localSrc}
                     alt='source'
                     onLoad={handleImgLoad}
-                    width={1000}
-                    height={1000}
                     style={{
                       position: 'absolute',
                       left: `${display.offsetX}px`,

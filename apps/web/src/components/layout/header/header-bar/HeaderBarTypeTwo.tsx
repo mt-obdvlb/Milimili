@@ -31,10 +31,10 @@ const HeaderBarTypeTwo = ({
   return (
     <div
       className={cn(
-        'flex h-[64px] w-full items-center px-[24px]',
+        'flex h-[64px] w-full items-center px-[24px] justify-center',
 
         'bg-bg1_float animate-none shadow-[0_2px_4px_#00000014]',
-        hidden && 'justify-between'
+        hidden && 'justify-between max-w-[1500px] mx-auto'
       )}
     >
       <HeaderBarLeftEntry type={type} />

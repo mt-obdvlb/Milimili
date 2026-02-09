@@ -18,6 +18,7 @@ const PlatformUploadWrapper = () => {
   const { uploadFile } = useUploadFile()
   const [complete, setComplete] = useState(false)
   const router = useRouter()
+  const [isUploading, setIsUploading] = useState(false)
   const { getInputProps, getRootProps, isDragActive } = useDropzone({
     accept: {
       'video/mp4': ['.mp4'],
@@ -35,10 +36,12 @@ const PlatformUploadWrapper = () => {
             toast('视频大小不能超过50MB')
             return
           }
+          setIsUploading(true)
           const [{ thumbnail, time }, { fileUrl }] = await Promise.all([
             getVideoMeta(file),
             uploadFile(file),
           ])
+          setIsUploading(false)
           setVideo({
             thumbnail,
             time,
@@ -516,10 +519,36 @@ const PlatformUploadWrapper = () => {
                     </span>
                     <span
                       className={cn(
-                        'bg-brand_blue text-white mt-6 w-[304px] rounded-[6px] transition-colors duration-300 ease-in-out text-center leading-12 whitespace-nowrap'
+                        'bg-brand_blue text-white mt-6 w-[304px] rounded-[6px] transition-colors duration-300 ease-in-out text-center leading-12 whitespace-nowrap flex items-center justify-center gap-2'
                       )}
                     >
-                      上传视频
+                      {isUploading ? (
+                        <>
+                          <svg
+                            className='w-4 h-4 animate-spin text-white'
+                            xmlns='http://www.w3.org/2000/svg'
+                            fill='none'
+                            viewBox='0 0 24 24'
+                          >
+                            <circle
+                              className='opacity-25'
+                              cx='12'
+                              cy='12'
+                              r='10'
+                              stroke='currentColor'
+                              strokeWidth='4'
+                            />
+                            <path
+                              className='opacity-75'
+                              fill='currentColor'
+                              d='M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z'
+                            />
+                          </svg>
+                          <span>正在上传</span>
+                        </>
+                      ) : (
+                        '上传视频'
+                      )}
                     </span>
                   </div>
                   <Input {...getInputProps()} className={cn('size-0 opacity-0')} />

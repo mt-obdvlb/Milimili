@@ -18,7 +18,6 @@ import {
 } from '@/components/ui/select'
 import AtTextarea from '@/components/layout/at/AtTextarea'
 import AtTextareaPlaceholder from '@/components/layout/at/AtTextareaPlaceholder'
-import { useList } from 'react-use'
 
 const formSchema = videoCreateDTO
 
@@ -27,12 +26,16 @@ const PlatformUploadVideoForm = ({
   videoId,
   setVideo,
   setCompelete,
+  push,
+  coverList,
 }: {
   edit: boolean
   video: Partial<VideoCreateDTO>
   videoId?: string
   setVideo: Dispatch<SetStateAction<Partial<VideoCreateDTO> | null>>
   setCompelete: Dispatch<SetStateAction<boolean>>
+  coverList: string[]
+  push: (...items: string[]) => void
 }) => {
   const atTextareaRef = useRef<AtTextareaRef>(null)
 
@@ -48,7 +51,6 @@ const PlatformUploadVideoForm = ({
   const { uploadFile } = useUploadFile()
   const { categoryList } = useCategoryList()
   const initialDescription = useRef<string>(video.description ?? '')
-  const [coverList, { push }] = useList<string>(video.thumbnail ? [video.thumbnail] : [])
 
   const formStyles = tv({
     slots: {

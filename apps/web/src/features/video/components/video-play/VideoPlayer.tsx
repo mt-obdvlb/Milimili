@@ -203,8 +203,9 @@ const VideoPlayer = ({
 
   const { bottomContainerRef, topContainerRef, scrollContainerRef } = useDanmakuManager({
     videoId: videoDetail.video.id,
-    videoRef: videoElRef, // 传 RefObject
+    videoRef: videoElRef,
     showDanmaku,
+    isPlay: !paused,
   })
 
   const videoPlayerStyles = tv({

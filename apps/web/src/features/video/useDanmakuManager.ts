@@ -30,19 +30,31 @@ export const useDanmakuManager = ({
 
   // 初始化 CommentManager
   useEffect(() => {
-    if (!window.CommentManager) return
+    if (typeof window === 'undefined') return
 
-    const initCM = (ref: RefObject<HTMLDivElement | null>) => {
-      if (!ref.current) return null
-      const cm = new window.CommentManager(ref.current)
-      cm.init()
-      cm.options.global.scale = 1.5
-      return cm
+    let timer: number | null = null
+    const tryInit = () => {
+      if (window.CommentManager) {
+        const initCM = (ref: RefObject<HTMLDivElement | null>) => {
+          if (!ref.current) return null
+          const cm = new window.CommentManager(ref.current)
+          cm.init()
+          cm.options.global.scale = 1.5
+          return cm
+        }
+        scrollCMRef.current = initCM(scrollContainerRef)
+        topCMRef.current = initCM(topContainerRef)
+        bottomCMRef.current = initCM(bottomContainerRef)
+        if (timer) clearInterval(timer)
+      }
     }
 
-    scrollCMRef.current = initCM(scrollContainerRef)
-    topCMRef.current = initCM(topContainerRef)
-    bottomCMRef.current = initCM(bottomContainerRef)
+    tryInit()
+    timer = window.setInterval(tryInit, 100)
+
+    return () => {
+      if (timer) clearInterval(timer)
+    }
   }, [])
 
   // 视频事件绑定

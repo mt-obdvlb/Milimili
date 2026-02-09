@@ -7,6 +7,7 @@ import { Progress } from '@/components/ui/progress'
 import { cn } from '@/lib'
 import { getVideoMeta } from '@/utils'
 import PlatformUploadVideoForm from '@/features/platform/components/upload/PlatformUploadVideoForm'
+import { useList } from 'react-use'
 
 const PlatformUploadVideoDetail = ({
   video,
@@ -22,6 +23,7 @@ const PlatformUploadVideoDetail = ({
   setCompelete: Dispatch<SetStateAction<boolean>>
 }) => {
   const { uploadFile, progress, isUploading } = useUploadFile()
+  const [coverList, { push, clear }] = useList<string>(video.thumbnail ? [video.thumbnail] : [])
 
   return (
     <div className={'relative flow-root min-h-full mb-[50px]'}>
@@ -151,6 +153,8 @@ const PlatformUploadVideoDetail = ({
                                 time,
                                 title: file.name,
                               }))
+                              clear()
+                              push(thumbnail)
                             }}
                             className={'size-0 opacity-0'}
                             type={'file'}
@@ -186,6 +190,8 @@ const PlatformUploadVideoDetail = ({
           video={video}
           edit={edit}
           videoId={videoId}
+          push={push}
+          coverList={coverList}
         />
       </div>
     </div>

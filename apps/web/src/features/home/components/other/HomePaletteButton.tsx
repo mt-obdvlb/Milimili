@@ -12,7 +12,7 @@ const HomePaletteButton = () => {
     slots: {
       base: 'fixed inset-0 z-10 bg-transparent translate-z-0 pointer-events-none',
       inner: 'relative size-full',
-      wrap: cn('left-[1339px] fixed bottom-[30px] text-center translate-2.5 '),
+      wrap: cn('right-[100px] fixed bottom-[30px] text-center translate-2.5 '),
       roll: cn(
         'relative size-10 flex items-center justify-end mt-1.5 cursor-pointer pointer-events-auto '
       ),

@@ -48,7 +48,7 @@ const HeaderBarRightEntry = ({
   )
 
   return (
-    <div className={cn('ml-[10px] flex items-center', color)}>
+    <div className={cn('ml-[10px] flex items-center ', color)}>
       {userHomeInfo ? (
         <HeaderBarRightEntryAvatar userHomeInfo={userHomeInfo} />
       ) : (

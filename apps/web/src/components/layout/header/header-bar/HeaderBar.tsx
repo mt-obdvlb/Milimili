@@ -53,7 +53,7 @@ const HeaderBar = ({
   return (
     <div
       className={cn(
-        'absolute top-0 left-0 z-1002 flex h-[64px] w-full items-center px-[24px]',
+        'absolute top-0 inset-x-0 z-1002 flex h-[64px] w-full  items-center px-[24px] justify-center',
         type === 'second' &&
           'bg-bg1_float fixed top-0 animate-none shadow-[inset_0_-1px_0_var(--line_regular)]',
         bg

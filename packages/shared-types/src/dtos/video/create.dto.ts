@@ -14,7 +14,7 @@ export const videoCreateDTO = z.object({
     .optional(),
   thumbnail: z.url({ message: '视频封面必须是有效的 URL' }),
   categoryId: z
-    .string({ message: '分类 ID 必须是字符串类型' })
+    .string({ message: '请选择视频类别' })
     .trim()
     .regex(/^[a-f\d]{24}$/i, { message: '分类 ID 格式不正确，必须是有效的 MongoDB ObjectId' }),
   time: z.number({ message: '视频时长必须是数字类型' }).min(0, { message: '视频时长不能为负数' }),
