@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import { formatTime } from '@/utils'
 import { VideoListItem } from '@mtobdvlb/shared-types'
 import { cn } from '@/lib'
-import { useDanmakuManager } from '@/features/video/useDanmakuManager'
+import { useDanmakuManager } from '@/features/danmaku/useDanmakuManager'
 
 interface MainVideoPlayerProps {
   video: VideoListItem

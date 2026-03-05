@@ -1,7 +1,7 @@
 'use client'
 
 import { Dispatch, RefObject, SetStateAction, useEffect, useRef, useState } from 'react'
-import { useDanmakuManager } from '@/features/video/useDanmakuManager'
+import { useDanmakuManager } from '@/features/danmaku/useDanmakuManager'
 import { VideoGetDetail } from '@mtobdvlb/shared-types'
 import { cn } from '@/lib'
 import { tv } from 'tailwind-variants'
