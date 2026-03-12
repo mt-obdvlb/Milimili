@@ -18,9 +18,9 @@ const VideoWrapper = ({ videoDetail }: { videoDetail: VideoGetDetail }) => {
   const [isAutoPlayNext, setIsAutoPlayNext] = useState(false)
   return (
     <DanmakuProvider videoId={videoDetail.video.id}>
-      <div className={'flex justify-center relative w-auto px-2.5'}>
-        <div className={'sticky h-fit z-1 w-[668px]'}>
-          <div className={'relative h-[104px] pt-[22px]'}>
+      <div className={'flex justify-center  w-auto px-2.5'}>
+        <div className={' h-fit w-[668px]'}>
+          <div className={' h-[104px] pt-[22px]'}>
             <div className={'flex items-center  overflow-hidden relative'}>
               <h1
                 className={
