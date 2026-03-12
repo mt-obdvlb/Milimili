@@ -6,7 +6,6 @@ export type NativeDanmakuItem = {
   stime: number
   size?: number
   color?: number
-  priority?: number
 }
 
 type ActiveDanmaku = {
@@ -32,9 +31,12 @@ type NativeDanmakuOptions = {
 }
 
 const FIXED_DURATION = 4
-const SCROLL_BASE_DURATION = 8
+const SCROLL_BASE_DURATION = 6.4
+const BASE_LANE_HEIGHT = 24
 const PRELOAD_WINDOW = 0.12
+const PENDING_EXPIRE_WINDOW = 5
 const SEEK_THRESHOLD = 0.8
+const MIN_SAFE_GAP = 50
 
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(value, max))
 
@@ -129,10 +131,7 @@ export class NativeDanmakuEngine {
   load(data: NativeDanmakuItem[]) {
     this.timeline.length = 0
     for (const item of data) this.timeline.push(item)
-    this.timeline.sort(
-      (a, b) =>
-        a.stime - b.stime || (b.priority ?? 0) - (a.priority ?? 0) || a.id.localeCompare(b.id)
-    )
+    this.timeline.sort((a, b) => a.stime - b.stime || a.id.localeCompare(b.id))
     this.seekTo(this.currentTime)
   }
 
@@ -178,15 +177,22 @@ export class NativeDanmakuEngine {
       const current = this.timeline[this.pointer]
       if (!current) break
       if (current.stime > this.currentTime + PRELOAD_WINDOW) break
+      if (this.isActive(current.id)) {
+        this.pointer += 1
+        continue
+      }
+      if (this.currentTime - current.stime > PENDING_EXPIRE_WINDOW) {
+        this.pointer += 1
+        continue
+      }
       if (!this.tryEmitOne(current)) break
       this.pointer += 1
     }
   }
 
   private tryEmitOne(item: NativeDanmakuItem) {
-    if (this.active.length >= this.getActiveLimit()) return false
-    if (!this.emitOne(item)) return false
-    return true
+    if (this.track !== 'scroll' && this.active.length >= this.getActiveLimit()) return false
+    return this.emitOne(item)
   }
 
   private emitOne(item: NativeDanmakuItem) {
@@ -195,6 +201,7 @@ export class NativeDanmakuEngine {
 
     const scale = this.options.global.scale || 1
     const fontSize = (item.size || 24) * scale
+    const laneHeight = this.getLaneHeight()
     const width = this.stage.clientWidth
     const height = this.stage.clientHeight
     if (!width || !height) return
@@ -205,43 +212,43 @@ export class NativeDanmakuEngine {
     el.style.position = 'absolute'
     el.style.whiteSpace = 'nowrap'
     el.style.fontSize = `${fontSize}px`
-    el.style.lineHeight = '1.25'
+    el.style.lineHeight = `${laneHeight}px`
     el.style.fontWeight = '700'
     el.style.textShadow = '0 0 2px rgba(0,0,0,0.9), 0 1px 2px rgba(0,0,0,0.75)'
     el.style.color = this.toHexColor(item.color)
-    el.style.opacity = `${clamp(this.options.global.opacity, 0.2, 1)}`
+    el.style.opacity = `${clamp(this.options.global.opacity, 0.1, 1)}`
     el.style.transform = 'translate3d(-9999px,-9999px,0)'
     el.style.willChange = 'transform'
     this.stage.appendChild(el)
 
     const measuredWidth = Math.max(el.offsetWidth, 1)
-    const lane = this.pickLane(measuredWidth)
-    if (lane === -1) {
-      el.remove()
-      return false
-    }
-    const laneHeight = Math.max(fontSize * 1.45, 28)
-    const usableHeight = Math.max(height * clamp(this.options.global.areaRatio, 0.2, 1), laneHeight)
-    const trackTop = this.track === 'bottom' ? Math.max(height - usableHeight, 0) : 0
-    const y =
-      this.track === 'bottom'
-        ? Math.max(trackTop + usableHeight - (lane + 1) * laneHeight, 0)
-        : Math.min(trackTop + lane * laneHeight, Math.max(height - laneHeight, 0))
+    const { top: trackTop, usableHeight } = this.getTrackMetrics(height, laneHeight)
 
     const speedRatio = clamp(this.options.global.speed, 0.5, 2)
     const densityRatio = clamp(this.options.global.density, 0.5, 2)
     if (this.track === 'scroll') {
-      const textFactor = Math.min(measuredWidth / 320, 0.45)
-      const duration = Math.max((SCROLL_BASE_DURATION - textFactor) / speedRatio, 3.8)
-      const speed = (width + measuredWidth) / duration
-      const laneGap = Math.min((duration * 0.45) / densityRatio, 2.5)
+      const speed = this.getScrollSpeed(width, speedRatio)
+      const duration = (width + measuredWidth) / speed
+      const lane = this.pickLane(measuredWidth, speed)
+      if (lane === -1) {
+        el.remove()
+        return false
+      }
+      const scrollY = Math.min(
+        trackTop + lane * laneHeight,
+        Math.max(trackTop + usableHeight - laneHeight, 0)
+      )
+      const laneGap = Math.max(
+        this.getMinGap(measuredWidth) / Math.max(speed * densityRatio, 1),
+        0.04
+      )
       this.laneAvailableAt[lane] = this.playClock + laneGap
       this.active.push({
         id: item.id,
         el,
         lane,
         x: width,
-        y,
+        y: scrollY,
         width: measuredWidth,
         speed,
         duration,
@@ -252,19 +259,28 @@ export class NativeDanmakuEngine {
 
     const x = (width - measuredWidth) / 2
     const duration = FIXED_DURATION / speedRatio
+    const lane = this.pickLane(measuredWidth, 0)
+    if (lane === -1) {
+      el.remove()
+      return false
+    }
+    const fixedY =
+      this.track === 'bottom'
+        ? Math.max(trackTop + usableHeight - (lane + 1) * laneHeight, 0)
+        : Math.min(trackTop + lane * laneHeight, Math.max(trackTop + usableHeight - laneHeight, 0))
     this.laneAvailableAt[lane] = this.playClock + duration * 0.9
     this.active.push({
       id: item.id,
       el,
       lane,
       x,
-      y,
+      y: fixedY,
       width: measuredWidth,
       speed: 0,
       duration,
       elapsed: 0,
     })
-    el.style.transform = `translate3d(${x}px, ${y}px, 0)`
+    el.style.transform = `translate3d(${x}px, ${fixedY}px, 0)`
     return true
   }
 
@@ -294,24 +310,206 @@ export class NativeDanmakuEngine {
 
   private seekTo(time: number) {
     this.currentTime = time
+    this.playClock = time
     for (const item of this.active) {
       item.el.remove()
     }
     this.active.length = 0
     this.laneAvailableAt = this.laneAvailableAt.map(() => 0)
     this.pointer = this.lowerBound(time)
+    this.restoreVisibleDanmakus(time)
+  }
+
+  private restoreVisibleDanmakus(time: number) {
+    const visibleStartTime =
+      this.track === 'scroll'
+        ? Math.max(time - SCROLL_BASE_DURATION * 1.4, 0)
+        : Math.max(time - FIXED_DURATION, 0)
+
+    const candidates: NativeDanmakuItem[] = []
+    const startIndex = this.lowerBound(visibleStartTime)
+    for (let index = startIndex; index < this.timeline.length; index += 1) {
+      const item = this.timeline[index]
+      if (!item) continue
+      if (item.stime > time) break
+      candidates.push(item)
+    }
+
+    if (this.track === 'scroll') {
+      candidates.sort((a, b) => b.stime - a.stime || a.id.localeCompare(b.id))
+    }
+
+    const activeLimit = this.getActiveLimit()
+    for (const item of candidates) {
+      if (this.active.length >= activeLimit) break
+      this.restoreOne(item, time)
+    }
+  }
+
+  private restoreOne(item: NativeDanmakuItem, time: number) {
+    const text = item.text?.trim()
+    if (!text) return
+
+    const scale = this.options.global.scale || 1
+    const fontSize = (item.size || 24) * scale
+    const laneHeight = this.getLaneHeight()
+    const width = this.stage.clientWidth
+    const height = this.stage.clientHeight
+    if (!width || !height) return
+
+    const el = document.createElement('div')
+    el.dataset.danmakuId = item.id
+    el.textContent = text
+    el.style.position = 'absolute'
+    el.style.whiteSpace = 'nowrap'
+    el.style.fontSize = `${fontSize}px`
+    el.style.lineHeight = `${laneHeight}px`
+    el.style.fontWeight = '700'
+    el.style.textShadow = '0 0 2px rgba(0,0,0,0.9), 0 1px 2px rgba(0,0,0,0.75)'
+    el.style.color = this.toHexColor(item.color)
+    el.style.opacity = `${clamp(this.options.global.opacity, 0.2, 1)}`
+    el.style.willChange = 'transform'
+    this.stage.appendChild(el)
+
+    const measuredWidth = Math.max(el.offsetWidth, 1)
+    const { top: trackTop, usableHeight } = this.getTrackMetrics(height, laneHeight)
+    const speedRatio = clamp(this.options.global.speed, 0.5, 2)
+
+    if (this.track === 'scroll') {
+      const elapsed = Math.max(time - item.stime, 0)
+      const speed = this.getScrollSpeed(width, speedRatio)
+      const duration = (width + measuredWidth) / speed
+      if (elapsed >= duration) {
+        el.remove()
+        return
+      }
+      const x = width - speed * elapsed
+      if (x + measuredWidth <= 0) {
+        el.remove()
+        return
+      }
+      const lane = this.pickRestoreLane(x, measuredWidth)
+      const y = Math.min(
+        trackTop + lane * laneHeight,
+        Math.max(trackTop + usableHeight - laneHeight, 0)
+      )
+      this.active.push({
+        id: item.id,
+        el,
+        lane,
+        x,
+        y,
+        width: measuredWidth,
+        speed,
+        duration,
+        elapsed,
+      })
+      this.laneAvailableAt[lane] = Math.max(this.laneAvailableAt[lane] ?? 0, this.playClock + 0.2)
+      el.style.transform = `translate3d(${x}px, ${y}px, 0)`
+      return
+    }
+
+    const elapsed = Math.max(time - item.stime, 0)
+    const duration = FIXED_DURATION / speedRatio
+    if (elapsed >= duration) {
+      el.remove()
+      return
+    }
+    const x = (width - measuredWidth) / 2
+    const lane = this.pickRestoreLane(x, measuredWidth)
+    const y =
+      this.track === 'bottom'
+        ? Math.max(trackTop + usableHeight - (lane + 1) * laneHeight, 0)
+        : Math.min(trackTop + lane * laneHeight, Math.max(trackTop + usableHeight - laneHeight, 0))
+    this.active.push({
+      id: item.id,
+      el,
+      lane,
+      x,
+      y,
+      width: measuredWidth,
+      speed: 0,
+      duration,
+      elapsed,
+    })
+    this.laneAvailableAt[lane] = Math.max(
+      this.laneAvailableAt[lane] ?? 0,
+      this.playClock + (duration - elapsed) * 0.2
+    )
+    el.style.transform = `translate3d(${x}px, ${y}px, 0)`
+  }
+
+  private pickRestoreLane(x: number, width: number) {
+    if (this.laneAvailableAt.length === 0) {
+      this.refreshLanes()
+    }
+    let lane = 0
+    let bestScore = Number.POSITIVE_INFINITY
+    for (let index = 0; index < this.laneAvailableAt.length; index += 1) {
+      const score = this.getRestoreLaneScore(index, x, width)
+      if (score < bestScore) {
+        bestScore = score
+        lane = index
+      }
+    }
+    return lane
+  }
+
+  private getRestoreLaneScore(lane: number, x: number, width: number) {
+    const laneItems = this.active.filter((item) => item.lane === lane)
+    if (laneItems.length === 0) return 0
+
+    const minGap = this.getMinGap(width)
+    let score = 0
+    for (const item of laneItems) {
+      const overlapLeft = Math.max(x, item.x)
+      const overlapRight = Math.min(x + width, item.x + item.width)
+      const overlapWidth = Math.max(overlapRight - overlapLeft, 0)
+
+      if (overlapWidth > 0) {
+        score += 1000 + overlapWidth
+        continue
+      }
+
+      const gapLeft = Math.abs(x - (item.x + item.width))
+      const gapRight = Math.abs(item.x - (x + width))
+      const horizontalGap = Math.min(gapLeft, gapRight)
+      if (horizontalGap < minGap) {
+        score += minGap - horizontalGap
+      }
+    }
+
+    return score + laneItems.length * 10
   }
 
   private refreshLanes() {
     const stageHeight = this.stage.clientHeight
-    const scale = this.options.global.scale || 1
-    const laneHeight = Math.max(28 * scale, 24)
-    const usableHeight = Math.max(
-      stageHeight * clamp(this.options.global.areaRatio, 0.2, 1),
-      laneHeight
-    )
+    const laneHeight = this.getLaneHeight()
+    const { usableHeight } = this.getTrackMetrics(stageHeight, laneHeight)
     const laneCount = Math.max(Math.floor(usableHeight / laneHeight), 1)
     this.laneAvailableAt = new Array(laneCount).fill(0)
+  }
+
+  private getTrackMetrics(stageHeight: number, laneHeight: number) {
+    const areaRatio = clamp(this.options.global.areaRatio, 0.2, 1)
+    const scrollHeight = Math.max(stageHeight * areaRatio, laneHeight)
+
+    if (this.track === 'scroll') {
+      return {
+        top: 0,
+        usableHeight: scrollHeight,
+      }
+    }
+
+    const fixedRegionHeight = Math.max(
+      Math.min(stageHeight * Math.min(areaRatio * 0.36, 0.3), stageHeight * 0.3),
+      laneHeight
+    )
+
+    return {
+      top: this.track === 'top' ? 0 : Math.max(stageHeight - fixedRegionHeight, 0),
+      usableHeight: fixedRegionHeight,
+    }
   }
 
   private getActiveLimit() {
@@ -319,26 +517,35 @@ export class NativeDanmakuEngine {
     return Math.max(Math.ceil(this.laneAvailableAt.length * densityRatio), 1)
   }
 
-  private pickLane(nextWidth: number) {
+  private pickLane(nextWidth: number, nextSpeed: number) {
     if (this.laneAvailableAt.length === 0) {
       this.refreshLanes()
     }
-    let lane = 0
-    let minAvailableAt = this.laneAvailableAt[0] ?? 0
+    let bestLane = -1
+    let bestScore = Number.POSITIVE_INFINITY
 
     for (let i = 0; i < this.laneAvailableAt.length; i += 1) {
       const availableAt = this.laneAvailableAt[i] ?? 0
-      if (availableAt <= this.playClock && this.canUseLane(i, nextWidth)) return i
-      if (availableAt < minAvailableAt) {
-        minAvailableAt = availableAt
-        lane = i
+      if (!this.canUseLane(i, nextWidth, nextSpeed)) continue
+
+      const laneScore = this.getLaneScore(i, availableAt, nextWidth)
+      if (laneScore < bestScore) {
+        bestScore = laneScore
+        bestLane = i
       }
     }
 
-    return this.canUseLane(lane, nextWidth) ? lane : -1
+    return bestLane
   }
 
-  private canUseLane(lane: number, nextWidth: number) {
+  private getLaneScore(lane: number, availableAt: number, _: number) {
+    const timePenalty = Math.max(availableAt - this.playClock, 0)
+    // 可用轨道按从上到下（lane index 小到大）严格优先选择。
+    // timePenalty 仅作为同轨道序下的极小平局因子。
+    return lane + timePenalty * 0.0001
+  }
+
+  private canUseLane(lane: number, nextWidth: number, _: number) {
     const laneItems = this.active.filter((item) => item.lane === lane)
     if (laneItems.length === 0) return true
 
@@ -346,11 +553,32 @@ export class NativeDanmakuEngine {
       return laneItems.every((item) => item.elapsed >= item.duration * 0.92)
     }
 
-    const lastItem = laneItems.reduce((latest, current) =>
-      current.x > latest.x ? current : latest
+    const minGap = this.getMinGap(nextWidth)
+    const rightMost = laneItems.reduce((candidate, item) =>
+      item.x > candidate.x ? item : candidate
     )
-    const minGap = Math.max(Math.min(nextWidth * 0.12, 48), 20)
-    return lastItem.x + lastItem.width <= this.stage.clientWidth - minGap
+    return this.stage.clientWidth - (rightMost.x + rightMost.width) >= minGap
+  }
+
+  private getMinGap(nextWidth: number) {
+    if (this.track === 'scroll') {
+      return MIN_SAFE_GAP
+    }
+    return Math.max(Math.min(nextWidth * 0.08, 22), 10)
+  }
+
+  private getLaneHeight() {
+    const scale = this.options.global.scale || 1
+    return BASE_LANE_HEIGHT * scale
+  }
+
+  private getScrollSpeed(stageWidth: number, speedRatio: number) {
+    const visibleDuration = Math.max(SCROLL_BASE_DURATION / speedRatio, 3.6)
+    return stageWidth / visibleDuration
+  }
+
+  private isActive(itemId: string) {
+    return this.active.some((item) => item.id === itemId)
   }
 
   private lowerBound(stime: number) {

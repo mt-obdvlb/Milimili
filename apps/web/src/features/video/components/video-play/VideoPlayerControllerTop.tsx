@@ -124,7 +124,7 @@ const VideoPlayerControllerTop = ({ isDragging, setIsDragging }: VideoPlayerCont
   }, [hoverTime, debouncedFetchFrame, isDragging, videoRef])
 
   useEffect(() => {
-    if (!isDragging) setThumbTranslate(containerWidth * progress)
+    if (!isDragging && containerWidth) setThumbTranslate(containerWidth * progress)
   }, [progress, containerWidth, isDragging])
 
   const updateVideoTime = useCallback(

@@ -7,9 +7,10 @@ import { VideoGetDanmakusItem } from '@mtobdvlb/shared-types'
 
 interface UseDanmakuManagerProps {
   videoRef: RefObject<HTMLVideoElement | null>
+  paused: boolean
 }
 
-export const useDanmakuManager = ({ videoRef }: UseDanmakuManagerProps) => {
+export const useDanmakuManager = ({ videoRef, paused }: UseDanmakuManagerProps) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const topContainerRef = useRef<HTMLDivElement>(null)
   const bottomContainerRef = useRef<HTMLDivElement>(null)
@@ -25,8 +26,7 @@ export const useDanmakuManager = ({ videoRef }: UseDanmakuManagerProps) => {
     () =>
       danmakuList.filter((item) => {
         if (config.modeFilter !== 'all' && item.mode !== config.modeFilter) return false
-        if (config.smartMask && item.position === 'bottom') return false
-        return true
+        return !(config.smartMask && item.position === 'bottom')
       }),
     [config.modeFilter, config.smartMask, danmakuList]
   )
@@ -123,15 +123,25 @@ export const useDanmakuManager = ({ videoRef }: UseDanmakuManagerProps) => {
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
+    let rafId: number | null = null
+
+    const stopSyncLoop = () => {
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId)
+        rafId = null
+      }
+    }
 
     const play = () => {
       if (!config.visible) return
+      startSyncLoop()
       scrollEngineRef.current?.start()
       topEngineRef.current?.start()
       bottomEngineRef.current?.start()
     }
 
     const pause = () => {
+      stopSyncLoop()
       scrollEngineRef.current?.stop()
       topEngineRef.current?.stop()
       bottomEngineRef.current?.stop()
@@ -143,6 +153,20 @@ export const useDanmakuManager = ({ videoRef }: UseDanmakuManagerProps) => {
       scrollEngineRef.current?.time(currentTime)
       topEngineRef.current?.time(currentTime)
       bottomEngineRef.current?.time(currentTime)
+    }
+
+    const syncFrame = () => {
+      sync()
+      if (!video.paused && !video.ended && config.visible) {
+        rafId = requestAnimationFrame(syncFrame)
+        return
+      }
+      rafId = null
+    }
+
+    const startSyncLoop = () => {
+      if (rafId !== null) return
+      rafId = requestAnimationFrame(syncFrame)
     }
 
     const updateRate = () => {
@@ -172,6 +196,7 @@ export const useDanmakuManager = ({ videoRef }: UseDanmakuManagerProps) => {
     if (!video.paused && config.visible) play()
 
     return () => {
+      stopSyncLoop()
       registerSeekHandler(null)
       video.removeEventListener('play', play)
       video.removeEventListener('playing', play)
@@ -186,26 +211,32 @@ export const useDanmakuManager = ({ videoRef }: UseDanmakuManagerProps) => {
   }, [config.visible, registerSeekHandler, setCurrentTime, videoRef])
 
   useEffect(() => {
-    if (config.visible) {
-      const currentTime = videoRef.current?.currentTime ?? 0
-      scrollEngineRef.current?.time(currentTime)
-      topEngineRef.current?.time(currentTime)
-      bottomEngineRef.current?.time(currentTime)
-      if (!videoRef.current?.paused) {
-        scrollEngineRef.current?.start()
-        topEngineRef.current?.start()
-        bottomEngineRef.current?.start()
-      }
+    const currentTime = videoRef.current?.currentTime ?? 0
+    scrollEngineRef.current?.time(currentTime)
+    topEngineRef.current?.time(currentTime)
+    bottomEngineRef.current?.time(currentTime)
+
+    if (!config.visible) {
+      scrollEngineRef.current?.stop()
+      topEngineRef.current?.stop()
+      bottomEngineRef.current?.stop()
+      scrollEngineRef.current?.clear()
+      topEngineRef.current?.clear()
+      bottomEngineRef.current?.clear()
       return
     }
 
-    scrollEngineRef.current?.stop()
-    topEngineRef.current?.stop()
-    bottomEngineRef.current?.stop()
-    scrollEngineRef.current?.clear()
-    topEngineRef.current?.clear()
-    bottomEngineRef.current?.clear()
-  }, [config.visible, videoRef])
+    if (paused) {
+      scrollEngineRef.current?.stop()
+      topEngineRef.current?.stop()
+      bottomEngineRef.current?.stop()
+      return
+    }
+
+    scrollEngineRef.current?.start()
+    topEngineRef.current?.start()
+    bottomEngineRef.current?.start()
+  }, [config.visible, paused, videoRef])
 
   return {
     scrollContainerRef,

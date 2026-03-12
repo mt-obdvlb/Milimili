@@ -201,6 +201,7 @@ const VideoPlayer = ({
 
   const { bottomContainerRef, topContainerRef, scrollContainerRef } = useDanmakuManager({
     videoRef: videoElRef,
+    paused,
   })
 
   const videoPlayerStyles = tv({
