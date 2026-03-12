@@ -23,6 +23,7 @@ import { FeedModel } from '@/models/feed.model'
 import {
   VideoAddDanmakuDTO,
   VideoCreateDTO,
+  VideoGetDanmakusItem,
   VideoGetDanmakusList,
   VideoGetDetail,
   VideoGetWatchLaterDTO,
@@ -123,54 +124,74 @@ export const VideoService = {
     await MessageService.atMessage(userId, 'video', video._id, body.description)
   },
   getDanmakus: async (videoId: string) => {
-    const video = await VideoModel.findById(videoId, { time: 1 }).lean()
+    const video = await VideoModel.findById(videoId, { _id: 1 }).lean()
     if (!video) return []
 
     const data = await DanmakuModel.find(
       {},
       {
+        videoId: 1,
         content: 1,
         position: 1,
         color: 1,
+        time: 1,
+        fontSize: 1,
+        sender: 1,
+        createdAt: 1,
       }
-    ).lean()
+    )
+      .sort({ time: 1, createdAt: 1, _id: 1 })
+      .lean()
 
-    const danmakus: VideoGetDanmakusList = []
-
-    // 先把弹幕内容打平，保证至少能循环使用
-    const baseDanmakus = data.map((d) => ({
-      content: d.content!,
-      position: d.position!,
-      color: d.color!,
+    const danmakus: VideoGetDanmakusList = data.map((item) => ({
+      id: item._id.toString(),
+      videoId: item.videoId.toString(),
+      content: item.content,
+      mode: item.position,
+      position: item.position,
+      color: item.color ?? '#FFFFFF',
+      time: item.time,
+      fontSize: item.fontSize ?? 24,
+      createdAt: item.createdAt.toISOString(),
+      sender: item.sender,
     }))
-
-    const interval = 5 // 每 5 秒
-    const countPerInterval = 5 // 每个区间至少 5 条
-
-    const totalIntervals = Math.ceil(video.time / interval)
-
-    for (let i = 0; i < totalIntervals; i++) {
-      for (let j = 0; j < countPerInterval; j++) {
-        const danmaku = baseDanmakus[Math.floor(Math.random() * baseDanmakus.length)]
-        danmakus.push({
-          ...danmaku!,
-          time: Math.floor(Math.random() * interval) + i * interval,
-          id: crypto.randomUUID(),
-        })
-      }
-    }
 
     return danmakus
   },
   addDanmaku: async (body: VideoAddDanmakuDTO) => {
     const video = await VideoModel.findById(body.videoId)
     if (!video) throw new HttpError(400, MESSAGE.VIDEO_NOT_FOUND)
-    await DanmakuModel.create(body)
+    const user = await UserModel.findById(body.userId, { _id: 1, name: 1, avatar: 1 }).lean()
+    if (!user) throw new HttpError(400, MESSAGE.USER_NOT_FOUND)
+
+    const created = await DanmakuModel.create({
+      ...body,
+      sender: {
+        userId: user._id.toString(),
+        name: user.name,
+        avatar: user.avatar,
+      },
+    })
     await VideoStatsModel.updateOne(
       { videoId: body.videoId },
       { $inc: { danmakusCount: 1 } },
       { upsert: true }
     )
+
+    const danmaku: VideoGetDanmakusItem = {
+      id: created._id.toString(),
+      videoId: created.videoId.toString(),
+      content: created.content,
+      time: created.time,
+      mode: created.position,
+      position: created.position,
+      color: created.color ?? '#FFFFFF',
+      fontSize: created.fontSize ?? 24,
+      createdAt: created.createdAt.toISOString(),
+      sender: created.sender,
+    }
+
+    return danmaku
   },
   getWatchLater: async (body: VideoGetWatchLaterDTO, userId: string) => {
     const { kw, sort, type, time, addAt, from, to } = body

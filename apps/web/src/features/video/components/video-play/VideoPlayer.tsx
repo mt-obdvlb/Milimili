@@ -2,6 +2,7 @@
 
 import { Dispatch, RefObject, SetStateAction, useEffect, useRef, useState } from 'react'
 import { useDanmakuManager } from '@/features/danmaku/useDanmakuManager'
+import { useDanmakuRuntime } from '@/features/danmaku'
 import { VideoGetDetail } from '@mtobdvlb/shared-types'
 import { cn } from '@/lib'
 import { tv } from 'tailwind-variants'
@@ -15,8 +16,6 @@ import VIdeoEndWrapper from '@/features/video/components/video-play/VIdeoEndWrap
 const VideoPlayer = ({
   videoDetail,
   setIsShowCursor,
-  showDanmaku,
-  setShowDanmaku,
   containerRef,
   isAutoPlayNext,
 }: {
@@ -24,8 +23,6 @@ const VideoPlayer = ({
   videoDetail: VideoGetDetail
   isShowCursor: boolean
   setIsShowCursor: Dispatch<SetStateAction<boolean>>
-  showDanmaku: boolean
-  setShowDanmaku: Dispatch<SetStateAction<boolean>>
   isAutoPlayNext: boolean
 }) => {
   const controllerRef = useRef<HTMLDivElement>(null)
@@ -48,6 +45,7 @@ const VideoPlayer = ({
     duration,
     isWebFull,
   } = useVideoContext()
+  const { config } = useDanmakuRuntime()
 
   useEffect(() => {
     const video = videoElRef.current
@@ -202,10 +200,7 @@ const VideoPlayer = ({
   }, [videoDetail.video.id, paused, historyAdd, videoElRef])
 
   const { bottomContainerRef, topContainerRef, scrollContainerRef } = useDanmakuManager({
-    videoId: videoDetail.video.id,
     videoRef: videoElRef,
-    showDanmaku,
-    isPlay: !paused,
   })
 
   const videoPlayerStyles = tv({
@@ -271,8 +266,8 @@ const VideoPlayer = ({
         <div className={controllerMask()}></div>
         <VideoPlayerController
           videoDetail={videoDetail}
-          setShowDanmaku={setShowDanmaku}
-          showDanmaku={showDanmaku}
+          setShowDanmaku={() => undefined}
+          showDanmaku={config.visible}
           isDragging={isDragging}
           setIsDragging={setIsDragging}
           isShowController={isShowController}

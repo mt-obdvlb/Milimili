@@ -4,6 +4,7 @@ import {
   PageResult,
   Result,
   VideoAddDanmakuDTO,
+  VideoGetDanmakusItem,
   VideoCreateDTO,
   VideoGetDanmakusDTO,
   VideoGetDanmakusList,
@@ -75,10 +76,11 @@ export const videoGetDanmakus: RequestHandler<
   })
 }
 
-export const videoAddDanmaku: RequestHandler<ParamsDictionary, Result, VideoAddDanmakuDTO> = async (
-  req,
-  res
-) => {
+export const videoAddDanmaku: RequestHandler<
+  ParamsDictionary,
+  Result<VideoGetDanmakusItem>,
+  VideoAddDanmakuDTO
+> = async (req, res) => {
   if (!req.user?.id) {
     return res.status(401).json({
       code: 401,
@@ -87,9 +89,10 @@ export const videoAddDanmaku: RequestHandler<ParamsDictionary, Result, VideoAddD
   }
   req.body.userId = req.user.id
 
-  await VideoService.addDanmaku(req.body)
+  const data = await VideoService.addDanmaku(req.body)
   return res.status(200).json({
     code: 0,
+    data,
   })
 }
 

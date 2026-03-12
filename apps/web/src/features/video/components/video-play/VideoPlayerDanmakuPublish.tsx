@@ -1,6 +1,7 @@
 'use client'
 import { Button, HoverCard, HoverCardContent, HoverCardTrigger, Input } from '@/components'
 import { useDanmakuAdd } from '@/features'
+import { useDanmakuRuntime } from '@/features/danmaku'
 import { cn, toast } from '@/lib'
 import { RefObject, useState } from 'react'
 import { DanmakuPosition } from '@mtobdvlb/shared-types'
@@ -17,11 +18,13 @@ const VideoPlayerDanmakuPublish = ({
   videoRef: RefObject<HTMLVideoElement | null>
 }) => {
   const { danmakuAdd } = useDanmakuAdd()
+  const { appendDanmaku } = useDanmakuRuntime()
 
   const [selectColor, setSelectColor] = useState('#FFFFFF')
   const [inputColor, setInputColor] = useState('#FFFFFF')
   const [input, setInput] = useState('')
   const [position, setPosition] = useState<DanmakuPosition>('scroll')
+  const [fontSize, setFontSize] = useState(24)
 
   const validateColor = (color: string) => {
     const hexRegex = /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/
@@ -31,14 +34,16 @@ const VideoPlayerDanmakuPublish = ({
   const handleDanmaku = async () => {
     const video = videoRef.current
     if (!input.trim() || !video) return
-    const { code } = await danmakuAdd({
+    const result = await danmakuAdd({
       videoId,
-      content: input,
+      content: input.trim(),
       color: selectColor,
       time: video.currentTime,
       position,
+      fontSize,
     })
-    if (code) return
+    if (result.code) return
+    if (result.data) appendDanmaku(result.data)
     setInput('')
     toast('发送成功')
   }
@@ -105,6 +110,29 @@ const VideoPlayerDanmakuPublish = ({
               side={'top'}
             >
               <div className={'relative'}>
+                <div className={'text-xs leading-5.5 my-2.5 mx-5 min-h-5.5 relative w-[176px]'}>
+                  <div className={'text-white leading-4 text-left'}>字号</div>
+                  <div className={'flex flex-wrap mt-2 -mr-2'}>
+                    {[
+                      [18, '小'],
+                      [24, '标准'],
+                    ].map(([value, label]) => (
+                      <div
+                        key={value}
+                        className={cn(
+                          'mb-2 w-21 bg-[hsla(0,0%,100%,.2)] leading-[22px] min-h-[22px] rounded-[2px] text-white cursor-pointer text-xs mr-2 relative text-center ',
+                          fontSize === value && 'bg-brand_blue text-white'
+                        )}
+                        onClick={() => setFontSize(value as number)}
+                      >
+                        <span className={'text-center pointer-events-none leading-[22px]'}>
+                          {label}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
                 <div className={'text-xs leading-5.5 my-2.5 mx-5 min-h-5.5 relative w-[176px]'}>
                   <div className={'text-white leading-4 text-left'}>模式</div>
                   <div className={'flex flex-wrap mt-2 -mr-2'}>

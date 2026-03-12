@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from 'react'
 import { formatTime } from '@/utils'
 import { VideoListItem } from '@mtobdvlb/shared-types'
 import { cn } from '@/lib'
-import { useDanmakuManager } from '@/features/danmaku/useDanmakuManager'
 
 interface MainVideoPlayerProps {
   video: VideoListItem
@@ -38,18 +37,6 @@ const TinyVideoPlayer = ({
   const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   const hasPlayedRef = useRef(false)
   const [isPlay, setIsPlay] = useState(false)
-
-  // 初始化 CommentManager
-
-  // 绑定视频事件
-  const { bottomContainerRef, topContainerRef, scrollContainerRef } = useDanmakuManager({
-    videoId: video.id,
-    isPlay,
-    videoRef,
-    setTime,
-  })
-
-  // 加载弹幕
 
   // hover 播放逻辑
   useEffect(() => {
@@ -91,11 +78,6 @@ const TinyVideoPlayer = ({
             className={'size-full object-contain bg-black'}
           />
         </div>
-      </div>
-      <div className={'absolute inset-0 overflow-hidden'}>
-        <div className={cn(dm(), 'cnt')} ref={scrollContainerRef}></div>
-        <div className={cn(dm(), 'cnt')} ref={topContainerRef}></div>
-        <div className={cn(dm(), 'cnt')} ref={bottomContainerRef}></div>
       </div>
       {!hiddenTime && (
         <div className={time()}>

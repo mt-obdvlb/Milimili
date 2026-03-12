@@ -1,147 +1,211 @@
 'use client'
-import { RefObject, useEffect, useRef } from 'react'
+
+import { RefObject, useEffect, useMemo, useRef } from 'react'
+import { NativeDanmakuEngine, NativeDanmakuItem } from '@/features/danmaku/NativeDanmakuEngine'
+import { useDanmakuRuntime } from '@/features/danmaku/DanmakuProvider'
 import { VideoGetDanmakusItem } from '@mtobdvlb/shared-types'
-import { useDanmakuGet } from '@/features/danmaku/api'
 
 interface UseDanmakuManagerProps {
-  videoId: string
   videoRef: RefObject<HTMLVideoElement | null>
-  isPlay?: boolean
-  setTime?: (time: number) => void
-  showDanmaku?: boolean // 父组件控制
 }
 
-export const useDanmakuManager = ({
-  videoId,
-  videoRef,
-  isPlay,
-  setTime,
-  showDanmaku = true, // 默认显示
-}: UseDanmakuManagerProps) => {
+export const useDanmakuManager = ({ videoRef }: UseDanmakuManagerProps) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const topContainerRef = useRef<HTMLDivElement>(null)
   const bottomContainerRef = useRef<HTMLDivElement>(null)
 
-  const scrollCMRef = useRef<CommentManager | null>(null)
-  const topCMRef = useRef<CommentManager | null>(null)
-  const bottomCMRef = useRef<CommentManager | null>(null)
+  const scrollEngineRef = useRef<NativeDanmakuEngine | null>(null)
+  const topEngineRef = useRef<NativeDanmakuEngine | null>(null)
+  const bottomEngineRef = useRef<NativeDanmakuEngine | null>(null)
+  const previousIdsRef = useRef<string[]>([])
 
-  const { danmakuList } = useDanmakuGet(videoId, isPlay)
+  const { danmakuList, config, setCurrentTime, registerSeekHandler } = useDanmakuRuntime()
 
-  // 初始化 CommentManager
+  const filteredDanmakus = useMemo(
+    () =>
+      danmakuList.filter((item) => {
+        if (config.modeFilter !== 'all' && item.mode !== config.modeFilter) return false
+        if (config.smartMask && item.position === 'bottom') return false
+        return true
+      }),
+    [config.modeFilter, config.smartMask, danmakuList]
+  )
+
   useEffect(() => {
-    if (typeof window === 'undefined') return
+    if (!scrollContainerRef.current || !topContainerRef.current || !bottomContainerRef.current)
+      return
 
-    let timer: number | null = null
-    const tryInit = () => {
-      if (window.CommentManager) {
-        const initCM = (ref: RefObject<HTMLDivElement | null>) => {
-          if (!ref.current) return null
-          const cm = new window.CommentManager(ref.current)
-          cm.init()
-          cm.options.global.scale = 1.5
-          return cm
-        }
-        scrollCMRef.current = initCM(scrollContainerRef)
-        topCMRef.current = initCM(topContainerRef)
-        bottomCMRef.current = initCM(bottomContainerRef)
-        if (timer) clearInterval(timer)
-      }
-    }
+    const scrollEngine = new NativeDanmakuEngine(scrollContainerRef.current, 'scroll')
+    const topEngine = new NativeDanmakuEngine(topContainerRef.current, 'top')
+    const bottomEngine = new NativeDanmakuEngine(bottomContainerRef.current, 'bottom')
 
-    tryInit()
-    timer = window.setInterval(tryInit, 100)
+    scrollEngine.init()
+    topEngine.init()
+    bottomEngine.init()
+
+    scrollEngineRef.current = scrollEngine
+    topEngineRef.current = topEngine
+    bottomEngineRef.current = bottomEngine
 
     return () => {
-      if (timer) clearInterval(timer)
+      scrollEngine.destroy()
+      topEngine.destroy()
+      bottomEngine.destroy()
+      scrollEngineRef.current = null
+      topEngineRef.current = null
+      bottomEngineRef.current = null
     }
   }, [])
 
-  // 视频事件绑定
   useEffect(() => {
-    const videoEl = videoRef.current
-    if (!videoEl) return
-
-    const startAll = () => {
-      if (!showDanmaku) return
-      scrollCMRef.current?.start()
-      topCMRef.current?.start()
-      bottomCMRef.current?.start()
+    const engines = [scrollEngineRef.current, topEngineRef.current, bottomEngineRef.current].filter(
+      Boolean
+    )
+    for (const engine of engines) {
+      engine?.setConfig({
+        scale: config.fontScale,
+        opacity: config.opacity,
+        areaRatio: config.areaRatio,
+        speed: config.speed,
+        density: config.density,
+      })
     }
+  }, [config.areaRatio, config.density, config.fontScale, config.opacity, config.speed])
 
-    const stopAll = () => {
-      scrollCMRef.current?.stop()
-      topCMRef.current?.stop()
-      bottomCMRef.current?.stop()
-    }
-
-    const timeUpdateAll = () => {
-      const t = videoEl.currentTime
-      scrollCMRef.current?.time(t)
-      topCMRef.current?.time(t)
-      bottomCMRef.current?.time(t)
-      setTime?.(t)
-    }
-
-    videoEl.addEventListener('play', startAll)
-    videoEl.addEventListener('pause', stopAll)
-    videoEl.addEventListener('timeupdate', timeUpdateAll)
-
-    return () => {
-      videoEl.removeEventListener('play', startAll)
-      videoEl.removeEventListener('pause', stopAll)
-      videoEl.removeEventListener('timeupdate', timeUpdateAll)
-    }
-  }, [setTime, videoRef, showDanmaku])
-
-  // 加载弹幕
   useEffect(() => {
-    if (!danmakuList || danmakuList.length === 0) return
+    const mapDanmaku = (item: VideoGetDanmakusItem): NativeDanmakuItem => ({
+      id: item.id,
+      text: item.content,
+      stime: item.time,
+      size: item.fontSize,
+      color: Number(`0x${item.color.replace(/^#/, '')}`),
+    })
 
-    const scrollCM = scrollCMRef.current
-    const topCM = topCMRef.current
-    const bottomCM = bottomCMRef.current
-    if (!scrollCM || !topCM || !bottomCM) return
+    const nextIds = filteredDanmakus.map((item) => item.id)
+    const prevIds = previousIdsRef.current
+    const prevSet = new Set(prevIds)
+    const nextSet = new Set(nextIds)
+    const removed = prevIds.some((id) => !nextSet.has(id))
+    const added = filteredDanmakus.filter((item) => !prevSet.has(item.id))
 
-    if (!showDanmaku) {
-      // 关闭弹幕就 stop
-      scrollCM.stop()
-      topCM.stop()
-      bottomCM.stop()
+    const scrollEngine = scrollEngineRef.current
+    const topEngine = topEngineRef.current
+    const bottomEngine = bottomEngineRef.current
+    if (!scrollEngine || !topEngine || !bottomEngine) return
+
+    const sendToTrack = (item: VideoGetDanmakusItem) => {
+      const mapped = mapDanmaku(item)
+      if (item.position === 'scroll') scrollEngine.send(mapped)
+      if (item.position === 'top') topEngine.send(mapped)
+      if (item.position === 'bottom') bottomEngine.send(mapped)
+    }
+
+    if (!removed && added.length === 1 && prevIds.length > 0) {
+      sendToTrack(added[0]!)
+      previousIdsRef.current = nextIds
       return
     }
 
-    // 清空旧弹幕
-    scrollCM.clear()
-    topCM.clear()
-    bottomCM.clear()
+    const scrollDanmaku = filteredDanmakus
+      .filter((item) => item.position === 'scroll')
+      .map(mapDanmaku)
+    const topDanmaku = filteredDanmakus.filter((item) => item.position === 'top').map(mapDanmaku)
+    const bottomDanmaku = filteredDanmakus
+      .filter((item) => item.position === 'bottom')
+      .map(mapDanmaku)
 
-    const containerWidth = scrollContainerRef.current?.offsetWidth || 0
+    scrollEngine.load(scrollDanmaku)
+    topEngine.load(topDanmaku)
+    bottomEngine.load(bottomDanmaku)
+    previousIdsRef.current = nextIds
+  }, [filteredDanmakus])
 
-    const createDanmaku = (item: VideoGetDanmakusItem) => ({
-      text: item.content,
-      mode: item.position === 'scroll' ? 1 : item.position === 'top' ? 5 : 4,
-      stime: item.time,
-      size: 16,
-      color: Number(`0x${(item.color || '#ffffff').replace(/^#/, '')}`),
-      left: containerWidth,
-      align: item.position === 'scroll' ? undefined : 'center',
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+
+    const play = () => {
+      if (!config.visible) return
+      scrollEngineRef.current?.start()
+      topEngineRef.current?.start()
+      bottomEngineRef.current?.start()
+    }
+
+    const pause = () => {
+      scrollEngineRef.current?.stop()
+      topEngineRef.current?.stop()
+      bottomEngineRef.current?.stop()
+    }
+
+    const sync = () => {
+      const currentTime = video.currentTime
+      setCurrentTime(currentTime)
+      scrollEngineRef.current?.time(currentTime)
+      topEngineRef.current?.time(currentTime)
+      bottomEngineRef.current?.time(currentTime)
+    }
+
+    const updateRate = () => {
+      const playbackRate = video.playbackRate || 1
+      scrollEngineRef.current?.setPlaybackRate(playbackRate)
+      topEngineRef.current?.setPlaybackRate(playbackRate)
+      bottomEngineRef.current?.setPlaybackRate(playbackRate)
+    }
+
+    registerSeekHandler((time) => {
+      video.currentTime = time
+      sync()
     })
 
-    const scrollDanmaku = danmakuList.filter((d) => d.position === 'scroll').map(createDanmaku)
-    const topDanmaku = danmakuList.filter((d) => d.position === 'top').map(createDanmaku)
-    const bottomDanmaku = danmakuList.filter((d) => d.position === 'bottom').map(createDanmaku)
+    updateRate()
+    sync()
+    video.addEventListener('play', play)
+    video.addEventListener('playing', play)
+    video.addEventListener('pause', pause)
+    video.addEventListener('waiting', pause)
+    video.addEventListener('timeupdate', sync)
+    video.addEventListener('seeking', sync)
+    video.addEventListener('seeked', sync)
+    video.addEventListener('loadeddata', sync)
+    video.addEventListener('ratechange', updateRate)
 
-    setTimeout(() => {
-      if (scrollDanmaku.length) scrollCM.load(scrollDanmaku)
-      if (topDanmaku.length) topCM.load(topDanmaku)
-      if (bottomDanmaku.length) bottomCM.load(bottomDanmaku)
+    if (!video.paused && config.visible) play()
 
-      scrollCM.start()
-      topCM.start()
-      bottomCM.start()
-    }, 0)
-  }, [danmakuList, showDanmaku])
+    return () => {
+      registerSeekHandler(null)
+      video.removeEventListener('play', play)
+      video.removeEventListener('playing', play)
+      video.removeEventListener('pause', pause)
+      video.removeEventListener('waiting', pause)
+      video.removeEventListener('timeupdate', sync)
+      video.removeEventListener('seeking', sync)
+      video.removeEventListener('seeked', sync)
+      video.removeEventListener('loadeddata', sync)
+      video.removeEventListener('ratechange', updateRate)
+    }
+  }, [config.visible, registerSeekHandler, setCurrentTime, videoRef])
+
+  useEffect(() => {
+    if (config.visible) {
+      const currentTime = videoRef.current?.currentTime ?? 0
+      scrollEngineRef.current?.time(currentTime)
+      topEngineRef.current?.time(currentTime)
+      bottomEngineRef.current?.time(currentTime)
+      if (!videoRef.current?.paused) {
+        scrollEngineRef.current?.start()
+        topEngineRef.current?.start()
+        bottomEngineRef.current?.start()
+      }
+      return
+    }
+
+    scrollEngineRef.current?.stop()
+    topEngineRef.current?.stop()
+    bottomEngineRef.current?.stop()
+    scrollEngineRef.current?.clear()
+    topEngineRef.current?.clear()
+    bottomEngineRef.current?.clear()
+  }, [config.visible, videoRef])
 
   return {
     scrollContainerRef,

@@ -3,11 +3,13 @@
 import { VideoGetDetail } from '@mtobdvlb/shared-types'
 import React, { useEffect, useRef, useState } from 'react'
 import VideoPlayer from '@/features/video/components/video-play/VideoPlayer'
-import { Input, Label } from '@/components'
+import { HoverCard, HoverCardContent, HoverCardTrigger, Input, Label } from '@/components'
+import { Slider } from '@/components/ui/slider'
 import VideoPlayerDanmakuPublish from '@/features/video/components/video-play/VideoPlayerDanmakuPublish'
 import { useShow } from '@/hooks'
 import { VideoProvider } from '@/features/video/components/video-play/VideoPlayerProvider'
 import VideoContainer from '@/features/video/components/video-play/VideoContainer'
+import { useDanmakuRuntime } from '@/features/danmaku'
 
 const VideoPlayerWrapper = ({
   videoDetail,
@@ -17,18 +19,15 @@ const VideoPlayerWrapper = ({
   isAutoPlayNext: boolean
 }) => {
   const containerRef = useRef<HTMLDivElement>(null)
-
   const [isShowCursor, setIsShowCursor] = useState(true)
-  const [showDanmaku, setShowDanmaku] = useState(true)
   const { isShow } = useShow(500)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const { config, updateConfig, danmakuCount } = useDanmakuRuntime()
 
-  /** 拖拽相关 */
-  const [position, setPosition] = useState({ x: 100, y: 100 }) // 默认位置
+  const [position, setPosition] = useState({ x: 100, y: 100 })
   const [isDragging, setIsDragging] = useState(false)
   const dragOffset = useRef({ x: 0, y: 0 })
 
-  /** 拖拽逻辑（限制在浏览器窗口内） */
   useEffect(() => {
     if (!isShow || !containerRef.current) return
 
@@ -41,33 +40,26 @@ const VideoPlayerWrapper = ({
         x: e.clientX - position.x,
         y: e.clientY - position.y,
       }
-      // 拖拽开始时阻止选中文字
       document.body.style.userSelect = 'none'
     }
 
     const handleMouseMove = (e: MouseEvent) => {
       e.preventDefault()
-      if (!isDragging) return
-      if (!containerRef.current) return
+      if (!isDragging || !containerRef.current) return
       const containerWidth = containerRef.current.offsetWidth
       const containerHeight = containerRef.current.offsetHeight
       const winWidth = window.innerWidth
       const winHeight = window.innerHeight
-      let newX = e.clientX - dragOffset.current.x
-      let newY = e.clientY - dragOffset.current.y
-      // 限制边界，上边界空出 64px
-      newX = Math.max(0, Math.min(newX, winWidth - containerWidth))
-      newY = Math.max(64, Math.min(newY, winHeight - containerHeight))
-      setPosition({
-        x: newX,
-        y: newY,
-      })
+      let nextX = e.clientX - dragOffset.current.x
+      let nextY = e.clientY - dragOffset.current.y
+      nextX = Math.max(0, Math.min(nextX, winWidth - containerWidth))
+      nextY = Math.max(64, Math.min(nextY, winHeight - containerHeight))
+      setPosition({ x: nextX, y: nextY })
     }
 
     const handleMouseUp = (e: MouseEvent) => {
       e.preventDefault()
       setIsDragging(false)
-      // 拖拽结束时恢复选中文字
       document.body.style.userSelect = ''
     }
 
@@ -79,20 +71,16 @@ const VideoPlayerWrapper = ({
       el.removeEventListener('mousedown', handleMouseDown)
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('mouseup', handleMouseUp)
-      // 确保卸载时恢复 userSelect
       document.body.style.userSelect = ''
     }
-    // 依赖只需要 isShow 和 isDragging
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isShow, isDragging])
+  }, [isDragging, isShow, position.x, position.y])
 
   return (
-    <div className={'h-[422px] relative'}>
-      <div className={'w-[668px] h-[422px] '}>
-        <div className={'size-full relative leading-[1] font-normal text-xs '}>
-          <div className={'size-full relative shadow-[0_0_8px_#e5e9ef]'}>
-            <div className={'flex flex-col size-full flex-nowrap'}>
-              {/**/}
+    <div className='relative h-[422px]'>
+      <div className='h-[422px] w-[668px]'>
+        <div className='relative size-full text-xs leading-[1]'>
+          <div className='relative size-full shadow-[0_0_8px_#e5e9ef]'>
+            <div className='flex size-full flex-col flex-nowrap'>
               <VideoProvider containerRef={containerRef} videoRef={videoRef}>
                 <VideoContainer
                   containerRef={containerRef}
@@ -106,87 +94,68 @@ const VideoPlayerWrapper = ({
                 >
                   <VideoPlayer
                     isAutoPlayNext={isAutoPlayNext}
-                    setShowDanmaku={setShowDanmaku}
-                    showDanmaku={showDanmaku}
                     videoDetail={videoDetail}
                     containerRef={containerRef}
                     isShowCursor={isShowCursor}
                     setIsShowCursor={setIsShowCursor}
                   />
-                  <div className={'size-full'}>
+                  <div className='size-full'>
                     <video
                       crossOrigin='anonymous'
-                      preload={'metadata'}
+                      preload='metadata'
                       ref={videoRef}
-                      className={'size-full'}
+                      className='size-full'
                       src={videoDetail.video.url}
                     ></video>
                   </div>
                 </VideoContainer>
               </VideoProvider>
-              {/**/}
+
               <div>
-                <div className={'bg-[#f4f4f4] h-[1px] -mb-[1px] w-full'}></div>
-                <div
-                  className={
-                    'text-[13px] px-3 flex justify-between h-[46px] items-center shrink-0 bg-white'
-                  }
-                >
-                  <div
-                    className={
-                      'leading-4.5 w-[211px] mr-6  text-[#505050] items-center flex shrink h-4 overflow-hidden relative select-none whitespace-nowrap'
-                    }
-                  >
+                <div className='-mb-[1px] h-[1px] w-full bg-[#f4f4f4]'></div>
+                <div className='flex h-[46px] shrink-0 items-center justify-between bg-white px-3 text-[13px]'>
+                  <div className='relative mr-6 flex h-4 shrink items-center overflow-hidden whitespace-nowrap leading-4.5 text-[#505050]'>
                     已装填{' '}
-                    <span className={'font-bold mx-1'}> {`${videoDetail.video.danmakus}`} </span>{' '}
+                    <span className='mx-1 font-bold'>{`${danmakuCount || videoDetail.video.danmakus}`}</span>
                     条弹幕
                   </div>
-                  <div className={'flex h-[34px] flex-1 items-center'}>
-                    <div
-                      className={
-                        'cursor-pointer leading-[30px] size-6  relative items-center inline-flex justify-start fill-[#757575] hover:fill-brand_blue'
-                      }
-                    >
-                      <Label
-                        className={
-                          'flex cursor-pointer items-center size-full select-none align-middle'
-                        }
-                      >
+                  <div className='flex h-[34px] flex-1 items-center'>
+                    <div className='relative inline-flex size-6 cursor-pointer items-center justify-start leading-[30px] fill-[#757575] hover:fill-brand_blue mr-3'>
+                      <Label className='flex size-full cursor-pointer items-center select-none align-middle'>
                         <Input
-                          checked={showDanmaku}
-                          onChange={() => setShowDanmaku(!showDanmaku)}
-                          type={'checkbox'}
-                          className={'-z-1 cursor-pointer inset-0 absolute '}
+                          checked={config.visible}
+                          onChange={() => updateConfig({ visible: !config.visible })}
+                          type='checkbox'
+                          className='absolute inset-0 -z-1 cursor-pointer'
                         />
-                        <div className={'w-full flex justify-center align-middle items-center'}>
-                          {showDanmaku ? (
-                            <span className={'size-6'}>
+                        <div className='flex w-full items-center justify-center align-middle'>
+                          <span className='size-6'>
+                            {config.visible ? (
+                              <>
+                                <svg
+                                  xmlns='http://www.w3.org/2000/svg'
+                                  data-pointer='none'
+                                  viewBox='0 0 24 24'
+                                  className='size-6'
+                                >
+                                  <path
+                                    fillRule='evenodd'
+                                    d='M11.989 4.828c-.47 0-.975.004-1.515.012l-1.71-2.566a1.008 1.008 0 0 0-1.678 1.118l.999 1.5c-.681.018-1.403.04-2.164.068a4.013 4.013 0 0 0-3.83 3.44c-.165 1.15-.245 2.545-.245 4.185 0 1.965.115 3.67.35 5.116a4.012 4.012 0 0 0 3.763 3.363l.906.046c1.205.063 1.808.095 3.607.095a.988.988 0 0 0 0-1.975c-1.758 0-2.339-.03-3.501-.092l-.915-.047a2.037 2.037 0 0 1-1.91-1.708c-.216-1.324-.325-2.924-.325-4.798 0-1.563.076-2.864.225-3.904.14-.977.96-1.713 1.945-1.747 2.444-.087 4.465-.13 6.063-.131 1.598 0 3.62.044 6.064.13.96.034 1.71.81 1.855 1.814.075.524.113 1.962.141 3.065v.002c.01.342.017.65.025.88a.987.987 0 1 0 1.974-.068c-.008-.226-.016-.523-.025-.856v-.027c-.03-1.118-.073-2.663-.16-3.276-.273-1.906-1.783-3.438-3.74-3.507-.9-.032-1.743-.058-2.531-.078l1.05-1.46a1.008 1.008 0 0 0-1.638-1.177l-1.862 2.59c-.38-.004-.744-.007-1.088-.007h-.13Zm.521 4.775h-1.32v4.631h2.222v.847h-2.618v1.078h2.618l.003.678c.36.026.714.163 1.01.407h.11v-1.085h2.694v-1.078h-2.695v-.847H16.8v-4.63h-1.276a8.59 8.59 0 0 0 .748-1.42L15.183 7.8a14.232 14.232 0 0 1-.814 1.804h-1.518l.693-.308a8.862 8.862 0 0 0-.814-1.408l-1.045.352c.297.396.572.847.825 1.364Zm-4.18 3.564.154-1.485h1.98V8.294h-3.2v.98H9.33v1.43H7.472l-.308 3.453h2.277c0 1.166-.044 1.925-.12 2.277-.078.352-.386.528-.936.528-.308 0-.616-.022-.902-.055l.297 1.067.062.005c.285.02.551.04.818.04 1.001-.067 1.562-.419 1.694-1.057.11-.638.176-1.903.176-3.795h-2.2Zm7.458.11v-.858h-1.254v.858h1.254Zm-2.376-.858v.858h-1.199v-.858h1.2Zm-1.199-.946h1.2v-.902h-1.2v.902Zm2.321 0v-.902h1.254v.902h-1.254Z'
+                                    clipRule='evenodd'
+                                  ></path>
+                                  <path
+                                    fillRule='evenodd'
+                                    d='M22.846 14.627a1 1 0 0 0-1.412.075l-5.091 5.703-2.216-2.275-.097-.086-.008-.005a1 1 0 0 0-1.322 1.493l2.963 3.041.093.083.007.005c.407.315 1 .27 1.354-.124l5.81-6.505.08-.102.005-.008a1 1 0 0 0-.166-1.295Z'
+                                    clipRule='evenodd'
+                                  ></path>
+                                </svg>
+                              </>
+                            ) : (
                               <svg
                                 xmlns='http://www.w3.org/2000/svg'
                                 data-pointer='none'
                                 viewBox='0 0 24 24'
-                                className={'size-6'}
-                              >
-                                <path
-                                  fillRule='evenodd'
-                                  d='M11.989 4.828c-.47 0-.975.004-1.515.012l-1.71-2.566a1.008 1.008 0 0 0-1.678 1.118l.999 1.5c-.681.018-1.403.04-2.164.068a4.013 4.013 0 0 0-3.83 3.44c-.165 1.15-.245 2.545-.245 4.185 0 1.965.115 3.67.35 5.116a4.012 4.012 0 0 0 3.763 3.363l.906.046c1.205.063 1.808.095 3.607.095a.988.988 0 0 0 0-1.975c-1.758 0-2.339-.03-3.501-.092l-.915-.047a2.037 2.037 0 0 1-1.91-1.708c-.216-1.324-.325-2.924-.325-4.798 0-1.563.076-2.864.225-3.904.14-.977.96-1.713 1.945-1.747 2.444-.087 4.465-.13 6.063-.131 1.598 0 3.62.044 6.064.13.96.034 1.71.81 1.855 1.814.075.524.113 1.962.141 3.065v.002c.01.342.017.65.025.88a.987.987 0 1 0 1.974-.068c-.008-.226-.016-.523-.025-.856v-.027c-.03-1.118-.073-2.663-.16-3.276-.273-1.906-1.783-3.438-3.74-3.507-.9-.032-1.743-.058-2.531-.078l1.05-1.46a1.008 1.008 0 0 0-1.638-1.177l-1.862 2.59c-.38-.004-.744-.007-1.088-.007h-.13Zm.521 4.775h-1.32v4.631h2.222v.847h-2.618v1.078h2.618l.003.678c.36.026.714.163 1.01.407h.11v-1.085h2.694v-1.078h-2.695v-.847H16.8v-4.63h-1.276a8.59 8.59 0 0 0 .748-1.42L15.183 7.8a14.232 14.232 0 0 1-.814 1.804h-1.518l.693-.308a8.862 8.862 0 0 0-.814-1.408l-1.045.352c.297.396.572.847.825 1.364Zm-4.18 3.564.154-1.485h1.98V8.294h-3.2v.98H9.33v1.43H7.472l-.308 3.453h2.277c0 1.166-.044 1.925-.12 2.277-.078.352-.386.528-.936.528-.308 0-.616-.022-.902-.055l.297 1.067.062.005c.285.02.551.04.818.04 1.001-.067 1.562-.419 1.694-1.057.11-.638.176-1.903.176-3.795h-2.2Zm7.458.11v-.858h-1.254v.858h1.254Zm-2.376-.858v.858h-1.199v-.858h1.2Zm-1.199-.946h1.2v-.902h-1.2v.902Zm2.321 0v-.902h1.254v.902h-1.254Z'
-                                  clipRule='evenodd'
-                                ></path>
-                                <path
-                                  fill='#00AEEC'
-                                  fillRule='evenodd'
-                                  d='M22.846 14.627a1 1 0 0 0-1.412.075l-5.091 5.703-2.216-2.275-.097-.086-.008-.005a1 1 0 0 0-1.322 1.493l2.963 3.041.093.083.007.005c.407.315 1 .27 1.354-.124l5.81-6.505.08-.102.005-.008a1 1 0 0 0-.166-1.295Z'
-                                  clipRule='evenodd'
-                                ></path>
-                              </svg>
-                            </span>
-                          ) : (
-                            <span className={'size-6'}>
-                              <svg
-                                xmlns='http://www.w3.org/2000/svg'
-                                data-pointer='none'
-                                viewBox='0 0 24 24'
-                                className={'size-6'}
+                                className='size-6'
                               >
                                 <path
                                   fillRule='evenodd'
@@ -194,21 +163,114 @@ const VideoPlayerWrapper = ({
                                   clipRule='evenodd'
                                 ></path>
                               </svg>
-                            </span>
-                          )}
+                            )}
+                          </span>
                         </div>
                       </Label>
                     </div>
+
+                    <HoverCard openDelay={50} closeDelay={150}>
+                      <HoverCardTrigger asChild>
+                        <div className='relative inline-flex size-6 cursor-pointer items-center justify-start leading-[30px] fill-[#757575] hover:fill-brand_blue mr-3'>
+                          <span className='leading-[30px] cursor-pointer fill-[#757575] w-full select-none h-full inline-flex'>
+                            <svg
+                              xmlns='http://www.w3.org/2000/svg'
+                              data-pointer='none'
+                              viewBox='0 0 24 24'
+                              className='size-6'
+                            >
+                              <path
+                                fillRule='evenodd'
+                                d='m15.645 4.881 1.06-1.473a.998.998 0 1 0-1.622-1.166L13.22 4.835a110.67 110.67 0 0 0-1.1-.007h-.131c-.47 0-.975.004-1.515.012L8.783 2.3A.998.998 0 0 0 7.12 3.408l.988 1.484c-.688.019-1.418.042-2.188.069a4.013 4.013 0 0 0-3.83 3.44c-.165 1.15-.245 2.545-.245 4.185 0 1.965.115 3.67.35 5.116a4.012 4.012 0 0 0 3.763 3.363c1.903.094 3.317.141 5.513.141a.988.988 0 0 0 0-1.975 97.58 97.58 0 0 1-5.416-.139 2.037 2.037 0 0 1-1.91-1.708c-.216-1.324-.325-2.924-.325-4.798 0-1.563.076-2.864.225-3.904.14-.977.96-1.713 1.945-1.747 2.444-.087 4.465-.13 6.063-.131 1.598 0 3.62.044 6.064.13.96.034 1.71.81 1.855 1.814.075.524.113 1.962.141 3.065v.002c.005.183.01.07.014-.038.004-.096.008-.189.011-.081a.987.987 0 1 0 1.974-.069c-.004-.105-.007-.009-.011.09-.002.056-.004.112-.007.135l-.002.01a.574.574 0 0 1-.005-.091v-.027c-.03-1.118-.073-2.663-.16-3.276-.273-1.906-1.783-3.438-3.74-3.507-.905-.032-1.752-.058-2.543-.079Zm-3.113 4.703h-1.307v4.643h2.2v.04l.651-1.234c.113-.215.281-.389.482-.509v-.11h.235c.137-.049.283-.074.433-.074h1.553V9.584h-1.264a8.5 8.5 0 0 0 .741-1.405l-1.078-.381c-.24.631-.501 1.23-.806 1.786h-1.503l.686-.305c-.228-.501-.5-.959-.806-1.394l-1.034.348c.294.392.566.839.817 1.35Zm-1.7 5.502h2.16l-.564 1.068h-1.595v-1.068Zm-2.498-1.863.152-1.561h1.96V8.289H7.277v.969h2.048v1.435h-1.84l-.306 3.51h2.254c0 1.155-.043 1.906-.12 2.255-.076.348-.38.523-.925.523-.305 0-.61-.022-.893-.055l.294 1.056.061.005c.282.02.546.039.81.039.991-.065 1.547-.414 1.677-1.046.11-.631.175-1.883.175-3.757H8.334Zm5.09-.8v.85h-1.188v-.85h1.187Zm-1.188-.955h1.187v-.893h-1.187v.893Zm2.322.007v-.893h1.241v.893h-1.241Zm.528 2.757a1.26 1.26 0 0 1 1.087-.627l4.003-.009a1.26 1.26 0 0 1 1.094.63l1.721 2.982c.226.39.225.872-.001 1.263l-1.743 3a1.26 1.26 0 0 1-1.086.628l-4.003.009a1.26 1.26 0 0 1-1.094-.63l-1.722-2.982a1.26 1.26 0 0 1 .002-1.263l1.742-3Zm1.967.858a1.26 1.26 0 0 0-1.08.614l-.903 1.513a1.26 1.26 0 0 0-.002 1.289l.885 1.492c.227.384.64.62 1.086.618l2.192-.005a1.26 1.26 0 0 0 1.08-.615l.904-1.518a1.26 1.26 0 0 0 .001-1.288l-.884-1.489a1.26 1.26 0 0 0-1.086-.616l-2.193.005Zm2.517 2.76a1.4 1.4 0 1 1-2.8 0 1.4 1.4 0 0 1 2.8 0Z'
+                                clipRule='evenodd'
+                              ></path>
+                            </svg>
+                          </span>
+                        </div>
+                      </HoverCardTrigger>
+                      <HoverCardContent
+                        side='top'
+                        className='w-[280px] rounded-[8px] border-line_regular bg-white p-4 shadow-[0_8px_24px_rgba(0,0,0,0.12)]'
+                      >
+                        <div className='space-y-4 text-xs text-[#444]'>
+                          <div className='flex items-center justify-between'>
+                            <span>模式</span>
+                            <div className='flex gap-1'>
+                              {[
+                                ['all', '全部'],
+                                ['scroll', '滚动'],
+                                ['top', '顶部'],
+                                ['bottom', '底部'],
+                              ].map(([value, label]) => (
+                                <button
+                                  key={value}
+                                  type='button'
+                                  onClick={() =>
+                                    updateConfig({ modeFilter: value as typeof config.modeFilter })
+                                  }
+                                  className={`rounded-full px-2 py-1 ${
+                                    config.modeFilter === value
+                                      ? 'bg-brand_blue text-white'
+                                      : 'bg-[#f4f4f4] text-[#666]'
+                                  }`}
+                                >
+                                  {label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          {[
+                            ['透明度', config.opacity, 0.2, 1, 0.05, 'opacity'],
+                            ['字号倍率', config.fontScale, 0.8, 1.6, 0.05, 'fontScale'],
+                            ['显示区域', config.areaRatio, 0.3, 1, 0.05, 'areaRatio'],
+                            ['弹幕速度', config.speed, 0.6, 1.8, 0.05, 'speed'],
+                            ['弹幕密度', config.density, 0.5, 2, 0.05, 'density'],
+                          ].map(([label, value, min, max, step, key]) => (
+                            <div key={key}>
+                              <div className='mb-2 flex items-center justify-between'>
+                                <span>{label}</span>
+                                <span>{Number(value).toFixed(2)}</span>
+                              </div>
+                              <Slider
+                                value={[Number(value)]}
+                                min={Number(min)}
+                                max={Number(max)}
+                                step={Number(step)}
+                                onValueChange={([next]) => {
+                                  if (key === 'opacity') updateConfig({ opacity: next })
+                                  if (key === 'fontScale') updateConfig({ fontScale: next })
+                                  if (key === 'areaRatio') updateConfig({ areaRatio: next })
+                                  if (key === 'speed') updateConfig({ speed: next })
+                                  if (key === 'density') updateConfig({ density: next })
+                                }}
+                              />
+                            </div>
+                          ))}
+                          <button
+                            type='button'
+                            onClick={() => updateConfig({ smartMask: !config.smartMask })}
+                            className={`w-full rounded-[6px] px-3 py-2 text-left ${
+                              config.smartMask
+                                ? 'bg-[#e8f7ff] text-brand_blue'
+                                : 'bg-[#f4f4f4] text-[#666]'
+                            }`}
+                          >
+                            智能防挡字幕 {config.smartMask ? '开启' : '关闭'}
+                          </button>
+                        </div>
+                      </HoverCardContent>
+                    </HoverCard>
+
                     <VideoPlayerDanmakuPublish
                       videoRef={videoRef}
                       videoId={videoDetail.video.id}
-                      showDanmaku={showDanmaku}
+                      showDanmaku={config.visible}
                     />
                   </div>
                 </div>
               </div>
             </div>
-            <div className={'absolute inset-0 pointer-events-none'}></div>
+            <div className='pointer-events-none absolute inset-0'></div>
           </div>
         </div>
       </div>

@@ -2,6 +2,7 @@
 
 import { danmakuAdd, danmakuGet } from '@/services/danmaku'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { VideoAddDanmakuDTO } from '@mtobdvlb/shared-types'
 
 export const useDanmakuGet = (videoId: string, isGet: boolean = true) => {
   const { data } = useQuery({
@@ -16,7 +17,7 @@ export const useDanmakuGet = (videoId: string, isGet: boolean = true) => {
 
 export const useDanmakuAdd = () => {
   const { mutateAsync } = useMutation({
-    mutationFn: danmakuAdd,
+    mutationFn: (body: VideoAddDanmakuDTO) => danmakuAdd(body),
   })
   return {
     danmakuAdd: mutateAsync,
