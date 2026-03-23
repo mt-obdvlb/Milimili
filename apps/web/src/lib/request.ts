@@ -32,9 +32,12 @@ const processQueue = (error: unknown, cookieHeader: string | null = null) => {
 }
 
 const request: AxiosInstance = (() => {
+  const isDevelopment = process.env.NODE_ENV === 'development'
   const apiPath = process.env.NEXT_PUBLIC_API_URL || '/api/v1'
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost'
-  const baseURL = isServer() ? `${frontendUrl}${apiPath}` : apiPath
+  const developmentBaseURL = 'http://localhost:3000/api/v1'
+  const productionBaseURL = isServer() ? `${frontendUrl}${apiPath}` : apiPath
+  const baseURL = isDevelopment ? developmentBaseURL : productionBaseURL
 
   const instance = axios.create({
     baseURL,

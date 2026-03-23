@@ -3,7 +3,9 @@ import { io, Socket } from 'socket.io-client'
 let socket: Socket | null = null
 
 export const getSocket = (): Socket => {
-  const url = process.env.NEXT_PUBLIC_WS_URL || '/socket.io/'
+  const isDevelopment = process.env.NODE_ENV === 'development'
+  const url =
+    process.env.NEXT_PUBLIC_WS_URL || (isDevelopment ? 'http://localhost:3000' : '/socket.io/')
   if (!socket) {
     socket = io(url, {
       withCredentials: true,
