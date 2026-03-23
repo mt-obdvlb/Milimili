@@ -1,0 +1,69 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: milimili-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --shamefully-hoist
+
+      - name: Build shared types
+        run: pnpm -F @mtobdvlb/shared-types build
+
+      - name: Build server
+        run: pnpm -F server build
+
+      - name: Build web
+        run: pnpm -F web build
+
+      - name: Prepare SSH key
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Prepare deploy bundle
+        run: |
+          mkdir -p deploy_bundle/apps/server deploy_bundle/apps/web deploy_bundle/scripts
+          cp -R apps/server/dist deploy_bundle/apps/server/dist
+          cp -R apps/web/.next deploy_bundle/apps/web/.next
+          cp scripts/deploy_app_container.sh deploy_bundle/scripts/deploy_app_container.sh
+
+      - name: Upload deploy bundle
+        run: |
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/id_ed25519" \
+            deploy_bundle/ \
+            "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }}/"
+
+      - name: Restart app container
+        run: |
+          ssh -i ~/.ssh/id_ed25519 "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
+            "DEPLOY_PATH='${{ secrets.DEPLOY_PATH }}' APP_CONTAINER='${{ secrets.DEPLOY_APP_CONTAINER }}' sh '${{ secrets.DEPLOY_PATH }}/scripts/deploy_app_container.sh'"

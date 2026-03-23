@@ -14,7 +14,7 @@ const userSocketMap = new Map<string, Set<string>>()
 export const initSocket = (server: http.Server) => {
   const io = new Server(server, {
     cors: {
-      origin: ['http://localhost:3000', 'http://localhost:3001'],
+      origin: true,
       credentials: true,
       methods: ['GET', 'POST'],
     },

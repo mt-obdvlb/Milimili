@@ -32,11 +32,9 @@ const processQueue = (error: unknown, cookieHeader: string | null = null) => {
 }
 
 const request: AxiosInstance = (() => {
-  // const baseURL = `${process.env.NEXT_PUBLIC_API_URL}`
-  // 部署版
-  // const baseURL = isServer() ? 'http://localhost/api/v1' : '/api/v1'
-  //本地版
-  const baseURL = 'http://localhost:3000/api/v1'
+  const apiPath = process.env.NEXT_PUBLIC_API_URL || '/api/v1'
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost'
+  const baseURL = isServer() ? `${frontendUrl}${apiPath}` : apiPath
 
   const instance = axios.create({
     baseURL,

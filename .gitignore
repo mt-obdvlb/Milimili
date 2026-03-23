@@ -88,3 +88,4 @@ Thumbs.db
 *.tar
 /apps/web/next-env.d.ts
 /milimili-app_latest.tar.gz
+.github/keys/
