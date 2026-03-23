@@ -357,7 +357,6 @@ const VideoPlayer = ({
           ></div>
         </div>
       </div>
-      {/*TODO*/}
       <div ref={tooltipRef} className={tooltip()}>
         <div
           data-danmaku-tooltip-copy='true'

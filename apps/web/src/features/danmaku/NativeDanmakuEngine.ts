@@ -606,7 +606,7 @@ export class NativeDanmakuEngine {
       const availableAt = this.laneAvailableAt[i] ?? 0
       if (!this.canUseLane(i, nextWidth, nextSpeed)) continue
 
-      const laneScore = this.getLaneScore(i, availableAt, nextWidth)
+      const laneScore = this.getLaneScore(i, availableAt)
       if (laneScore < bestScore) {
         bestScore = laneScore
         bestLane = i
@@ -616,10 +616,8 @@ export class NativeDanmakuEngine {
     return bestLane
   }
 
-  private getLaneScore(lane: number, availableAt: number, _: number) {
+  private getLaneScore(lane: number, availableAt: number) {
     const timePenalty = Math.max(availableAt - this.playClock, 0)
-    // 可用轨道按从上到下（lane index 小到大）严格优先选择。
-    // timePenalty 仅作为同轨道序下的极小平局因子。
     return lane + timePenalty * 0.0001
   }
 
