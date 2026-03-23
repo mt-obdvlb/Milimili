@@ -8,9 +8,10 @@ import { VideoGetDanmakusItem } from '@mtobdvlb/shared-types'
 interface UseDanmakuManagerProps {
   videoRef: RefObject<HTMLVideoElement | null>
   paused: boolean
+  tooltipRef?: RefObject<HTMLDivElement | null>
 }
 
-export const useDanmakuManager = ({ videoRef, paused }: UseDanmakuManagerProps) => {
+export const useDanmakuManager = ({ videoRef, paused, tooltipRef }: UseDanmakuManagerProps) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const topContainerRef = useRef<HTMLDivElement>(null)
   const bottomContainerRef = useRef<HTMLDivElement>(null)
@@ -39,6 +40,10 @@ export const useDanmakuManager = ({ videoRef, paused }: UseDanmakuManagerProps) 
     const topEngine = new NativeDanmakuEngine(topContainerRef.current, 'top')
     const bottomEngine = new NativeDanmakuEngine(bottomContainerRef.current, 'bottom')
 
+    scrollEngine.setTooltipElement(tooltipRef?.current ?? null)
+    topEngine.setTooltipElement(tooltipRef?.current ?? null)
+    bottomEngine.setTooltipElement(tooltipRef?.current ?? null)
+
     scrollEngine.init()
     topEngine.init()
     bottomEngine.init()
@@ -55,7 +60,7 @@ export const useDanmakuManager = ({ videoRef, paused }: UseDanmakuManagerProps) 
       topEngineRef.current = null
       bottomEngineRef.current = null
     }
-  }, [])
+  }, [tooltipRef])
 
   useEffect(() => {
     const engines = [scrollEngineRef.current, topEngineRef.current, bottomEngineRef.current].filter(

@@ -1,3 +1,5 @@
+import { toast } from '@/lib'
+
 type DanmakuTrack = 'scroll' | 'top' | 'bottom'
 
 export type NativeDanmakuItem = {
@@ -10,6 +12,7 @@ export type NativeDanmakuItem = {
 
 type ActiveDanmaku = {
   id: string
+  text: string
   el: HTMLDivElement
   lane: number
   x: number
@@ -18,6 +21,7 @@ type ActiveDanmaku = {
   speed: number
   duration: number
   elapsed: number
+  paused: boolean
 }
 
 type NativeDanmakuOptions = {
@@ -27,6 +31,7 @@ type NativeDanmakuOptions = {
     areaRatio: number
     speed: number
     density: number
+    hoverable: boolean
   }
 }
 
@@ -48,6 +53,7 @@ export class NativeDanmakuEngine {
       areaRatio: 0.7,
       speed: 1,
       density: 1,
+      hoverable: true,
     },
   }
 
@@ -64,6 +70,12 @@ export class NativeDanmakuEngine {
   private playClock = 0
   private resizeObserver: ResizeObserver | null = null
   private playbackRate = 1
+  private stageWidth = 0
+  private stageHeight = 0
+  private tooltipEl: HTMLDivElement | null = null
+  private tooltipCopyTriggerEl: HTMLElement | null = null
+  private hoveredItemId: string | null = null
+  private hideTooltipTimer: number | null = null
 
   constructor(stage: HTMLDivElement, track: DanmakuTrack) {
     this.stage = stage
@@ -76,8 +88,10 @@ export class NativeDanmakuEngine {
     this.stage.style.overflow = 'hidden'
     this.stage.style.pointerEvents = 'none'
     this.stage.style.userSelect = 'none'
+    this.stageWidth = this.stage.clientWidth
+    this.stageHeight = this.stage.clientHeight
     this.refreshLanes()
-    this.resizeObserver = new ResizeObserver(() => this.refreshLanes())
+    this.resizeObserver = new ResizeObserver(() => this.handleStageResize())
     this.resizeObserver.observe(this.stage)
   }
 
@@ -86,9 +100,14 @@ export class NativeDanmakuEngine {
       ...this.options.global,
       ...config,
     }
+    if (!this.isHoverEnabled()) {
+      this.hideHoveredItem(true)
+    }
     this.refreshLanes()
     for (const item of this.active) {
       item.el.style.opacity = `${clamp(this.options.global.opacity, 0.2, 1)}`
+      item.el.style.pointerEvents = this.isHoverEnabled() ? 'auto' : 'none'
+      item.el.style.cursor = this.isHoverEnabled() ? 'pointer' : 'default'
     }
   }
 
@@ -112,6 +131,7 @@ export class NativeDanmakuEngine {
   }
 
   clear() {
+    this.hideHoveredItem(true)
     for (const item of this.active) {
       item.el.remove()
     }
@@ -126,6 +146,23 @@ export class NativeDanmakuEngine {
     this.timeline.length = 0
     this.resizeObserver?.disconnect()
     this.resizeObserver = null
+    this.destroyTooltip()
+  }
+
+  setTooltipElement(element: HTMLDivElement | null) {
+    if (this.tooltipEl === element) return
+    this.destroyTooltip()
+    this.tooltipEl = element
+    if (!this.tooltipEl) return
+    this.tooltipEl.style.position = 'absolute'
+    this.tooltipEl.style.left = '0px'
+    this.tooltipEl.style.top = '0px'
+    this.tooltipEl.style.visibility = 'hidden'
+    this.tooltipEl.style.pointerEvents = 'auto'
+    this.tooltipCopyTriggerEl = this.tooltipEl.querySelector('[data-danmaku-tooltip-copy="true"]')
+    this.tooltipEl.addEventListener('mouseenter', this.handleTooltipMouseEnter)
+    this.tooltipEl.addEventListener('mouseleave', this.handleTooltipMouseLeave)
+    this.tooltipCopyTriggerEl?.addEventListener('click', this.handleTooltipClick)
   }
 
   load(data: NativeDanmakuItem[]) {
@@ -155,7 +192,27 @@ export class NativeDanmakuEngine {
   }
 
   setBounds() {
+    this.handleStageResize()
+  }
+
+  private readonly handleTooltipMouseEnter = () => this.clearHideTooltipTimer()
+
+  private readonly handleTooltipMouseLeave = () => this.scheduleHideHoveredItem()
+
+  private readonly handleTooltipClick = () => void this.copyHoveredDanmaku()
+
+  private handleStageResize() {
+    const nextWidth = this.stage.clientWidth
+    const nextHeight = this.stage.clientHeight
+    if (nextWidth === this.stageWidth && nextHeight === this.stageHeight) return
+
+    this.stageWidth = nextWidth
+    this.stageHeight = nextHeight
     this.refreshLanes()
+
+    if (!nextWidth || !nextHeight) return
+    // Resize/fullscreen toggle 后用当前时间重建，避免旧尺寸坐标残留。
+    this.seekTo(this.currentTime)
   }
 
   private readonly tick = (ts: number) => {
@@ -219,7 +276,10 @@ export class NativeDanmakuEngine {
     el.style.opacity = `${clamp(this.options.global.opacity, 0.1, 1)}`
     el.style.transform = 'translate3d(-9999px,-9999px,0)'
     el.style.willChange = 'transform'
+    el.style.pointerEvents = this.isHoverEnabled() ? 'auto' : 'none'
+    el.style.cursor = this.isHoverEnabled() ? 'pointer' : 'default'
     this.stage.appendChild(el)
+    this.bindHoverEvents(el, item.id)
 
     const measuredWidth = Math.max(el.offsetWidth, 1)
     const { top: trackTop, usableHeight } = this.getTrackMetrics(height, laneHeight)
@@ -227,7 +287,7 @@ export class NativeDanmakuEngine {
     const speedRatio = clamp(this.options.global.speed, 0.5, 2)
     const densityRatio = clamp(this.options.global.density, 0.5, 2)
     if (this.track === 'scroll') {
-      const speed = this.getScrollSpeed(width, speedRatio)
+      const speed = this.getScrollSpeed(width, speedRatio, measuredWidth)
       const duration = (width + measuredWidth) / speed
       const lane = this.pickLane(measuredWidth, speed)
       if (lane === -1) {
@@ -245,6 +305,7 @@ export class NativeDanmakuEngine {
       this.laneAvailableAt[lane] = this.playClock + laneGap
       this.active.push({
         id: item.id,
+        text,
         el,
         lane,
         x: width,
@@ -253,6 +314,7 @@ export class NativeDanmakuEngine {
         speed,
         duration,
         elapsed: 0,
+        paused: false,
       })
       return true
     }
@@ -271,6 +333,7 @@ export class NativeDanmakuEngine {
     this.laneAvailableAt[lane] = this.playClock + duration * 0.9
     this.active.push({
       id: item.id,
+      text,
       el,
       lane,
       x,
@@ -279,6 +342,7 @@ export class NativeDanmakuEngine {
       speed: 0,
       duration,
       elapsed: 0,
+      paused: false,
     })
     el.style.transform = `translate3d(${x}px, ${fixedY}px, 0)`
     return true
@@ -288,6 +352,12 @@ export class NativeDanmakuEngine {
     for (let i = this.active.length - 1; i >= 0; i -= 1) {
       const item = this.active[i]
       if (!item) continue
+      if (item.paused) {
+        if (this.hoveredItemId === item.id) {
+          this.positionTooltip(item)
+        }
+        continue
+      }
       item.elapsed += delta * this.playbackRate
 
       if (this.track === 'scroll') {
@@ -309,6 +379,7 @@ export class NativeDanmakuEngine {
   }
 
   private seekTo(time: number) {
+    this.hideHoveredItem(true)
     this.currentTime = time
     this.playClock = time
     for (const item of this.active) {
@@ -369,7 +440,10 @@ export class NativeDanmakuEngine {
     el.style.color = this.toHexColor(item.color)
     el.style.opacity = `${clamp(this.options.global.opacity, 0.2, 1)}`
     el.style.willChange = 'transform'
+    el.style.pointerEvents = this.isHoverEnabled() ? 'auto' : 'none'
+    el.style.cursor = this.isHoverEnabled() ? 'pointer' : 'default'
     this.stage.appendChild(el)
+    this.bindHoverEvents(el, item.id)
 
     const measuredWidth = Math.max(el.offsetWidth, 1)
     const { top: trackTop, usableHeight } = this.getTrackMetrics(height, laneHeight)
@@ -377,7 +451,7 @@ export class NativeDanmakuEngine {
 
     if (this.track === 'scroll') {
       const elapsed = Math.max(time - item.stime, 0)
-      const speed = this.getScrollSpeed(width, speedRatio)
+      const speed = this.getScrollSpeed(width, speedRatio, measuredWidth)
       const duration = (width + measuredWidth) / speed
       if (elapsed >= duration) {
         el.remove()
@@ -395,6 +469,7 @@ export class NativeDanmakuEngine {
       )
       this.active.push({
         id: item.id,
+        text,
         el,
         lane,
         x,
@@ -403,6 +478,7 @@ export class NativeDanmakuEngine {
         speed,
         duration,
         elapsed,
+        paused: false,
       })
       this.laneAvailableAt[lane] = Math.max(this.laneAvailableAt[lane] ?? 0, this.playClock + 0.2)
       el.style.transform = `translate3d(${x}px, ${y}px, 0)`
@@ -423,6 +499,7 @@ export class NativeDanmakuEngine {
         : Math.min(trackTop + lane * laneHeight, Math.max(trackTop + usableHeight - laneHeight, 0))
     this.active.push({
       id: item.id,
+      text,
       el,
       lane,
       x,
@@ -431,6 +508,7 @@ export class NativeDanmakuEngine {
       speed: 0,
       duration,
       elapsed,
+      paused: false,
     })
     this.laneAvailableAt[lane] = Math.max(
       this.laneAvailableAt[lane] ?? 0,
@@ -545,7 +623,7 @@ export class NativeDanmakuEngine {
     return lane + timePenalty * 0.0001
   }
 
-  private canUseLane(lane: number, nextWidth: number, _: number) {
+  private canUseLane(lane: number, nextWidth: number, nextSpeed: number) {
     const laneItems = this.active.filter((item) => item.lane === lane)
     if (laneItems.length === 0) return true
 
@@ -557,7 +635,13 @@ export class NativeDanmakuEngine {
     const rightMost = laneItems.reduce((candidate, item) =>
       item.x > candidate.x ? item : candidate
     )
-    return this.stage.clientWidth - (rightMost.x + rightMost.width) >= minGap
+    const initialGap = this.stage.clientWidth - (rightMost.x + rightMost.width)
+    if (initialGap < minGap) return false
+    if (nextSpeed <= rightMost.speed || rightMost.speed <= 0) return true
+
+    const timeUntilRightMostExit = (rightMost.x + rightMost.width) / rightMost.speed
+    const gapAtExit = initialGap - (nextSpeed - rightMost.speed) * timeUntilRightMostExit
+    return gapAtExit >= minGap
   }
 
   private getMinGap(nextWidth: number) {
@@ -572,13 +656,127 @@ export class NativeDanmakuEngine {
     return BASE_LANE_HEIGHT * scale
   }
 
-  private getScrollSpeed(stageWidth: number, speedRatio: number) {
+  private getScrollSpeed(stageWidth: number, speedRatio: number, danmakuWidth: number) {
     const visibleDuration = Math.max(SCROLL_BASE_DURATION / speedRatio, 3.6)
-    return stageWidth / visibleDuration
+    const baseSpeed = stageWidth / visibleDuration
+    const widthRatio = clamp(danmakuWidth / Math.max(stageWidth, 1), 0, 1.5)
+    return baseSpeed * (1 + widthRatio * 0.8)
+  }
+
+  private isHoverEnabled() {
+    return this.options.global.hoverable
   }
 
   private isActive(itemId: string) {
     return this.active.some((item) => item.id === itemId)
+  }
+
+  private bindHoverEvents(el: HTMLDivElement, itemId: string) {
+    el.addEventListener('mouseenter', () => this.hoverItem(itemId))
+    el.addEventListener('mouseleave', () => this.scheduleHideHoveredItem())
+  }
+
+  private hoverItem(itemId: string) {
+    if (!this.isHoverEnabled()) return
+    const item = this.active.find((entry) => entry.id === itemId)
+    if (!item) return
+
+    this.clearHideTooltipTimer()
+    if (this.hoveredItemId && this.hoveredItemId !== itemId) {
+      this.hideHoveredItem(true)
+    }
+
+    this.hoveredItemId = itemId
+    item.paused = true
+    item.el.style.zIndex = '40'
+    item.el.style.filter = 'brightness(1.12)'
+    this.showTooltip(item)
+  }
+
+  private scheduleHideHoveredItem() {
+    if (!this.isHoverEnabled()) return
+    this.clearHideTooltipTimer()
+    this.hideTooltipTimer = window.setTimeout(() => this.hideHoveredItem(), 120)
+  }
+
+  private hideHoveredItem(force: boolean = false) {
+    this.clearHideTooltipTimer()
+    if (!force && this.tooltipEl?.matches(':hover')) return
+
+    if (this.hoveredItemId) {
+      const item = this.active.find((entry) => entry.id === this.hoveredItemId)
+      if (item) {
+        item.paused = false
+        item.el.style.zIndex = ''
+        item.el.style.filter = ''
+      }
+    }
+
+    this.hoveredItemId = null
+    if (this.tooltipEl) {
+      this.tooltipEl.style.visibility = 'hidden'
+    }
+  }
+
+  private clearHideTooltipTimer() {
+    if (this.hideTooltipTimer !== null) {
+      window.clearTimeout(this.hideTooltipTimer)
+      this.hideTooltipTimer = null
+    }
+  }
+
+  private destroyTooltip() {
+    this.clearHideTooltipTimer()
+    this.tooltipEl?.removeEventListener('mouseenter', this.handleTooltipMouseEnter)
+    this.tooltipEl?.removeEventListener('mouseleave', this.handleTooltipMouseLeave)
+    this.tooltipCopyTriggerEl?.removeEventListener('click', this.handleTooltipClick)
+    if (this.tooltipEl) {
+      this.tooltipEl.style.visibility = 'hidden'
+    }
+    this.tooltipCopyTriggerEl = null
+    this.tooltipEl = null
+  }
+
+  private showTooltip(item: ActiveDanmaku) {
+    if (!this.tooltipEl) return
+    this.tooltipEl.style.visibility = 'visible'
+    this.positionTooltip(item)
+  }
+
+  private positionTooltip(item: ActiveDanmaku) {
+    if (!this.tooltipEl) return
+
+    const tooltipRect = this.tooltipEl.getBoundingClientRect()
+    const stageWidth = this.stage.clientWidth
+    const stageHeight = this.stage.clientHeight
+
+    let left = item.x + item.width / 2 - tooltipRect.width / 2
+    left = clamp(left, 8, Math.max(stageWidth - tooltipRect.width - 8, 8))
+
+    let top = item.y - tooltipRect.height - 10
+    if (top < 8) {
+      top = Math.min(
+        item.y + this.getLaneHeight() + 10,
+        Math.max(stageHeight - tooltipRect.height - 8, 8)
+      )
+    }
+
+    this.tooltipEl.style.left = `${left}px`
+    this.tooltipEl.style.top = `${top}px`
+  }
+
+  private async copyHoveredDanmaku() {
+    const item = this.hoveredItemId
+      ? this.active.find((entry) => entry.id === this.hoveredItemId)
+      : null
+    if (!item) return
+
+    try {
+      await navigator.clipboard.writeText(item.text)
+      toast('已复制')
+    } catch {
+      return
+    }
   }
 
   private lowerBound(stime: number) {

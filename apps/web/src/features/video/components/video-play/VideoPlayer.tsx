@@ -26,6 +26,7 @@ const VideoPlayer = ({
   isAutoPlayNext: boolean
 }) => {
   const controllerRef = useRef<HTMLDivElement>(null)
+  const tooltipRef = useRef<HTMLDivElement>(null)
   const [isShowController, setIsShowController] = useState(true)
   const [isShowToast, setIsShowToast] = useState(false)
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -202,6 +203,7 @@ const VideoPlayer = ({
   const { bottomContainerRef, topContainerRef, scrollContainerRef } = useDanmakuManager({
     videoRef: videoElRef,
     paused,
+    tooltipRef,
   })
 
   const videoPlayerStyles = tv({
@@ -225,11 +227,11 @@ const VideoPlayer = ({
         'absolute select-none z-76 pointer-events-none leading-7 leaft-2.5 bottom-15 text-[14px]',
         isShow && 'hidden'
       ),
+      tooltip: cn('text-xs leading-1 h-12  absolute w-[162px] z-999999 invisible'),
     },
   })
 
-  const { toast, dm, state, controller, controllerMask } = videoPlayerStyles()
-
+  const { toast, dm, state, controller, controllerMask, tooltip } = videoPlayerStyles()
   return (
     <>
       <div className={dm()}>
@@ -353,6 +355,57 @@ const VideoPlayer = ({
             style={{ transform: `scaleX(${progress})` }}
             className={'bg-[#00a1d6] inset-0 absolute origin-[0_0]'}
           ></div>
+        </div>
+      </div>
+      {/*TODO*/}
+      <div ref={tooltipRef} className={tooltip()}>
+        <div
+          data-danmaku-tooltip-copy='true'
+          className={
+            'items-center rounded-[4px] cursor-pointer flex h-8 justify-center w-[32px] z-2 absolute top-2.5 left-16 hover:bg-[#2f3238e5]'
+          }
+        >
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            fill='none'
+            data-pointer='none'
+            viewBox='0 0 24 25'
+          >
+            <path
+              fill='#fff'
+              d='M3 6.87a4 4 0 0 1 4-4h6.75a.75.75 0 0 1 0 1.5H7a2.5 2.5 0 0 0-2.5 2.5v9.75a.75.75 0 0 1-1.5 0V6.87Z'
+            ></path>
+            <path
+              fill='#fff'
+              d='M6 8.87a3 3 0 0 1 3-3h8.5a3 3 0 0 1 3 3v7.11a3.5 3.5 0 0 1-1.025 2.476l-3.39 3.389a3.5 3.5 0 0 1-2.474 1.025H9a3 3 0 0 1-3-3v-11Zm3-1.5a1.5 1.5 0 0 0-1.5 1.5v11a1.5 1.5 0 0 0 1.5 1.5h4.61a2 2 0 0 0 1.415-.586l3.39-3.389A2 2 0 0 0 19 15.981V8.87a1.5 1.5 0 0 0-1.5-1.5H9Z'
+            ></path>
+            <path
+              fill='#fff'
+              d='M16.25 17.62a1 1 0 0 0-1 1v2.75a.75.75 0 0 1-1.5 0v-2.75a2.5 2.5 0 0 1 2.5-2.5H19a.75.75 0 0 1 0 1.5h-2.75ZM9.75 11.62a.75.75 0 0 1 .75-.75H16a.75.75 0 0 1 0 1.5h-5.5a.75.75 0 0 1-.75-.75ZM9.75 15.12a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 0 1.5h-3a.75.75 0 0 1-.75-.75Z'
+            ></path>
+          </svg>
+        </div>
+        <div className={'absolute inset-0 origin-center'}>
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            fill='none'
+            data-pointer='none'
+            viewBox='0 0 162 48'
+          >
+            <path
+              fill='#000'
+              fillOpacity='.703'
+              fillRule='evenodd'
+              d='M1 27.075C1 16.07 9.92 7.149 20.925 7.149h55.91L81.522 1l4.741 6.15h54.812C152.079 7.15 161 16.07 161 27.074 161 38.079 152.079 47 141.075 47H20.925C9.921 47 1 38.08 1 27.075Z'
+              clipRule='evenodd'
+            ></path>
+            <path
+              stroke='#fff'
+              strokeLinejoin='round'
+              strokeOpacity='.496'
+              d='M81.918.695a.5.5 0 0 0-.794.002l-4.536 5.952H20.925C9.645 6.65.5 15.794.5 27.075.5 38.355 9.645 47.5 20.925 47.5h120.15c11.28 0 20.425-9.145 20.425-20.425 0-11.281-9.145-20.426-20.425-20.426H86.509L81.918.695Z'
+            ></path>
+          </svg>
         </div>
       </div>
       {!isShow && <VIdeoEndWrapper isAutoPlayNext={isAutoPlayNext} videoDetail={videoDetail} />}
