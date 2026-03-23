@@ -6,7 +6,7 @@
   - 在 `pull_request` 和 `main` 分支 `push` 时执行
   - 安装依赖并构建 `shared-types`、`server`、`web`
 - `Deploy`
-  - 在 `main` 分支 `push` 后执行
+  - 在 `CI` 成功后执行
   - 通过 SSH 把构建产物上传到服务器
   - 只更新并重启 `milimili-app`
   - 不会重建 `milimili-mongo`
@@ -44,7 +44,7 @@
 2. 把公钥追加到服务器 `~/.ssh/authorized_keys`。
 3. 把私钥内容保存到 GitHub Secret `DEPLOY_SSH_KEY`。
 4. 在 GitHub 仓库 `Settings -> Secrets and variables -> Actions` 中补齐其余 secrets。
-5. 推送到 `main`，观察 `CI` 和 `Deploy` 两个工作流。
+5. 推送到 `main`，先观察 `CI` 成功，再观察 `Deploy` 自动接续执行。
 
 ## 当前部署策略
 
