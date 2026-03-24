@@ -11,7 +11,7 @@ import { formatTime } from '@/utils'
 import { useHistoryAdd } from '@/features'
 import { useShow } from '@/hooks'
 import { useVideoContext } from '@/features/video/components/video-play/VideoPlayerProvider'
-import VIdeoEndWrapper from '@/features/video/components/video-play/VIdeoEndWrapper'
+import VideoEndWrapper from '@/features/video/components/video-play/VideoEndWrapper'
 
 const VideoPlayer = ({
   videoDetail,
@@ -361,7 +361,7 @@ const VideoPlayer = ({
         <div
           data-danmaku-tooltip-copy='true'
           className={
-            'items-center rounded-[4px] cursor-pointer flex h-8 justify-center w-[32px] z-2 absolute top-2.5 left-16 hover:bg-[#2f3238e5]'
+            'items-center rounded-[4px] cursor-pointer flex h-8 justify-center w-[32px] z-2 absolute top-2.5 left-16 hover:bg-[#2f3238e5] in-data-[type=top]:h-5'
           }
         >
           <svg
@@ -384,7 +384,10 @@ const VideoPlayer = ({
             ></path>
           </svg>
         </div>
-        <div className={'absolute inset-0 origin-center'}>
+        <div
+          data-type={'bottom'}
+          className={'absolute inset-0 origin-center in-data-[type=top]:rotate-180'}
+        >
           <svg
             xmlns='http://www.w3.org/2000/svg'
             fill='none'
@@ -407,7 +410,7 @@ const VideoPlayer = ({
           </svg>
         </div>
       </div>
-      {!isShow && <VIdeoEndWrapper isAutoPlayNext={isAutoPlayNext} videoDetail={videoDetail} />}
+      {!isShow && <VideoEndWrapper isAutoPlayNext={isAutoPlayNext} videoDetail={videoDetail} />}
     </>
   )
 }

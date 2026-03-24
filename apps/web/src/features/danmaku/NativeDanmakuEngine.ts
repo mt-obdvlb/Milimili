@@ -163,6 +163,7 @@ export class NativeDanmakuEngine {
     this.tooltipEl.addEventListener('mouseenter', this.handleTooltipMouseEnter)
     this.tooltipEl.addEventListener('mouseleave', this.handleTooltipMouseLeave)
     this.tooltipCopyTriggerEl?.addEventListener('click', this.handleTooltipClick)
+    this.updateTooltipDirection('top')
   }
 
   load(data: NativeDanmakuItem[]) {
@@ -752,15 +753,24 @@ export class NativeDanmakuEngine {
     left = clamp(left, 8, Math.max(stageWidth - tooltipRect.width - 8, 8))
 
     let top = item.y - tooltipRect.height - 10
+    let direction: 'top' | 'bottom' = 'top'
     if (top < 8) {
+      direction = 'bottom'
       top = Math.min(
         item.y + this.getLaneHeight() + 10,
         Math.max(stageHeight - tooltipRect.height - 8, 8)
       )
     }
 
+    this.updateTooltipDirection(direction)
     this.tooltipEl.style.left = `${left}px`
     this.tooltipEl.style.top = `${top}px`
+  }
+
+  private updateTooltipDirection(direction: 'top' | 'bottom') {
+    if (this.tooltipEl) {
+      this.tooltipEl.dataset.type = direction
+    }
   }
 
   private async copyHoveredDanmaku() {

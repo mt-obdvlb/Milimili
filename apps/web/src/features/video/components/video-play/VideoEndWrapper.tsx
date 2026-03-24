@@ -9,7 +9,7 @@ import { useVideoContext, useVideoList } from '@/features'
 import { VideoGetDetail } from '@mtobdvlb/shared-types'
 import VideoEndItem from '@/features/video/components/video-play/VideoEndItem'
 
-const VIdeoEndWrapper = ({
+const VideoEndWrapper = ({
   videoDetail,
   isAutoPlayNext,
 }: {
@@ -145,4 +145,4 @@ const VIdeoEndWrapper = ({
   )
 }
 
-export default VIdeoEndWrapper
+export default VideoEndWrapper
