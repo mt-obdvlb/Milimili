@@ -22,6 +22,7 @@ export const useDanmakuManager = ({ videoRef, paused, tooltipRef }: UseDanmakuMa
   const previousIdsRef = useRef<string[]>([])
 
   const { danmakuList, config, setCurrentTime, registerSeekHandler } = useDanmakuRuntime()
+  const previousVisibleRef = useRef(config.visible)
 
   const filteredDanmakus = useMemo(
     () =>
@@ -98,6 +99,14 @@ export const useDanmakuManager = ({ videoRef, paused, tooltipRef }: UseDanmakuMa
     const bottomEngine = bottomEngineRef.current
     if (!scrollEngine || !topEngine || !bottomEngine) return
 
+    const becameVisible = config.visible && !previousVisibleRef.current
+    previousVisibleRef.current = config.visible
+
+    if (!config.visible) {
+      previousIdsRef.current = nextIds
+      return
+    }
+
     const sendToTrack = (item: VideoGetDanmakusItem) => {
       const mapped = mapDanmaku(item)
       if (item.position === 'scroll') scrollEngine.send(mapped)
@@ -105,7 +114,7 @@ export const useDanmakuManager = ({ videoRef, paused, tooltipRef }: UseDanmakuMa
       if (item.position === 'bottom') bottomEngine.send(mapped)
     }
 
-    if (!removed && added.length === 1 && prevIds.length > 0) {
+    if (!becameVisible && !removed && added.length === 1 && prevIds.length > 0) {
       sendToTrack(added[0]!)
       previousIdsRef.current = nextIds
       return
@@ -123,7 +132,7 @@ export const useDanmakuManager = ({ videoRef, paused, tooltipRef }: UseDanmakuMa
     topEngine.load(topDanmaku)
     bottomEngine.load(bottomDanmaku)
     previousIdsRef.current = nextIds
-  }, [filteredDanmakus])
+  }, [config.visible, filteredDanmakus])
 
   useEffect(() => {
     const video = videoRef.current
