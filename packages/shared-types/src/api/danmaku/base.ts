@@ -30,6 +30,5 @@ export type DanmakuPlayerConfig = {
   fontScale: number
   areaRatio: number
   speed: number
-  density: number
   smartMask: boolean
 }

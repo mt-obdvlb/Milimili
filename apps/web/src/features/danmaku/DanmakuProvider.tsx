@@ -17,7 +17,6 @@ export const DEFAULT_DANMAKU_PLAYER_CONFIG: DanmakuPlayerConfig = {
   fontScale: 1,
   areaRatio: 0.7,
   speed: 1,
-  density: 1,
   smartMask: true,
 }
 

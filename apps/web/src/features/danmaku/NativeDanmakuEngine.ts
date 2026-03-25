@@ -30,7 +30,6 @@ type NativeDanmakuOptions = {
     opacity: number
     areaRatio: number
     speed: number
-    density: number
     hoverable: boolean
   }
 }
@@ -52,7 +51,6 @@ export class NativeDanmakuEngine {
       opacity: 1,
       areaRatio: 0.7,
       speed: 1,
-      density: 1,
       hoverable: true,
     },
   }
@@ -286,7 +284,6 @@ export class NativeDanmakuEngine {
     const { top: trackTop, usableHeight } = this.getTrackMetrics(height, laneHeight)
 
     const speedRatio = clamp(this.options.global.speed, 0.5, 2)
-    const densityRatio = clamp(this.options.global.density, 0.5, 2)
     if (this.track === 'scroll') {
       const speed = this.getScrollSpeed(width, speedRatio, measuredWidth)
       const duration = (width + measuredWidth) / speed
@@ -299,10 +296,7 @@ export class NativeDanmakuEngine {
         trackTop + lane * laneHeight,
         Math.max(trackTop + usableHeight - laneHeight, 0)
       )
-      const laneGap = Math.max(
-        this.getMinGap(measuredWidth) / Math.max(speed * densityRatio, 1),
-        0.04
-      )
+      const laneGap = Math.max(this.getMinGap(measuredWidth) / Math.max(speed, 1), 0.04)
       this.laneAvailableAt[lane] = this.playClock + laneGap
       this.active.push({
         id: item.id,
@@ -592,8 +586,7 @@ export class NativeDanmakuEngine {
   }
 
   private getActiveLimit() {
-    const densityRatio = clamp(this.options.global.density, 0.5, 2)
-    return Math.max(Math.ceil(this.laneAvailableAt.length * densityRatio), 1)
+    return Math.max(this.laneAvailableAt.length, 1)
   }
 
   private pickLane(nextWidth: number, nextSpeed: number) {

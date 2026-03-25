@@ -73,10 +73,9 @@ export const useDanmakuManager = ({ videoRef, paused, tooltipRef }: UseDanmakuMa
         opacity: config.opacity,
         areaRatio: config.areaRatio,
         speed: config.speed,
-        density: config.density,
       })
     }
-  }, [config.areaRatio, config.density, config.fontScale, config.opacity, config.speed])
+  }, [config.areaRatio, config.fontScale, config.opacity, config.speed])
 
   useEffect(() => {
     const mapDanmaku = (item: VideoGetDanmakusItem): NativeDanmakuItem => ({

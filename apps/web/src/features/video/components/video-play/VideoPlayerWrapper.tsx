@@ -224,7 +224,6 @@ const VideoPlayerWrapper = ({
                             ['字号倍率', config.fontScale, 0.8, 1.6, 0.05, 'fontScale'],
                             ['显示区域', config.areaRatio, 0.3, 1, 0.05, 'areaRatio'],
                             ['弹幕速度', config.speed, 0.6, 1.8, 0.05, 'speed'],
-                            ['弹幕密度', config.density, 0.5, 2, 0.05, 'density'],
                           ].map(([label, value, min, max, step, key]) => (
                             <div key={key}>
                               <div className='mb-2 flex items-center justify-between'>
@@ -241,7 +240,6 @@ const VideoPlayerWrapper = ({
                                   if (key === 'fontScale') updateConfig({ fontScale: next })
                                   if (key === 'areaRatio') updateConfig({ areaRatio: next })
                                   if (key === 'speed') updateConfig({ speed: next })
-                                  if (key === 'density') updateConfig({ density: next })
                                 }}
                               />
                             </div>

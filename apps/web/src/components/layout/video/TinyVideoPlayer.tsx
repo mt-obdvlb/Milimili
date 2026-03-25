@@ -22,7 +22,6 @@ const TINY_DANMAKU_CONFIG = {
   opacity: 1,
   areaRatio: 0.58,
   speed: 1,
-  density: 0.85,
   hoverable: false,
 }
 
