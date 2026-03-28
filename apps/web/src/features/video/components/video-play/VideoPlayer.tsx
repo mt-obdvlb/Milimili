@@ -45,6 +45,8 @@ const VideoPlayer = ({
     isEnded,
     duration,
     isWebFull,
+    toastContent,
+    isToastVisible,
   } = useVideoContext()
   const { config } = useDanmakuRuntime()
 
@@ -223,15 +225,31 @@ const VideoPlayer = ({
         (isShowController || isDragging) && 'opacity-100',
         isShow && 'hidden'
       ),
-      toast: cn(
+      historyToast: cn(
         'absolute select-none z-76 pointer-events-none leading-7 leaft-2.5 bottom-15 text-[14px]',
         isShow && 'hidden'
       ),
       tooltip: cn('text-xs leading-1 h-12  absolute w-[162px] z-999999 invisible'),
+      progress: cn('group cursor-move absolute z-12 inset-0'),
+      toast: cn(
+        'items-center bg-white/85 shadow-[0_10px_30px_rgba(0,0,0,0.12)] backdrop-blur-[6px] rounded-[6px] text-black flex text-[20px] h-9 left-1/2 top-1/2 z-77 absolute p-2 min-w-[96px] justify-center transition-[opacity,transform] duration-200 ease-out will-change-[opacity,transform]',
+        isToastVisible
+          ? '-translate-x-1/2 -translate-y-1/2 opacity-100 scale-100'
+          : '-translate-x-1/2 -translate-y-[42%] opacity-0 scale-[0.96]'
+      ),
     },
   })
 
-  const { toast, dm, state, controller, controllerMask, tooltip } = videoPlayerStyles()
+  const {
+    historyToast,
+    dm,
+    state,
+    controller,
+    controllerMask,
+    tooltip,
+    progress: progressStyle,
+    toast,
+  } = videoPlayerStyles()
   return (
     <>
       <div className={dm()}>
@@ -277,7 +295,7 @@ const VideoPlayer = ({
           containerRef={containerRef}
         />
       </div>
-      <div className={toast()}>
+      <div className={historyToast()}>
         <div
           className={cn(
             'opacity-100 overflow-hidden transition-all duration-250 ease-out will-change-[height,opacity]'
@@ -315,7 +333,7 @@ const VideoPlayer = ({
           )}
         </div>
       </div>
-      <div className={cn('group cursor-move absolute z-12 inset-0', !isShow && 'hidden')}>
+      <div className={cn(progressStyle(), !isShow && 'hidden')}>
         {/*<div*/}
         {/*  className={*/}
         {/*    'opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out cursor-pointer fill-white! float-right h-[26px] mr-2 mt-2 w-[26px]'*/}
@@ -410,6 +428,7 @@ const VideoPlayer = ({
           </svg>
         </div>
       </div>
+      <div className={cn(toast())}>{toastContent}</div>
       {!isShow && <VideoEndWrapper isAutoPlayNext={isAutoPlayNext} videoDetail={videoDetail} />}
     </>
   )

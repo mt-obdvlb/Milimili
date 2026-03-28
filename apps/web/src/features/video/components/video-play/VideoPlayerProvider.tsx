@@ -8,9 +8,9 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
-import { toast } from '@/lib'
 
 type VideoContextType = {
   videoRef: RefObject<HTMLVideoElement | null>
@@ -32,6 +32,9 @@ type VideoContextType = {
   speed: number
   setSpeed: (speed: number) => void
   isEnded: boolean
+  toast: (content: string) => void
+  toastContent: string
+  isToastVisible: boolean
 }
 
 const VideoContext = createContext<VideoContextType | null>(null)
@@ -60,6 +63,35 @@ export const VideoProvider = ({
   const [isPlayed, setIsPlayed] = useState(false)
   const [speed, setSpeedState] = useState(1)
   const [isEnded, setIsEnded] = useState(false)
+  const [toastContent, setToastContent] = useState('')
+  const [isToastVisible, setIsToastVisible] = useState(false)
+  const toastIdRef = useRef<null | ReturnType<typeof setTimeout>>(null)
+  const toastCleanupRef = useRef<null | ReturnType<typeof setTimeout>>(null)
+
+  const toast = (content: string) => {
+    if (!content.trim()) return
+
+    if (toastIdRef.current !== null) {
+      clearTimeout(toastIdRef.current)
+    }
+
+    if (toastCleanupRef.current !== null) {
+      clearTimeout(toastCleanupRef.current)
+    }
+
+    setToastContent(content)
+    setIsToastVisible(true)
+
+    toastIdRef.current = setTimeout(() => {
+      setIsToastVisible(false)
+      toastIdRef.current = null
+    }, 1000)
+
+    toastCleanupRef.current = setTimeout(() => {
+      setToastContent('')
+      toastCleanupRef.current = null
+    }, 1200)
+  }
 
   // 播放
   const play = () => {
@@ -243,6 +275,7 @@ export const VideoProvider = ({
       const delta = -e.deltaY / 100 // 上滚正, 下滚负
       const newVol = Math.max(0, Math.min(video.volume + delta * 0.05, 1))
       setVolume(newVol)
+      toast(`音量${Math.round(newVol * 100)}`)
     }
 
     window.addEventListener('keydown', handleKeyDown)
@@ -277,6 +310,9 @@ export const VideoProvider = ({
         speed,
         setSpeed,
         isEnded,
+        toast,
+        toastContent,
+        isToastVisible,
       }}
     >
       {children}
