@@ -43,7 +43,7 @@ copy_if_exists "$DEPLOY_PATH/packages/typescript-config/package.json" "/app/pack
 
 docker exec "$APP_CONTAINER" sh -lc '
   cd /app &&
-  CI=true pnpm install --frozen-lockfile --shamefully-hoist --ignore-scripts
+  CI=true pnpm install --prod --frozen-lockfile --prefer-offline --shamefully-hoist --ignore-scripts
 '
 
 docker cp "$DEPLOY_PATH/apps/server/dist/." "$APP_CONTAINER:/app/apps/server/dist/"

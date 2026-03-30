@@ -83,11 +83,11 @@ jobs:
       - name: Upload deploy bundle
         run: |
           rsync -az --delete \
-            -e "ssh -i ~/.ssh/id_ed25519" \
+            -e "ssh -i ~/.ssh/id_ed25519 -o ServerAliveInterval=30 -o ServerAliveCountMax=6 -o ConnectTimeout=10" \
             deploy_bundle/ \
             "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }}/"
 
       - name: Restart app container
         run: |
-          ssh -i ~/.ssh/id_ed25519 "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
+          ssh -i ~/.ssh/id_ed25519 -o ServerAliveInterval=30 -o ServerAliveCountMax=6 -o ConnectTimeout=10 "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
             "DEPLOY_PATH='${{ secrets.DEPLOY_PATH }}' APP_CONTAINER='${{ secrets.DEPLOY_APP_CONTAINER }}' sh '${{ secrets.DEPLOY_PATH }}/scripts/deploy_app_container.sh'"
