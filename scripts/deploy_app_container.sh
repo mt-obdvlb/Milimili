@@ -23,7 +23,10 @@ docker exec "$APP_CONTAINER" sh -lc '
   rm -rf /app/apps/server/dist /app/apps/web/.next &&
   mkdir -p \
     /app/apps/server \
+    /app/apps/server/dist \
     /app/apps/web \
+    /app/apps/web/.next \
+    /app/apps/web/node_modules/.bin \
     /app/packages/shared-types \
     /app/packages/tailwind-config \
     /app/packages/typescript-config
@@ -43,7 +46,12 @@ copy_if_exists "$DEPLOY_PATH/packages/typescript-config/package.json" "/app/pack
 
 docker exec "$APP_CONTAINER" sh -lc '
   cd /app &&
-  CI=true pnpm install --prod --frozen-lockfile --prefer-offline --shamefully-hoist --ignore-scripts
+  CI=true pnpm install --frozen-lockfile --shamefully-hoist --ignore-scripts
+'
+
+docker exec "$APP_CONTAINER" sh -lc '
+  ln -sfn /app/node_modules/next /app/apps/web/node_modules/next &&
+  ln -sfn /app/node_modules/.bin/next /app/apps/web/node_modules/.bin/next
 '
 
 docker cp "$DEPLOY_PATH/apps/server/dist/." "$APP_CONTAINER:/app/apps/server/dist/"
