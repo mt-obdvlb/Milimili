@@ -56,7 +56,26 @@ jobs:
 
       - name: Prepare deploy bundle
         run: |
-          mkdir -p deploy_bundle/apps/server deploy_bundle/apps/web deploy_bundle/scripts
+          mkdir -p \
+            deploy_bundle/apps/server \
+            deploy_bundle/apps/web \
+            deploy_bundle/packages/shared-types \
+            deploy_bundle/packages/tailwind-config \
+            deploy_bundle/packages/typescript-config \
+            deploy_bundle/scripts
+
+          cp package.json deploy_bundle/package.json
+          cp pnpm-lock.yaml deploy_bundle/pnpm-lock.yaml
+          cp pnpm-workspace.yaml deploy_bundle/pnpm-workspace.yaml
+          cp turbo.json deploy_bundle/turbo.json
+          if [ -f .npmrc ]; then cp .npmrc deploy_bundle/.npmrc; fi
+
+          cp apps/server/package.json deploy_bundle/apps/server/package.json
+          cp apps/web/package.json deploy_bundle/apps/web/package.json
+          cp packages/shared-types/package.json deploy_bundle/packages/shared-types/package.json
+          cp packages/tailwind-config/package.json deploy_bundle/packages/tailwind-config/package.json
+          cp packages/typescript-config/package.json deploy_bundle/packages/typescript-config/package.json
+
           cp -R apps/server/dist deploy_bundle/apps/server/dist
           cp -R apps/web/.next deploy_bundle/apps/web/.next
           cp scripts/deploy_app_container.sh deploy_bundle/scripts/deploy_app_container.sh
