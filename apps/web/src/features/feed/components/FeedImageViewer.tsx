@@ -13,15 +13,22 @@ interface FeedImagesViewerProps {
   isExpand?: boolean
 }
 
+interface ImageSize {
+  width: number
+  height: number
+}
+
 const FeedImagesViewer = ({ images, isExpand }: FeedImagesViewerProps) => {
   const [index, setIndex] = useState<number | null>(null)
   const [rotateDeg, setRotateDeg] = useState(0)
 
   const [isZoom, setIsZoom] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
-  // 在组件里加状态保存原始宽高
   const containerRef = useRef<HTMLDivElement>(null)
+  const previewViewportRef = useRef<HTMLDivElement>(null)
   const [borderStyle, setBorderStyle] = useState({ top: 0, left: 0, width: 58, height: 58 })
+  const [previewViewportSize, setPreviewViewportSize] = useState<ImageSize>({ width: 0, height: 0 })
+  const [imageNaturalSizes, setImageNaturalSizes] = useState<Record<string, ImageSize>>({})
 
   const slides = images.map((src, i) => ({
     src,
@@ -68,6 +75,57 @@ const FeedImagesViewer = ({ images, isExpand }: FeedImagesViewerProps) => {
   useEffect(() => {
     if (index !== null) scrollToIndex(index)
   }, [index, scrollToIndex])
+
+  useLayoutEffect(() => {
+    const viewport = previewViewportRef.current
+    if (!viewport) return
+
+    const updateViewportSize = () => {
+      setPreviewViewportSize({
+        width: viewport.clientWidth,
+        height: viewport.clientHeight,
+      })
+    }
+
+    updateViewportSize()
+
+    const resizeObserver = new ResizeObserver(updateViewportSize)
+    resizeObserver.observe(viewport)
+
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [isZoom])
+
+  const normalizedRotateDeg = ((rotateDeg % 360) + 360) % 360
+  const isQuarterTurn = normalizedRotateDeg === 90 || normalizedRotateDeg === 270
+  const currentImageSrc = typeof index === 'number' ? images[index] : null
+  const currentImageNaturalSize = currentImageSrc ? imageNaturalSizes[currentImageSrc] : null
+
+  const previewImageStyle =
+    currentImageNaturalSize && previewViewportSize.width > 0 && previewViewportSize.height > 0
+      ? (() => {
+          const rotatedWidth = isQuarterTurn
+            ? currentImageNaturalSize.height
+            : currentImageNaturalSize.width
+          const rotatedHeight = isQuarterTurn
+            ? currentImageNaturalSize.width
+            : currentImageNaturalSize.height
+          const scale = Math.min(
+            previewViewportSize.width / rotatedWidth,
+            previewViewportSize.height / rotatedHeight,
+            1
+          )
+
+          return {
+            width: currentImageNaturalSize.width * scale,
+            height: currentImageNaturalSize.height * scale,
+            transform: `rotate(${rotateDeg}deg)`,
+          }
+        })()
+      : {
+          transform: `rotate(${rotateDeg}deg)`,
+        }
 
   return (
     <>
@@ -219,25 +277,40 @@ const FeedImagesViewer = ({ images, isExpand }: FeedImagesViewerProps) => {
           ))}
         </div>
         {/*大图*/}
-        <div className={'bg-bg2 flex flex-col relative text-center w-full'}>
-          {typeof index === 'number' && images[index] && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              style={{
-                transform: `rotate(${rotateDeg}deg)`,
-              }}
-              src={images[index]}
-              alt={images[index]}
-              className={
-                'rounded-b-[4px] block rounded-l-[4px] cursor-zoom-out  max-w-full select-none'
-              }
-              onClick={() => {
-                setIsZoom(false)
-                setRotateDeg(0)
-                setIndex(null)
-              }}
-            />
-          )}
+        <div className={'bg-bg2 relative w-full'}>
+          <div
+            ref={previewViewportRef}
+            className={
+              'flex h-[min(70vh,560px)] min-h-[240px] w-full items-center justify-center overflow-hidden rounded-b-[4px] rounded-l-[4px] px-4'
+            }
+          >
+            {typeof index === 'number' && images[index] && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                style={previewImageStyle}
+                src={images[index]}
+                alt={images[index]}
+                className={'block cursor-zoom-out select-none transition-transform duration-200'}
+                onLoad={(event) => {
+                  const { currentTarget } = event
+                  if (!currentImageSrc) return
+
+                  setImageNaturalSizes((prev) => ({
+                    ...prev,
+                    [currentImageSrc]: {
+                      width: currentTarget.naturalWidth,
+                      height: currentTarget.naturalHeight,
+                    },
+                  }))
+                }}
+                onClick={() => {
+                  setIsZoom(false)
+                  setRotateDeg(0)
+                  setIndex(null)
+                }}
+              />
+            )}
+          </div>
           <div
             className={
               "cursor-[url('/images/prev-pointer.png'),_pointer] left-0 h-full top-0 w-1/3 absolute"
