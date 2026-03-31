@@ -5,6 +5,9 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "test": "pnpm run test:server && pnpm run test:web",
+    "test:server": "pnpm --filter server exec vitest run --config src/__test__/vitest.config.ts",
+    "test:web": "pnpm --filter web exec vitest run --config src/__test__/vitest.config.ts",
     "lint": "turbo run lint",
     "check-types": "turbo run check-types",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
