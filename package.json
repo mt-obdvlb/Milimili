@@ -15,6 +15,10 @@
     "lint-staged": "lint-staged"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/supertest": "^7.2.0",
     "@eslint/css": "^0.10.0",
     "@eslint/js": "^9.39.4",
     "@eslint/json": "^0.13.2",
@@ -32,9 +36,12 @@
     "lint-staged": "^16.4.0",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.6.14",
+    "jsdom": "^29.0.1",
+    "supertest": "^7.2.2",
     "turbo": "^2.8.21",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.57.2"
+    "typescript-eslint": "^8.57.2",
+    "vitest": "^4.1.2"
   },
   "packageManager": "pnpm@10.28.0",
   "engines": {
