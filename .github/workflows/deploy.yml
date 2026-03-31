@@ -56,6 +56,8 @@ jobs:
 
       - name: Prepare deploy bundle
         run: |
+          rm -rf apps/web/.next/dev apps/web/.next/cache
+
           mkdir -p \
             deploy_bundle/apps/server \
             deploy_bundle/apps/web \
@@ -72,12 +74,14 @@ jobs:
 
           cp apps/server/package.json deploy_bundle/apps/server/package.json
           cp apps/web/package.json deploy_bundle/apps/web/package.json
+          cp apps/web/next.config.ts deploy_bundle/apps/web/next.config.ts
           cp packages/shared-types/package.json deploy_bundle/packages/shared-types/package.json
           cp packages/tailwind-config/package.json deploy_bundle/packages/tailwind-config/package.json
           cp packages/typescript-config/package.json deploy_bundle/packages/typescript-config/package.json
 
           cp -R apps/server/dist deploy_bundle/apps/server/dist
           cp -R apps/web/.next deploy_bundle/apps/web/.next
+          if [ -d apps/web/public ]; then cp -R apps/web/public deploy_bundle/apps/web/public; fi
           cp scripts/deploy_app_container.sh deploy_bundle/scripts/deploy_app_container.sh
 
       - name: Upload deploy bundle

@@ -3,6 +3,7 @@ import { RequestHandler } from 'express'
 import { AuthService } from '@/services/auth.service'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { AuthRefresh, AuthSendCodeDTO, Result } from '@mtobdvlb/shared-types'
+import { getCookieOptions } from '@/utils'
 
 export const authRefresh: RequestHandler<ParamsDictionary, Result<AuthRefresh>> = async (
   req,
@@ -17,20 +18,8 @@ export const authRefresh: RequestHandler<ParamsDictionary, Result<AuthRefresh>> 
   }
 
   const { accessToken, newRefreshToken } = await AuthService.refreshToken(refreshToken)
-  res.cookie('refresh_token', newRefreshToken, {
-    httpOnly: true,
-    maxAge: 1000 * 60 * 60 * 24 * 7,
-    sameSite: 'lax',
-    path: '/',
-    secure: false,
-  })
-  res.cookie('access_token', accessToken, {
-    httpOnly: true,
-    maxAge: 1000 * 60 * 15,
-    sameSite: 'lax',
-    path: '/',
-    secure: false,
-  })
+  res.cookie('refresh_token', newRefreshToken, getCookieOptions(1000 * 60 * 60 * 24 * 7))
+  res.cookie('access_token', accessToken, getCookieOptions(1000 * 60 * 15))
   return res.status(200).json({
     code: 0,
     data: {

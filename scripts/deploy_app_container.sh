@@ -20,12 +20,13 @@ copy_if_exists() {
 }
 
 docker exec "$APP_CONTAINER" sh -lc '
-  rm -rf /app/apps/server/dist /app/apps/web/.next &&
+  rm -rf /app/apps/server/dist /app/apps/web/.next /app/apps/web/public &&
   mkdir -p \
     /app/apps/server \
     /app/apps/server/dist \
     /app/apps/web \
     /app/apps/web/.next \
+    /app/apps/web/public \
     /app/apps/web/node_modules/.bin \
     /app/packages/shared-types \
     /app/packages/tailwind-config \
@@ -40,6 +41,7 @@ copy_if_exists "$DEPLOY_PATH/.npmrc" "/app/.npmrc"
 
 copy_if_exists "$DEPLOY_PATH/apps/server/package.json" "/app/apps/server/package.json"
 copy_if_exists "$DEPLOY_PATH/apps/web/package.json" "/app/apps/web/package.json"
+copy_if_exists "$DEPLOY_PATH/apps/web/next.config.ts" "/app/apps/web/next.config.ts"
 copy_if_exists "$DEPLOY_PATH/packages/shared-types/package.json" "/app/packages/shared-types/package.json"
 copy_if_exists "$DEPLOY_PATH/packages/tailwind-config/package.json" "/app/packages/tailwind-config/package.json"
 copy_if_exists "$DEPLOY_PATH/packages/typescript-config/package.json" "/app/packages/typescript-config/package.json"
@@ -56,5 +58,6 @@ docker exec "$APP_CONTAINER" sh -lc '
 
 docker cp "$DEPLOY_PATH/apps/server/dist/." "$APP_CONTAINER:/app/apps/server/dist/"
 docker cp "$DEPLOY_PATH/apps/web/.next/." "$APP_CONTAINER:/app/apps/web/.next/"
+copy_if_exists "$DEPLOY_PATH/apps/web/public" "/app/apps/web/public"
 
 docker restart "$APP_CONTAINER"

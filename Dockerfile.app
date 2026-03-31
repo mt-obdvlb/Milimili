@@ -24,29 +24,18 @@ RUN pnpm -F server build
 RUN pnpm -F web build
 
 # -------------------------
-# 4. 安装 nginx（可选，只反代 /api）
-# -------------------------
-RUN apk add --no-cache nginx
-
-# -------------------------
-# 5. 配置 nginx
-# -------------------------
-COPY nginx/nginx.conf /etc/nginx/nginx.conf
-
-# -------------------------
-# 6. 启动脚本
+# 4. 启动脚本
 # -------------------------
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
 # -------------------------
-# 7. 环境变量 + 端口
+# 5. 环境变量 + 端口
 # -------------------------
 ENV NODE_ENV=production
-EXPOSE 80 3000 3001
- # 3000 后端, 3001 前端 SSR
+EXPOSE 3000 3001
 
 # -------------------------
-# 8. 启动容器
+# 6. 启动容器
 # -------------------------
 CMD ["/start.sh"]

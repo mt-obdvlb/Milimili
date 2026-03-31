@@ -16,6 +16,7 @@ import {
   UserUpdateDTO,
 } from '@mtobdvlb/shared-types'
 import { ParamsDictionary } from 'express-serve-static-core'
+import { getClearCookieOptions, getCookieOptions } from '@/utils'
 
 export const userLogin: RequestHandler<ParamsDictionary, Result, UserLoginDTO> = async (
   req,
@@ -37,37 +38,15 @@ export const userLogin: RequestHandler<ParamsDictionary, Result, UserLoginDTO> =
       message: MESSAGE.LOGIN_ERROR,
     })
   }
-  res.cookie('refresh_token', refreshToken, {
-    httpOnly: true,
-    maxAge: 1000 * 60 * 60 * 24 * 7,
-    sameSite: 'lax',
-    path: '/',
-    secure: false,
-  })
-  res.cookie('access_token', accessToken, {
-    httpOnly: true,
-    maxAge: 1000 * 60 * 15,
-    sameSite: 'lax',
-    path: '/',
-    secure: false,
-  })
+  res.cookie('refresh_token', refreshToken, getCookieOptions(1000 * 60 * 60 * 24 * 7))
+  res.cookie('access_token', accessToken, getCookieOptions(1000 * 60 * 15))
   return res.status(200).json({ code: 0 })
 }
 
 export const userLogout: RequestHandler<ParamsDictionary, Result, void> = async (_, res) => {
-  res.clearCookie('access_token', {
-    httpOnly: true,
-    sameSite: 'lax',
-    path: '/',
-    secure: false,
-  })
+  res.clearCookie('access_token', getClearCookieOptions())
 
-  res.clearCookie('refresh_token', {
-    httpOnly: true,
-    sameSite: 'lax',
-    path: '/',
-    secure: false,
-  })
+  res.clearCookie('refresh_token', getClearCookieOptions())
   return res.status(200).json({ code: 0 })
 }
 

@@ -5,14 +5,15 @@ services:
     env_file:
       - .env.production
     ports:
-      - "80:80"
+      - "127.0.0.1:3000:3000"
+      - "127.0.0.1:3001:3001"
     restart: always
     depends_on:
       - mongo
       - redis
 
   mongo:
-    image: mongo:6.0
+    image: mongo:latest
     container_name: milimili-mongo
     volumes:
       - mongo_data:/data/db

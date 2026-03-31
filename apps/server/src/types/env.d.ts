@@ -4,6 +4,7 @@ declare namespace NodeJS {
     // 通用
     PORT: string
     FRONTEND_URL: string
+    SWAGGER_SERVER_URL: string
     // MongoDB
     MONGO_URI: string
 

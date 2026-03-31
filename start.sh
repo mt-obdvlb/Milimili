@@ -11,6 +11,6 @@ node apps/server/dist/server.js &
 pnpm -F web start &   # 默认监听 3001
 
 # -------------------------
-# 启动 nginx 反代 /api（可选）
+# 保持容器前台运行
 # -------------------------
-nginx -g 'daemon off;'
+wait -n

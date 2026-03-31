@@ -1,6 +1,16 @@
 import { Express } from 'express'
+import path from 'path'
 import swaggerJSDoc from 'swagger-jsdoc'
 import swaggerUi from 'swagger-ui-express'
+import { getAppConfig } from '@/config'
+
+const appConfig = getAppConfig()
+const isCompiledRuntime = __filename.endsWith('.js')
+const apiFileExtension = isCompiledRuntime ? 'js' : 'ts'
+const swaggerApiGlobs = [
+  path.join(__dirname, `../routes/**/*.${apiFileExtension}`),
+  path.join(__dirname, `../controllers/**/*.${apiFileExtension}`),
+]
 
 const swaggerDefinition = {
   openapi: '3.0.0',
@@ -9,12 +19,12 @@ const swaggerDefinition = {
     version: '1.0.0',
     description: '使用 Swagger 自动生成的接口文档',
   },
-  servers: [{ url: 'http://localhost:3000' }],
+  servers: [{ url: appConfig.swaggerServerUrl }],
 }
 
 const options = {
   swaggerDefinition,
-  apis: ['src/routes/**/*.ts', 'src/controllers/**/*.ts'], // 你的接口注释路径
+  apis: swaggerApiGlobs,
 }
 
 const swaggerSpec = swaggerJSDoc(options)

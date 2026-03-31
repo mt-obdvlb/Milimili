@@ -153,6 +153,8 @@ docker compose up -d mongo redis
 
 补充说明：仓库自带的 `redis` 容器默认没有预设密码，使用时请同步调整 `apps/server/.env` 中的 `REDIS_URI` / `REDIS_PASSWORD`，保证和你的本地 Redis 配置一致。
 
+生产部署时，建议让应用容器只监听 `127.0.0.1:3000`（后端）和 `127.0.0.1:3001`（前端），再由宿主机 `nginx` 统一接管 `80/443`、域名与 HTTPS 证书。仓库中的 [nginx/nginx.conf](/Users/mtobdvlb/Desktop/Code/Project/Milimili/nginx/nginx.conf) 已按 `www.mtobdvlb.icu` 的宿主机反向代理场景整理。
+
 ### 5. 启动开发环境
 
 ```bash
