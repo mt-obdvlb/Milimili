@@ -72,16 +72,20 @@ describe('toast and socket libs', () => {
     expect(development.io).toHaveBeenCalledTimes(1)
     expect(development.io).toHaveBeenCalledWith('http://localhost:3000', {
       autoConnect: false,
+      path: '/socket.io/',
+      transports: undefined,
       withCredentials: true,
     })
 
     const production = await loadSocketModule({
       NODE_ENV: 'production',
-      NEXT_PUBLIC_WS_URL: 'https://socket.example.com',
+      NEXT_PUBLIC_WS_URL: '/socket.io/',
     })
     production.getSocket()
-    expect(production.io).toHaveBeenCalledWith('https://socket.example.com', {
+    expect(production.io).toHaveBeenCalledWith(undefined, {
       autoConnect: false,
+      path: '/socket.io/',
+      transports: ['websocket'],
       withCredentials: true,
     })
   })
