@@ -58,6 +58,8 @@ docker exec "$APP_CONTAINER" sh -lc '
 
 docker cp "$DEPLOY_PATH/apps/server/dist/." "$APP_CONTAINER:/app/apps/server/dist/"
 docker cp "$DEPLOY_PATH/apps/web/.next/." "$APP_CONTAINER:/app/apps/web/.next/"
-copy_if_exists "$DEPLOY_PATH/apps/web/public" "/app/apps/web/public"
+if [ -d "$DEPLOY_PATH/apps/web/public" ]; then
+  docker cp "$DEPLOY_PATH/apps/web/public/." "$APP_CONTAINER:/app/apps/web/public/"
+fi
 
 docker restart "$APP_CONTAINER"
