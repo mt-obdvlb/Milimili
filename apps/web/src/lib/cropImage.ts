@@ -1,5 +1,6 @@
-// /lib/cropImage.ts
-export const getCroppedImg = (imageSrc: string, pixelCrop: any): Promise<Blob> => {
+import type { PixelCrop } from 'react-image-crop'
+
+export const getCroppedImg = (imageSrc: string, pixelCrop: PixelCrop): Promise<Blob> => {
   return new Promise((resolve, reject) => {
     const image = new Image()
     image.src = imageSrc

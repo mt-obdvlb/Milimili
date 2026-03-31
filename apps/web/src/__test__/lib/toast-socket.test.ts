@@ -25,11 +25,12 @@ const loadSocketModule = async (env: Record<string, string | undefined>) => {
     io,
   }))
 
-  process.env.NODE_ENV = env.NODE_ENV
+  vi.stubEnv('NODE_ENV', env.NODE_ENV ?? '')
   if (env.NEXT_PUBLIC_WS_URL === undefined) {
-    delete process.env.NEXT_PUBLIC_WS_URL
+    vi.unstubAllEnvs()
+    vi.stubEnv('NODE_ENV', env.NODE_ENV ?? '')
   } else {
-    process.env.NEXT_PUBLIC_WS_URL = env.NEXT_PUBLIC_WS_URL
+    vi.stubEnv('NEXT_PUBLIC_WS_URL', env.NEXT_PUBLIC_WS_URL)
   }
 
   const mod = await import('@/lib/socket')

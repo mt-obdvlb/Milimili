@@ -18,7 +18,7 @@ import { isLike, like, unlike } from '@/services/like'
 
 describe('web services: comment/follow/history/like', () => {
   it('requests comment list, creation, and deletion', () => {
-    const params = { videoId: 'video-1', page: 1, pageSize: 10, sort: 'new' }
+    const params = { videoId: 'video-1', page: 1, pageSize: 10, sort: 'new' } as const
     const body = { content: 'hello', videoId: 'video-1' }
 
     commentList(params)
@@ -46,9 +46,9 @@ describe('web services: comment/follow/history/like', () => {
       data: body,
     })
 
-    await followList({ page: 1, pageSize: 20, userId: 'user-1', type: 'follow' })
+    await followList({ page: 1, pageSize: 20, userId: 'user-1', type: 'following' })
     expect(mockRequest.get).toHaveBeenNthCalledWith(2, '/follows/list', {
-      params: { page: 1, pageSize: 20, userId: 'user-1', type: 'follow' },
+      params: { page: 1, pageSize: 20, userId: 'user-1', type: 'following' },
     })
   })
 
@@ -56,14 +56,16 @@ describe('web services: comment/follow/history/like', () => {
     const listParams = {
       page: 3,
       pageSize: 20,
-      keyword: 'test',
-    }
+      kw: 'test',
+      time: 'all',
+      watchAt: 'all',
+    } as const
     const addBody = {
-      progress: 100,
+      duration: 100,
       videoId: 'video-1',
     }
     const deleteBody = {
-      ids: ['history-1', 'history-2'],
+      videoIds: ['history-1', 'history-2'],
     }
 
     historyGetRecent()

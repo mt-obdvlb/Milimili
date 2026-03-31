@@ -1,3 +1,4 @@
+import React from 'react'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { getMockProps } from '@/__test__/utils/component.mock'
@@ -95,7 +96,6 @@ vi.mock('@/features/search/components/SearchUserList', () => ({
   ),
 }))
 vi.mock('@/components', () => {
-  const React = require('react') as typeof import('react')
   const TabsContext = React.createContext<{
     setValue: (value: string) => void
     value: string

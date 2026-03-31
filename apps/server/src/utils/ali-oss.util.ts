@@ -1,17 +1,20 @@
 import Oss from 'ali-oss'
 import { getOssConfig } from '@/config'
 
-const ossConfig = getOssConfig()
+const createOssClient = () => {
+  const ossConfig = getOssConfig()
 
-const ossClient = new Oss({
-  bucket: ossConfig.bucket,
-  accessKeyId: ossConfig.accessKeyId,
-  accessKeySecret: ossConfig.accessKeySecret,
-  region: ossConfig.region,
-  secure: true,
-})
+  return new Oss({
+    bucket: ossConfig.bucket,
+    accessKeyId: ossConfig.accessKeyId,
+    accessKeySecret: ossConfig.accessKeySecret,
+    region: ossConfig.region,
+    secure: true,
+  })
+}
 
 export const getUploadURL = async (fileName: string) => {
+  const ossClient = createOssClient()
   const objectKey = `${Date.now()}-${fileName}`
   const url = ossClient.signatureUrl(objectKey, {
     expires: 300,

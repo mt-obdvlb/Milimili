@@ -178,7 +178,13 @@ describe('feature api: interaction hooks', () => {
       wrapper: query.wrapper,
     })
     const favoriteListHook = renderHook(
-      () => useFavoriteList({ favoriteFolderId: 'folder-1', page: 1, pageSize: 20 }),
+      () =>
+        useFavoriteList({
+          favoriteFolderId: 'folder-1',
+          page: 1,
+          pageSize: 20,
+          sort: 'favoriteAt',
+        }),
       { wrapper: query.wrapper }
     )
 
@@ -191,9 +197,8 @@ describe('feature api: interaction hooks', () => {
     const moveHook = renderHook(() => useFavoriteMoveBatch(), { wrapper: query.wrapper })
     await act(async () => {
       await moveHook.result.current.favoriteMove({
-        sourceFolderId: 'folder-1',
         targetFolderId: 'folder-2',
-        videoIds: ['video-1'],
+        ids: ['favorite-1'],
       })
     })
 
@@ -214,7 +219,7 @@ describe('feature api: interaction hooks', () => {
 
     const stateHook = renderHook(() => useFollowGet('user-2'), { wrapper: query.wrapper })
     const listHook = renderHook(
-      () => useFollowList({ page: 1, pageSize: 20, userId: 'user-1', type: 'follow' }),
+      () => useFollowList({ page: 1, pageSize: 20, userId: 'user-1', type: 'following' }),
       { wrapper: query.wrapper }
     )
 
@@ -252,9 +257,12 @@ describe('feature api: interaction hooks', () => {
     const invalidateSpy = vi.spyOn(query.client, 'invalidateQueries')
 
     const recentHook = renderHook(() => useHistoryGetRecent(), { wrapper: query.wrapper })
-    const listHook = renderHook(() => useHistoryList({ keyword: '动画' }, 1), {
-      wrapper: query.wrapper,
-    })
+    const listHook = renderHook(
+      () => useHistoryList({ kw: '动画', time: 'all', watchAt: 'all' }, 1),
+      {
+        wrapper: query.wrapper,
+      }
+    )
 
     await waitFor(() => {
       expect(recentHook.result.current.historyRecentList).toEqual([{ id: 'history-1' }])
@@ -280,7 +288,7 @@ describe('feature api: interaction hooks', () => {
 
     const addHook = renderHook(() => useHistoryAdd(), { wrapper: query.wrapper })
     await act(async () => {
-      await addHook.result.current.historyAdd({ videoId: 'video-1', progress: 10 })
+      await addHook.result.current.historyAdd({ duration: 10, videoId: 'video-1' })
     })
 
     expect(invalidateSpy).toHaveBeenCalledWith({
@@ -288,7 +296,7 @@ describe('feature api: interaction hooks', () => {
       queryKey: ['history', 'list'],
     })
     expect(mocks.historyAdd).toHaveBeenCalledWith(
-      { videoId: 'video-1', progress: 10 },
+      { duration: 10, videoId: 'video-1' },
       expect.objectContaining({
         client: expect.any(Object),
       })
@@ -316,9 +324,12 @@ describe('feature api: interaction hooks', () => {
     const likeMutationHook = renderHook(() => useLike({ videoId: 'video-1' }), {
       wrapper: query.wrapper,
     })
-    const watchLaterListHook = renderHook(() => useWatchLaterList({ page: 1, pageSize: 10 }), {
-      wrapper: query.wrapper,
-    })
+    const watchLaterListHook = renderHook(
+      () => useWatchLaterList({ addAt: 'all', sort: 'latest', time: 'all', type: 'all' }),
+      {
+        wrapper: query.wrapper,
+      }
+    )
     const isWatchLaterHook = renderHook(() => useIsWatchLater('video-1'), {
       wrapper: query.wrapper,
     })

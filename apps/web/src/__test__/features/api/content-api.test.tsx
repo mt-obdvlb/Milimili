@@ -239,7 +239,7 @@ describe('feature api: content hooks', () => {
       await readHook.result.current.readMessage({ type: 'reply' })
       await conversationMutationHook.result.current.createConversation('user-2')
       await conversationMutationHook.result.current.deleteConversation('conversation-1')
-      await sendHook.result.current.sendMessage({ receiverId: 'user-2', content: '你好' })
+      await sendHook.result.current.sendMessage({ toId: 'user-2', content: '你好' })
     })
 
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['messages'] })
@@ -292,7 +292,10 @@ describe('feature api: content hooks', () => {
 
     const updateHook = renderHook(() => useUserUpdateInfo(), { wrapper: query.wrapper })
     await act(async () => {
-      await updateHook.result.current.updateUserInfo({ username: 'new-name' })
+      await updateHook.result.current.updateUserInfo({
+        avatar: 'https://example.com/avatar.png',
+        name: 'new-name',
+      })
     })
 
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['user'] })
@@ -336,12 +339,15 @@ describe('feature api: content hooks', () => {
     const detailHook = renderHook(() => useVideoDetail('video-1'), { wrapper: query.wrapper })
     const likeListHook = renderHook(() => useVideoLikeList('user-1'), { wrapper: query.wrapper })
     const spaceHook = renderHook(
-      () => useVideoListSpace({ userId: 'user-1', page: 1, pageSize: 20 }),
+      () => useVideoListSpace({ userId: 'user-1', page: 1, pageSize: 20, sort: 'publishedAt' }),
       { wrapper: query.wrapper }
     )
-    const pageDisabledHook = renderHook(() => useVideoPageList({ page: 1, pageSize: 20 }), {
-      wrapper: query.wrapper,
-    })
+    const pageDisabledHook = renderHook(
+      () => useVideoPageList({ page: 1, pageSize: 20, sort: 'publishedAt' }),
+      {
+        wrapper: query.wrapper,
+      }
+    )
 
     await waitFor(() => {
       expect(listHook.result.current.videoRecommendList).toEqual([{ id: 'recommend-1' }])

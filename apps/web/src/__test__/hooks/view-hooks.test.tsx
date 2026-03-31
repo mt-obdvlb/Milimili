@@ -42,7 +42,7 @@ describe('view hooks', () => {
         clientWidth: 200,
         scrollWidth: 320,
       },
-    }
+    } as React.RefObject<HTMLElement | null>
 
     const { result } = renderHook(() => useCanScroll(ref))
 

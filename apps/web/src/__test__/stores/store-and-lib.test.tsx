@@ -32,7 +32,7 @@ describe('stores and simple libs', () => {
     vanilla.getState().logoutUser()
     expect(vanilla.getState().user).toBeNull()
 
-    const windowSpy = vi.stubGlobal('window', {} as Window & typeof globalThis)
+    vi.stubGlobal('window', {} as Window & typeof globalThis)
     const initialized = initializeUserStore({
       user: { id: 'user-2', username: 'client-user' } as never,
     })
@@ -40,7 +40,5 @@ describe('stores and simple libs', () => {
 
     const { result } = renderHook(() => useUserStore((state) => state.user))
     expect(result.current).toEqual({ id: 'user-2', username: 'client-user' })
-
-    windowSpy
   })
 })

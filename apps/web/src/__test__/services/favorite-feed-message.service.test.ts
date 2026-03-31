@@ -58,21 +58,19 @@ describe('web services: favorite/feed/message', () => {
       data: { ids: ['fav-1'] },
     })
 
-    favoriteAddBatch({ favoriteFolderId: 'folder-1', videoIds: ['video-1'] })
+    favoriteAddBatch({ folderId: 'folder-1', videoIds: ['video-1'] })
     expect(mockRequest.post).toHaveBeenNthCalledWith(1, '/favorites/batch', {
-      favoriteFolderId: 'folder-1',
+      folderId: 'folder-1',
       videoIds: ['video-1'],
     })
 
     favoriteMoveBatch({
-      sourceFolderId: 'folder-1',
       targetFolderId: 'folder-2',
-      videoIds: ['video-1'],
+      ids: ['fav-1'],
     })
     expect(mockRequest.post).toHaveBeenNthCalledWith(2, '/favorites/move-batch', {
-      sourceFolderId: 'folder-1',
       targetFolderId: 'folder-2',
-      videoIds: ['video-1'],
+      ids: ['fav-1'],
     })
 
     favoriteCleanWatchLater()
@@ -89,9 +87,9 @@ describe('web services: favorite/feed/message', () => {
     favoriteGetDetail('folder-1')
     expect(mockRequest.get).toHaveBeenNthCalledWith(5, '/favorites/detail/folder-1')
 
-    favoriteList({ favoriteFolderId: 'folder-1', page: 1, pageSize: 20 })
+    favoriteList({ favoriteFolderId: 'folder-1', page: 1, pageSize: 20, sort: 'favoriteAt' })
     expect(mockRequest.get).toHaveBeenNthCalledWith(6, '/favorites', {
-      params: { favoriteFolderId: 'folder-1', page: 1, pageSize: 20 },
+      params: { favoriteFolderId: 'folder-1', page: 1, pageSize: 20, sort: 'favoriteAt' },
     })
 
     favoriteDeleteFolder('folder-1')
@@ -151,10 +149,10 @@ describe('web services: favorite/feed/message', () => {
       params: { page: 1, pageSize: 10, type: 'reply' },
     })
 
-    messageSendWhisper({ content: '你好', receiverId: 'user-2' })
+    messageSendWhisper({ content: '你好', toId: 'user-2' })
     expect(mockRequest.post).toHaveBeenNthCalledWith(1, '/messages/send-whisper', {
       content: '你好',
-      receiverId: 'user-2',
+      toId: 'user-2',
     })
 
     messageDelete('message-1')

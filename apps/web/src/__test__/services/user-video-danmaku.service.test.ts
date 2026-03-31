@@ -32,10 +32,10 @@ import {
 
 describe('web services: user/video/danmaku', () => {
   it('requests user endpoints', () => {
-    loginUser({ account: 'test@example.com', password: 'secret' })
+    loginUser({ email: 'test@example.com', password: 'secret123A!' })
     expectRequestCalled('post', '/users/login', {
-      account: 'test@example.com',
-      password: 'secret',
+      email: 'test@example.com',
+      password: 'secret123A!',
     })
 
     logoutUser()
@@ -52,12 +52,14 @@ describe('web services: user/video/danmaku', () => {
 
     userFindPassword({
       email: 'user@example.com',
-      password: 'new-secret',
+      confirmPassword: 'New-secret1!',
+      password: 'New-secret1!',
       code: '123456',
     })
     expect(mockRequest.put).toHaveBeenNthCalledWith(1, '/users/find-password', {
       email: 'user@example.com',
-      password: 'new-secret',
+      confirmPassword: 'New-secret1!',
+      password: 'New-secret1!',
       code: '123456',
     })
 
@@ -69,9 +71,13 @@ describe('web services: user/video/danmaku', () => {
       params: { keyword: 'mi', page: 1, pageSize: 10 },
     })
 
-    updateUser({ username: 'new-name' })
+    updateUser({
+      avatar: 'https://example.com/avatar.png',
+      name: 'new-name',
+    })
     expect(mockRequest.put).toHaveBeenNthCalledWith(2, '/users/', {
-      username: 'new-name',
+      avatar: 'https://example.com/avatar.png',
+      name: 'new-name',
     })
 
     getUserById('user-1')
@@ -88,9 +94,9 @@ describe('web services: user/video/danmaku', () => {
       },
     })
 
-    videoGetWatchLater({ page: 1, pageSize: 10 })
+    videoGetWatchLater({ addAt: 'all', sort: 'latest', time: 'all', type: 'all' })
     expect(mockRequest.get).toHaveBeenNthCalledWith(2, '/videos/watch-later', {
-      params: { page: 1, pageSize: 10 },
+      params: { addAt: 'all', sort: 'latest', time: 'all', type: 'all' },
     })
 
     videoGetDetail('video-1')
@@ -104,9 +110,9 @@ describe('web services: user/video/danmaku', () => {
     videoListLike('user-1')
     expect(mockRequest.get).toHaveBeenNthCalledWith(4, '/videos/list-like/user-1')
 
-    videoListSpace({ userId: 'user-1', page: 1, pageSize: 20 })
+    videoListSpace({ userId: 'user-1', page: 1, pageSize: 20, sort: 'publishedAt' })
     expect(mockRequest.get).toHaveBeenNthCalledWith(5, '/videos/list-space', {
-      params: { userId: 'user-1', page: 1, pageSize: 20 },
+      params: { userId: 'user-1', page: 1, pageSize: 20, sort: 'publishedAt' },
     })
 
     videoCreate({ title: '新视频' })
@@ -127,10 +133,20 @@ describe('web services: user/video/danmaku', () => {
     danmakuGet('video-1')
     expectRequestCalled('get', '/videos/danmakus/video-1')
 
-    danmakuAdd({ videoId: 'video-1', content: '2333', time: 12 })
-    expect(mockRequest.post).toHaveBeenNthCalledWith(1, '/videos/danmakus', {
-      videoId: 'video-1',
+    danmakuAdd({
+      color: '#FFFFFF',
       content: '2333',
+      fontSize: 24,
+      position: 'scroll',
+      videoId: 'video-1',
+      time: 12,
+    })
+    expect(mockRequest.post).toHaveBeenNthCalledWith(1, '/videos/danmakus', {
+      color: '#FFFFFF',
+      content: '2333',
+      fontSize: 24,
+      position: 'scroll',
+      videoId: 'video-1',
       time: 12,
     })
   })

@@ -159,10 +159,24 @@ describe('feature api: foundation hooks', () => {
 
     const addHook = renderHook(() => useDanmakuAdd(), { wrapper })
     await act(async () => {
-      await addHook.result.current.danmakuAdd({ videoId: 'video-1', content: '2333', time: 10 })
+      await addHook.result.current.danmakuAdd({
+        color: '#FFFFFF',
+        content: '2333',
+        fontSize: 24,
+        position: 'scroll',
+        videoId: 'video-1',
+        time: 10,
+      })
     })
 
-    expect(mocks.danmakuAdd).toHaveBeenCalledWith({ videoId: 'video-1', content: '2333', time: 10 })
+    expect(mocks.danmakuAdd).toHaveBeenCalledWith({
+      color: '#FFFFFF',
+      content: '2333',
+      fontSize: 24,
+      position: 'scroll',
+      videoId: 'video-1',
+      time: 10,
+    })
   })
 
   it('maps search-log and search query results', async () => {
@@ -191,9 +205,11 @@ describe('feature api: foundation hooks', () => {
     const searchHook = renderHook(
       () =>
         useSearch({
-          keyword: '动画',
+          kw: '动画',
           page: 1,
-          pageSize: 10,
+          publishedAt: 'all',
+          sort: 'all',
+          time: 'all',
           type: 'all',
         }),
       { wrapper }

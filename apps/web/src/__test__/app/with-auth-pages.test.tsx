@@ -5,7 +5,7 @@ import { createMockComponent, getMockProps } from '@/__test__/utils/component.mo
 const loadSimplePage = async (importPath: string, componentModules: Record<string, unknown>) => {
   vi.resetModules()
   for (const [path, moduleValue] of Object.entries(componentModules)) {
-    vi.doMock(path, () => moduleValue)
+    vi.doMock(path, () => moduleValue as Record<string, unknown>)
   }
   return import(importPath)
 }

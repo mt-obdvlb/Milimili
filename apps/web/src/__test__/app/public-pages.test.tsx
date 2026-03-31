@@ -186,7 +186,7 @@ const loadSimplePublicModule = async (
   vi.resetModules()
 
   for (const [path, moduleValue] of Object.entries(componentModules)) {
-    vi.doMock(path, () => moduleValue)
+    vi.doMock(path, () => moduleValue as Record<string, unknown>)
   }
 
   return import(importPath)

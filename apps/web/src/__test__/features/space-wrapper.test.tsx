@@ -17,7 +17,9 @@ const navigationMocks = vi.hoisted(() => ({
 vi.mock('@/features', () => featureMocks)
 vi.mock('next/navigation', () => navigationMocks)
 vi.mock('next/image', () => ({
-  default: ({ alt, src }: { alt: string; src: string }) => <img alt={alt} src={src} />,
+  default: ({ alt, src }: { alt: string; src: string }) => (
+    <span data-alt={alt} data-src={src} data-testid='NextImage' />
+  ),
 }))
 
 vi.mock('@/features/space/components/favorite/SpaceFavoriteFilterWrapper', () => ({

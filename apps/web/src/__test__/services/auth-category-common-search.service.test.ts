@@ -55,11 +55,13 @@ describe('web services: auth/category/common/search', () => {
 
   it('requests the search endpoint with params', () => {
     const params = {
-      keyword: '猫',
+      kw: '猫',
       page: 2,
-      pageSize: 10,
+      publishedAt: 'all',
+      sort: 'all',
+      time: 'all',
       type: 'all',
-    }
+    } as const
 
     searchGet(params)
 

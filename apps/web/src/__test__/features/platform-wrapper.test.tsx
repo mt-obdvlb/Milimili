@@ -28,7 +28,9 @@ vi.mock('next/link', () => ({
   ),
 }))
 vi.mock('next/image', () => ({
-  default: ({ alt, src }: { alt: string; src: string }) => <img alt={alt} src={src} />,
+  default: ({ alt, src }: { alt: string; src: string }) => (
+    <span data-alt={alt} data-src={src} data-testid='NextImage' />
+  ),
 }))
 vi.mock('@/components/ui/select', () => ({
   Select: ({
@@ -92,7 +94,7 @@ vi.mock('@/components/layout/models/common/CommonDialog', () => ({
 }))
 vi.mock('@/components/ui/CoverImage', () => ({
   default: ({ alt, src }: { alt: string; src: string }) => (
-    <img alt={alt} data-testid='CoverImage' src={src} />
+    <span data-alt={alt} data-src={src} data-testid='CoverImage' />
   ),
 }))
 
