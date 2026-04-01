@@ -12,12 +12,16 @@ import {
 import { formatTime } from '@/utils'
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
-import { createPortal } from 'react-dom'
 import { cn, toast } from '@/lib'
-import { contextMenuContentClassName, contextMenuItemClassName } from '@/components/ui/context-menu'
 import VideoDanmakuScrollbar from './VideoDanmakuScrollbar'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { OverlayScrollbarsComponentRef } from 'overlayscrollbars-react'
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu'
 import { useCopyToClipboard } from 'react-use'
 
 type DanmakuItem = {
@@ -26,24 +30,16 @@ type DanmakuItem = {
   content: string
 }
 
-type ContextMenuState = {
-  content: string
-  x: number
-  y: number
-} | null
-
 const VideoDanmakuTable = ({ videoId }: { videoId: string }) => {
   const { danmakuList } = useDanmakuGet(videoId)
 
   const [sort, setSort] = useState<boolean | null>(null)
 
   const [selectId, setSelectId] = useState('')
-  const [contextMenu, setContextMenu] = useState<ContextMenuState>(null)
 
   const [value, copy] = useCopyToClipboard()
 
   const parentRef = useRef<OverlayScrollbarsComponentRef>(null)
-  const contextMenuRef = useRef<HTMLDivElement>(null)
 
   const columns: ColumnDef<DanmakuItem>[] = [
     {
@@ -131,50 +127,6 @@ const VideoDanmakuTable = ({ videoId }: { videoId: string }) => {
     }
   }, [value.value])
 
-  useEffect(() => {
-    if (!contextMenu) return
-
-    const handlePointerDown = (event: MouseEvent) => {
-      const target = event.target as Node | null
-      if (target && contextMenuRef.current?.contains(target)) return
-      setContextMenu(null)
-    }
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setContextMenu(null)
-      }
-    }
-
-    const handleViewportChange = () => {
-      setContextMenu(null)
-    }
-
-    document.addEventListener('mousedown', handlePointerDown)
-    window.addEventListener('keydown', handleKeyDown)
-    window.addEventListener('resize', handleViewportChange)
-    window.addEventListener('scroll', handleViewportChange, true)
-
-    return () => {
-      document.removeEventListener('mousedown', handlePointerDown)
-      window.removeEventListener('keydown', handleKeyDown)
-      window.removeEventListener('resize', handleViewportChange)
-      window.removeEventListener('scroll', handleViewportChange, true)
-    }
-  }, [contextMenu])
-
-  const contextMenuStyle = useMemo(() => {
-    if (!contextMenu) return null
-
-    const menuWidth = 140
-    const menuHeight = 42
-
-    return {
-      left: Math.max(8, Math.min(contextMenu.x, window.innerWidth - menuWidth - 8)),
-      top: Math.max(8, Math.min(contextMenu.y, window.innerHeight - menuHeight - 8)),
-    }
-  }, [contextMenu])
-
   return (
     <div className='max-h-[376px] relative overflow-hidden '>
       {/* 表头 */}
@@ -200,77 +152,51 @@ const VideoDanmakuTable = ({ videoId }: { videoId: string }) => {
               const row = table.getRowModel().rows[virtualRow.index]
               if (!row) return null
               return (
-                <TableRow
-                  key={row.id}
-                  style={{
-                    position: 'absolute',
-                    top: virtualRow.start, // 直接用top定位，避免transform
-                    left: 0,
-                    width: '100%',
-                    height: virtualRow.size, // 显式指定行高，避免布局抖动
-                  }}
-                  onMouseDown={(e) => {
-                    if (e.button !== 0 || e.ctrlKey) return
-                    setSelectId(row.id)
-                    setContextMenu(null)
-                  }}
-                  onContextMenu={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    setContextMenu({
-                      content: row.original.content,
-                      x: e.clientX,
-                      y: e.clientY,
-                    })
-                  }}
-                  className={cn(
-                    'text-[#6d757a] cursor-pointer flex text-xs font-normal h-6 leading-6 relative select-none',
-                    selectId === row.id && 'bg-[#9499a0]/10'
-                  )}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <Fragment key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </Fragment>
-                  ))}
-                </TableRow>
+                <ContextMenu key={row.id}>
+                  <ContextMenuTrigger asChild>
+                    <TableRow
+                      style={{
+                        position: 'absolute',
+                        top: virtualRow.start, // 直接用top定位，避免transform
+                        left: 0,
+                        width: '100%',
+                        height: virtualRow.size, // 显式指定行高，避免布局抖动
+                      }}
+                      onClick={() => setSelectId(row.id)}
+                      className={cn(
+                        'text-[#6d757a] cursor-pointer flex text-xs font-normal h-6 leading-6 relative select-none',
+                        selectId === row.id && 'bg-[#9499a0]/10'
+                      )}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <Fragment key={cell.id}>
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </Fragment>
+                      ))}
+                    </TableRow>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent
+                    className={
+                      'bg-white border-line_regular shadow-[0_2px_4px_0] shadow-black/14 border text-shadow-[0_0_#e2e2e2] rounded-[4px] z-80 transition duration-100 outline-none'
+                    }
+                  >
+                    <ContextMenuItem
+                      onClick={() => {
+                        copy(row.original.content)
+                      }}
+                      className={
+                        'whitespace-nowrap text-ellipsis text-left py-1 px-5 leading-[30px] h-[30px] text-[12px] bg-transparent relative text-[#222] hover:bg-[#ddd] cursor-pointer'
+                      }
+                    >
+                      复制选中弹幕
+                    </ContextMenuItem>
+                  </ContextMenuContent>
+                </ContextMenu>
               )
             })}
           </TableBody>
         </Table>
       </VideoDanmakuScrollbar>
-
-      {contextMenu && contextMenuStyle
-        ? createPortal(
-            <div
-              ref={contextMenuRef}
-              style={{
-                position: 'fixed',
-                left: contextMenuStyle.left,
-                top: contextMenuStyle.top,
-              }}
-              className={cn(
-                contextMenuContentClassName,
-                'bg-white border-line_regular shadow-[0_2px_4px_0] shadow-black/14 border text-shadow-[0_0_#e2e2e2] rounded-[4px] z-80 transition duration-100 outline-none p-0'
-              )}
-            >
-              <button
-                type='button'
-                onClick={() => {
-                  copy(contextMenu.content)
-                  setContextMenu(null)
-                }}
-                className={cn(
-                  contextMenuItemClassName,
-                  'whitespace-nowrap text-ellipsis text-left py-1 px-5 leading-[30px] h-[30px] text-[12px] bg-transparent relative text-[#222] hover:bg-[#ddd] cursor-pointer w-full rounded-[4px] justify-start'
-                )}
-              >
-                复制选中弹幕
-              </button>
-            </div>,
-            document.body
-          )
-        : null}
     </div>
   )
 }
