@@ -28,6 +28,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --shamefully-hoist
 
+      - name: Build shared types
+        run: pnpm -F @mtobdvlb/shared-types build
+
       - name: Run lint
         run: pnpm lint
 
@@ -36,9 +39,6 @@ jobs:
 
       - name: Run tests
         run: pnpm test
-
-      - name: Build shared types
-        run: pnpm -F @mtobdvlb/shared-types build
 
       - name: Build server
         run: pnpm -F server build

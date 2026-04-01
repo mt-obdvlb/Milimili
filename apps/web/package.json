@@ -90,6 +90,7 @@
     "zustand": "^5.0.12"
   },
   "devDependencies": {
+    "@playwright/test": "^1.51.1",
     "@mtobdvlb/shared-types": "workspace:*",
     "@mtobdvlb/tailwind-config": "workspace:*",
     "@mtobdvlb/typescript-config": "workspace:*",
