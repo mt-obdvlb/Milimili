@@ -404,7 +404,13 @@ const VideoPlayerController = ({
           <HoverCardPure open={volumeOpen} onOpenChange={setVolumeOpen} openDelay={50}>
             <HoverCardPureTrigger asChild>
               <div className={cn(btn())}>
-                <div onClick={() => setVolumeOpen(true)} className={cn('cursor-pointer w-full')}>
+                <div
+                  onClick={() => {
+                    setVolumeOpen(true)
+                    setVolume(0)
+                  }}
+                  className={cn('cursor-pointer w-full')}
+                >
                   <span className={cn('h-[22px] opacity-90 inline-flex select-none w-full')}>
                     <svg
                       xmlns='http://www.w3.org/2000/svg'
