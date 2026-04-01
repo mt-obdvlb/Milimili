@@ -3,8 +3,7 @@
 import { VideoGetDetail } from '@mtobdvlb/shared-types'
 import React, { useEffect, useRef, useState } from 'react'
 import VideoPlayer from '@/features/video/components/video-play/VideoPlayer'
-import { HoverCard, HoverCardContent, HoverCardTrigger, Input, Label } from '@/components'
-import { Slider } from '@/components/ui/slider'
+import { Input, Label } from '@/components'
 import VideoPlayerDanmakuPublish from '@/features/video/components/video-play/VideoPlayerDanmakuPublish'
 import { useShow } from '@/hooks'
 import { VideoProvider } from '@/features/video/components/video-play/VideoPlayerProvider'
@@ -169,95 +168,95 @@ const VideoPlayerWrapper = ({
                       </Label>
                     </div>
 
-                    <HoverCard openDelay={50} closeDelay={150}>
-                      <HoverCardTrigger asChild>
-                        <div className='relative inline-flex size-6 cursor-pointer items-center justify-start leading-[30px] fill-[#757575] hover:fill-brand_blue mr-3'>
-                          <span className='leading-[30px] cursor-pointer fill-[#757575] w-full select-none h-full inline-flex'>
-                            <svg
-                              xmlns='http://www.w3.org/2000/svg'
-                              data-pointer='none'
-                              viewBox='0 0 24 24'
-                              className='size-6'
-                            >
-                              <path
-                                fillRule='evenodd'
-                                d='m15.645 4.881 1.06-1.473a.998.998 0 1 0-1.622-1.166L13.22 4.835a110.67 110.67 0 0 0-1.1-.007h-.131c-.47 0-.975.004-1.515.012L8.783 2.3A.998.998 0 0 0 7.12 3.408l.988 1.484c-.688.019-1.418.042-2.188.069a4.013 4.013 0 0 0-3.83 3.44c-.165 1.15-.245 2.545-.245 4.185 0 1.965.115 3.67.35 5.116a4.012 4.012 0 0 0 3.763 3.363c1.903.094 3.317.141 5.513.141a.988.988 0 0 0 0-1.975 97.58 97.58 0 0 1-5.416-.139 2.037 2.037 0 0 1-1.91-1.708c-.216-1.324-.325-2.924-.325-4.798 0-1.563.076-2.864.225-3.904.14-.977.96-1.713 1.945-1.747 2.444-.087 4.465-.13 6.063-.131 1.598 0 3.62.044 6.064.13.96.034 1.71.81 1.855 1.814.075.524.113 1.962.141 3.065v.002c.005.183.01.07.014-.038.004-.096.008-.189.011-.081a.987.987 0 1 0 1.974-.069c-.004-.105-.007-.009-.011.09-.002.056-.004.112-.007.135l-.002.01a.574.574 0 0 1-.005-.091v-.027c-.03-1.118-.073-2.663-.16-3.276-.273-1.906-1.783-3.438-3.74-3.507-.905-.032-1.752-.058-2.543-.079Zm-3.113 4.703h-1.307v4.643h2.2v.04l.651-1.234c.113-.215.281-.389.482-.509v-.11h.235c.137-.049.283-.074.433-.074h1.553V9.584h-1.264a8.5 8.5 0 0 0 .741-1.405l-1.078-.381c-.24.631-.501 1.23-.806 1.786h-1.503l.686-.305c-.228-.501-.5-.959-.806-1.394l-1.034.348c.294.392.566.839.817 1.35Zm-1.7 5.502h2.16l-.564 1.068h-1.595v-1.068Zm-2.498-1.863.152-1.561h1.96V8.289H7.277v.969h2.048v1.435h-1.84l-.306 3.51h2.254c0 1.155-.043 1.906-.12 2.255-.076.348-.38.523-.925.523-.305 0-.61-.022-.893-.055l.294 1.056.061.005c.282.02.546.039.81.039.991-.065 1.547-.414 1.677-1.046.11-.631.175-1.883.175-3.757H8.334Zm5.09-.8v.85h-1.188v-.85h1.187Zm-1.188-.955h1.187v-.893h-1.187v.893Zm2.322.007v-.893h1.241v.893h-1.241Zm.528 2.757a1.26 1.26 0 0 1 1.087-.627l4.003-.009a1.26 1.26 0 0 1 1.094.63l1.721 2.982c.226.39.225.872-.001 1.263l-1.743 3a1.26 1.26 0 0 1-1.086.628l-4.003.009a1.26 1.26 0 0 1-1.094-.63l-1.722-2.982a1.26 1.26 0 0 1 .002-1.263l1.742-3Zm1.967.858a1.26 1.26 0 0 0-1.08.614l-.903 1.513a1.26 1.26 0 0 0-.002 1.289l.885 1.492c.227.384.64.62 1.086.618l2.192-.005a1.26 1.26 0 0 0 1.08-.615l.904-1.518a1.26 1.26 0 0 0 .001-1.288l-.884-1.489a1.26 1.26 0 0 0-1.086-.616l-2.193.005Zm2.517 2.76a1.4 1.4 0 1 1-2.8 0 1.4 1.4 0 0 1 2.8 0Z'
-                                clipRule='evenodd'
-                              ></path>
-                            </svg>
-                          </span>
-                        </div>
-                      </HoverCardTrigger>
-                      <HoverCardContent
-                        side='top'
-                        className='w-[280px] rounded-[8px] border-line_regular bg-white p-4 shadow-[0_8px_24px_rgba(0,0,0,0.12)]'
-                      >
-                        <div className='space-y-4 text-xs text-[#444]'>
-                          <div className='flex items-center justify-between'>
-                            <span>模式</span>
-                            <div className='flex gap-1'>
-                              {[
-                                ['all', '全部'],
-                                ['scroll', '滚动'],
-                                ['top', '顶部'],
-                                ['bottom', '底部'],
-                              ].map(([value, label]) => (
-                                <button
-                                  key={value}
-                                  type='button'
-                                  onClick={() =>
-                                    updateConfig({ modeFilter: value as typeof config.modeFilter })
-                                  }
-                                  className={`rounded-full px-2 py-1 ${
-                                    config.modeFilter === value
-                                      ? 'bg-brand_blue text-white'
-                                      : 'bg-[#f4f4f4] text-[#666]'
-                                  }`}
-                                >
-                                  {label}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                          {[
-                            ['透明度', config.opacity, 0.2, 1, 0.05, 'opacity'],
-                            ['字号倍率', config.fontScale, 0.8, 1.6, 0.05, 'fontScale'],
-                            ['显示区域', config.areaRatio, 0.3, 1, 0.05, 'areaRatio'],
-                            ['弹幕速度', config.speed, 0.6, 1.8, 0.05, 'speed'],
-                          ].map(([label, value, min, max, step, key]) => (
-                            <div key={key}>
-                              <div className='mb-2 flex items-center justify-between'>
-                                <span>{label}</span>
-                                <span>{Number(value).toFixed(2)}</span>
-                              </div>
-                              <Slider
-                                value={[Number(value)]}
-                                min={Number(min)}
-                                max={Number(max)}
-                                step={Number(step)}
-                                onValueChange={([next]) => {
-                                  if (key === 'opacity') updateConfig({ opacity: next })
-                                  if (key === 'fontScale') updateConfig({ fontScale: next })
-                                  if (key === 'areaRatio') updateConfig({ areaRatio: next })
-                                  if (key === 'speed') updateConfig({ speed: next })
-                                }}
-                              />
-                            </div>
-                          ))}
-                          <button
-                            type='button'
-                            onClick={() => updateConfig({ smartMask: !config.smartMask })}
-                            className={`w-full rounded-[6px] px-3 py-2 text-left ${
-                              config.smartMask
-                                ? 'bg-[#e8f7ff] text-brand_blue'
-                                : 'bg-[#f4f4f4] text-[#666]'
-                            }`}
-                          >
-                            智能防挡字幕 {config.smartMask ? '开启' : '关闭'}
-                          </button>
-                        </div>
-                      </HoverCardContent>
-                    </HoverCard>
+                    {/*<HoverCard openDelay={50} closeDelay={150}>*/}
+                    {/*  <HoverCardTrigger asChild>*/}
+                    {/*    <div className='relative inline-flex size-6 cursor-pointer items-center justify-start leading-[30px] fill-[#757575] hover:fill-brand_blue mr-3'>*/}
+                    {/*      <span className='leading-[30px] cursor-pointer fill-[#757575] w-full select-none h-full inline-flex'>*/}
+                    {/*        <svg*/}
+                    {/*          xmlns='http://www.w3.org/2000/svg'*/}
+                    {/*          data-pointer='none'*/}
+                    {/*          viewBox='0 0 24 24'*/}
+                    {/*          className='size-6'*/}
+                    {/*        >*/}
+                    {/*          <path*/}
+                    {/*            fillRule='evenodd'*/}
+                    {/*            d='m15.645 4.881 1.06-1.473a.998.998 0 1 0-1.622-1.166L13.22 4.835a110.67 110.67 0 0 0-1.1-.007h-.131c-.47 0-.975.004-1.515.012L8.783 2.3A.998.998 0 0 0 7.12 3.408l.988 1.484c-.688.019-1.418.042-2.188.069a4.013 4.013 0 0 0-3.83 3.44c-.165 1.15-.245 2.545-.245 4.185 0 1.965.115 3.67.35 5.116a4.012 4.012 0 0 0 3.763 3.363c1.903.094 3.317.141 5.513.141a.988.988 0 0 0 0-1.975 97.58 97.58 0 0 1-5.416-.139 2.037 2.037 0 0 1-1.91-1.708c-.216-1.324-.325-2.924-.325-4.798 0-1.563.076-2.864.225-3.904.14-.977.96-1.713 1.945-1.747 2.444-.087 4.465-.13 6.063-.131 1.598 0 3.62.044 6.064.13.96.034 1.71.81 1.855 1.814.075.524.113 1.962.141 3.065v.002c.005.183.01.07.014-.038.004-.096.008-.189.011-.081a.987.987 0 1 0 1.974-.069c-.004-.105-.007-.009-.011.09-.002.056-.004.112-.007.135l-.002.01a.574.574 0 0 1-.005-.091v-.027c-.03-1.118-.073-2.663-.16-3.276-.273-1.906-1.783-3.438-3.74-3.507-.905-.032-1.752-.058-2.543-.079Zm-3.113 4.703h-1.307v4.643h2.2v.04l.651-1.234c.113-.215.281-.389.482-.509v-.11h.235c.137-.049.283-.074.433-.074h1.553V9.584h-1.264a8.5 8.5 0 0 0 .741-1.405l-1.078-.381c-.24.631-.501 1.23-.806 1.786h-1.503l.686-.305c-.228-.501-.5-.959-.806-1.394l-1.034.348c.294.392.566.839.817 1.35Zm-1.7 5.502h2.16l-.564 1.068h-1.595v-1.068Zm-2.498-1.863.152-1.561h1.96V8.289H7.277v.969h2.048v1.435h-1.84l-.306 3.51h2.254c0 1.155-.043 1.906-.12 2.255-.076.348-.38.523-.925.523-.305 0-.61-.022-.893-.055l.294 1.056.061.005c.282.02.546.039.81.039.991-.065 1.547-.414 1.677-1.046.11-.631.175-1.883.175-3.757H8.334Zm5.09-.8v.85h-1.188v-.85h1.187Zm-1.188-.955h1.187v-.893h-1.187v.893Zm2.322.007v-.893h1.241v.893h-1.241Zm.528 2.757a1.26 1.26 0 0 1 1.087-.627l4.003-.009a1.26 1.26 0 0 1 1.094.63l1.721 2.982c.226.39.225.872-.001 1.263l-1.743 3a1.26 1.26 0 0 1-1.086.628l-4.003.009a1.26 1.26 0 0 1-1.094-.63l-1.722-2.982a1.26 1.26 0 0 1 .002-1.263l1.742-3Zm1.967.858a1.26 1.26 0 0 0-1.08.614l-.903 1.513a1.26 1.26 0 0 0-.002 1.289l.885 1.492c.227.384.64.62 1.086.618l2.192-.005a1.26 1.26 0 0 0 1.08-.615l.904-1.518a1.26 1.26 0 0 0 .001-1.288l-.884-1.489a1.26 1.26 0 0 0-1.086-.616l-2.193.005Zm2.517 2.76a1.4 1.4 0 1 1-2.8 0 1.4 1.4 0 0 1 2.8 0Z'*/}
+                    {/*            clipRule='evenodd'*/}
+                    {/*          ></path>*/}
+                    {/*        </svg>*/}
+                    {/*      </span>*/}
+                    {/*    </div>*/}
+                    {/*  </HoverCardTrigger>*/}
+                    {/*  <HoverCardContent*/}
+                    {/*    side='top'*/}
+                    {/*    className='w-[280px] rounded-[8px] border-line_regular bg-white p-4 shadow-[0_8px_24px_rgba(0,0,0,0.12)]'*/}
+                    {/*  >*/}
+                    {/*    <div className='space-y-4 text-xs text-[#444]'>*/}
+                    {/*      <div className='flex items-center justify-between'>*/}
+                    {/*        <span>模式</span>*/}
+                    {/*        <div className='flex gap-1'>*/}
+                    {/*          {[*/}
+                    {/*            ['all', '全部'],*/}
+                    {/*            ['scroll', '滚动'],*/}
+                    {/*            ['top', '顶部'],*/}
+                    {/*            ['bottom', '底部'],*/}
+                    {/*          ].map(([value, label]) => (*/}
+                    {/*            <button*/}
+                    {/*              key={value}*/}
+                    {/*              type='button'*/}
+                    {/*              onClick={() =>*/}
+                    {/*                updateConfig({ modeFilter: value as typeof config.modeFilter })*/}
+                    {/*              }*/}
+                    {/*              className={`rounded-full px-2 py-1 ${*/}
+                    {/*                config.modeFilter === value*/}
+                    {/*                  ? 'bg-brand_blue text-white'*/}
+                    {/*                  : 'bg-[#f4f4f4] text-[#666]'*/}
+                    {/*              }`}*/}
+                    {/*            >*/}
+                    {/*              {label}*/}
+                    {/*            </button>*/}
+                    {/*          ))}*/}
+                    {/*        </div>*/}
+                    {/*      </div>*/}
+                    {/*      {[*/}
+                    {/*        ['透明度', config.opacity, 0.2, 1, 0.05, 'opacity'],*/}
+                    {/*        ['字号倍率', config.fontScale, 0.8, 1.6, 0.05, 'fontScale'],*/}
+                    {/*        ['显示区域', config.areaRatio, 0.3, 1, 0.05, 'areaRatio'],*/}
+                    {/*        ['弹幕速度', config.speed, 0.6, 1.8, 0.05, 'speed'],*/}
+                    {/*      ].map(([label, value, min, max, step, key]) => (*/}
+                    {/*        <div key={key}>*/}
+                    {/*          <div className='mb-2 flex items-center justify-between'>*/}
+                    {/*            <span>{label}</span>*/}
+                    {/*            <span>{Number(value).toFixed(2)}</span>*/}
+                    {/*          </div>*/}
+                    {/*          <Slider*/}
+                    {/*            value={[Number(value)]}*/}
+                    {/*            min={Number(min)}*/}
+                    {/*            max={Number(max)}*/}
+                    {/*            step={Number(step)}*/}
+                    {/*            onValueChange={([next]) => {*/}
+                    {/*              if (key === 'opacity') updateConfig({ opacity: next })*/}
+                    {/*              if (key === 'fontScale') updateConfig({ fontScale: next })*/}
+                    {/*              if (key === 'areaRatio') updateConfig({ areaRatio: next })*/}
+                    {/*              if (key === 'speed') updateConfig({ speed: next })*/}
+                    {/*            }}*/}
+                    {/*          />*/}
+                    {/*        </div>*/}
+                    {/*      ))}*/}
+                    {/*      <button*/}
+                    {/*        type='button'*/}
+                    {/*        onClick={() => updateConfig({ smartMask: !config.smartMask })}*/}
+                    {/*        className={`w-full rounded-[6px] px-3 py-2 text-left ${*/}
+                    {/*          config.smartMask*/}
+                    {/*            ? 'bg-[#e8f7ff] text-brand_blue'*/}
+                    {/*            : 'bg-[#f4f4f4] text-[#666]'*/}
+                    {/*        }`}*/}
+                    {/*      >*/}
+                    {/*        智能防挡字幕 {config.smartMask ? '开启' : '关闭'}*/}
+                    {/*      </button>*/}
+                    {/*    </div>*/}
+                    {/*  </HoverCardContent>*/}
+                    {/*</HoverCard>*/}
 
                     <VideoPlayerDanmakuPublish
                       videoRef={videoRef}
