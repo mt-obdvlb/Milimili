@@ -4,11 +4,34 @@ set -eu
 
 DEPLOY_PATH="${DEPLOY_PATH:-/root/milimili-cicd}"
 APP_CONTAINER="${APP_CONTAINER:-milimili-app}"
+BACKUP_DIR="/tmp/milimili-deploy-backup-$(date +%s)"
+DEPLOY_OK=0
 
 if ! docker ps --format '{{.Names}}' | grep -Fx "$APP_CONTAINER" >/dev/null 2>&1; then
   echo "Container $APP_CONTAINER is not running"
   exit 1
 fi
+
+rollback() {
+  if [ "$DEPLOY_OK" = "1" ]; then
+    return
+  fi
+
+  echo "Deployment did not complete; restoring previous app artifacts"
+  docker exec "$APP_CONTAINER" sh -lc "
+    if [ -d '$BACKUP_DIR' ]; then
+      rm -rf /app/apps/server/dist /app/apps/web/.next /app/apps/web/public
+      mkdir -p /app/apps/server /app/apps/web
+      if [ -d '$BACKUP_DIR/server-dist' ]; then cp -a '$BACKUP_DIR/server-dist' /app/apps/server/dist; fi
+      if [ -d '$BACKUP_DIR/web-next' ]; then cp -a '$BACKUP_DIR/web-next' /app/apps/web/.next; fi
+      if [ -d '$BACKUP_DIR/web-public' ]; then cp -a '$BACKUP_DIR/web-public' /app/apps/web/public; fi
+      rm -rf '$BACKUP_DIR'
+    fi
+  " >/dev/null 2>&1 || true
+  docker restart "$APP_CONTAINER" >/dev/null 2>&1 || true
+}
+
+trap rollback EXIT INT TERM
 
 copy_if_exists() {
   src="$1"
@@ -18,6 +41,14 @@ copy_if_exists() {
     docker cp "$src" "$APP_CONTAINER:$dest"
   fi
 }
+
+docker exec "$APP_CONTAINER" sh -lc "
+  rm -rf '$BACKUP_DIR' &&
+  mkdir -p '$BACKUP_DIR' &&
+  if [ -d /app/apps/server/dist ]; then cp -a /app/apps/server/dist '$BACKUP_DIR/server-dist'; fi &&
+  if [ -d /app/apps/web/.next ]; then cp -a /app/apps/web/.next '$BACKUP_DIR/web-next'; fi &&
+  if [ -d /app/apps/web/public ]; then cp -a /app/apps/web/public '$BACKUP_DIR/web-public'; fi
+"
 
 docker exec "$APP_CONTAINER" sh -lc '
   rm -rf /app/apps/server/dist /app/apps/web/.next /app/apps/web/public &&
@@ -63,3 +94,20 @@ if [ -d "$DEPLOY_PATH/apps/web/public" ]; then
 fi
 
 docker restart "$APP_CONTAINER"
+
+attempt=1
+while [ "$attempt" -le 30 ]; do
+  if docker exec "$APP_CONTAINER" node -e "fetch('http://127.0.0.1:3000/api/v1/readyz').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))" >/dev/null 2>&1; then
+    DEPLOY_OK=1
+    docker exec "$APP_CONTAINER" rm -rf "$BACKUP_DIR" >/dev/null 2>&1 || true
+    echo "Deployment health check passed"
+    exit 0
+  fi
+
+  echo "Waiting for deployment readiness ($attempt/30)"
+  attempt=$((attempt + 1))
+  sleep 2
+done
+
+echo "Deployment health check failed"
+exit 1
