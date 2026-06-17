@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only --require tsconfig-paths/register src/server.ts",
     "build": "tsc && tsc-alias -p tsconfig.json",
+    "check-types": "tsc --noEmit",
+    "lint": "cd ../.. && eslint apps/server/src --config eslint.config.mjs --max-warnings 0",
     "start": "node dist/server.js"
   },
   "keywords": [],

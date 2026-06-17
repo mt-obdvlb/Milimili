@@ -61,6 +61,7 @@ export default defineConfig([
     rules: {
       ...pluginNext.configs.recommended.rules,
       ...pluginNext.configs['core-web-vitals'].rules,
+      '@next/next/no-html-link-for-pages': 'off',
     },
     files: ['apps/web/**'],
   },

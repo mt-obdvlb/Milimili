@@ -1,7 +1,7 @@
 import { Types } from 'mongoose'
 import { vi } from 'vitest'
 
-type MockQueryResult<T> = {
+type MockQueryResult = {
   catch: ReturnType<typeof vi.fn>
   exec: ReturnType<typeof vi.fn>
   finally: ReturnType<typeof vi.fn>
@@ -16,7 +16,7 @@ type MockQueryResult<T> = {
 
 export const createObjectId = (value = '507f1f77bcf86cd799439011') => new Types.ObjectId(value)
 
-export const createMockQuery = <T>(result: T): MockQueryResult<T> => {
+export const createMockQuery = <T>(result: T): MockQueryResult => {
   const query = {
     catch: vi.fn((onRejected?: (reason: unknown) => unknown) =>
       Promise.resolve(result).catch(onRejected)
@@ -32,7 +32,7 @@ export const createMockQuery = <T>(result: T): MockQueryResult<T> => {
     then: vi.fn((onFulfilled?: (value: T) => unknown, onRejected?: (reason: unknown) => unknown) =>
       Promise.resolve(result).then(onFulfilled, onRejected)
     ),
-  } satisfies MockQueryResult<T>
+  } satisfies MockQueryResult
 
   query.limit.mockReturnValue(query)
   query.populate.mockReturnValue(query)

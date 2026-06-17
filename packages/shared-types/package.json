@@ -15,6 +15,8 @@
     "dev:tsup": "tsup --watch --dts",
     "dev:barrels": "chokidar 'src/**/*.ts' -i 'src/**/*.d.ts' -i 'src/index.ts' -c 'pnpm barrels' --events add,unlink --debounce 500",
     "build": "pnpm barrels && tsup --dts --no-watch",
+    "check-types": "tsc --noEmit",
+    "lint": "cd ../.. && eslint packages/shared-types/src packages/shared-types/tsup.config.ts --config eslint.config.mjs --max-warnings 0",
     "barrels": "barrelsby -d src --delete --recurse -l all -q -S -H --exclude \\\\.d\\\\.ts$"
   },
   "dependencies": {
