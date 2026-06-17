@@ -56,7 +56,7 @@ jobs:
 
       - name: Prepare deploy bundle
         run: |
-          rm -rf apps/web/.next/dev apps/web/.next/cache
+          rm -rf apps/web/.next/dev apps/web/.next/cache apps/web/.next/node_modules
 
           mkdir -p \
             deploy_bundle/apps/server \

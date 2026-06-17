@@ -10,7 +10,7 @@
     "start": "next start -p 3001 -H 0.0.0.0",
     "lint": "cd ../.. && eslint apps/web/src apps/web/next.config.ts apps/web/postcss.config.js apps/web/replace-svg-attrs.ts --config eslint.config.mjs --max-warnings 0",
     "check-types": "tsc --noEmit",
-    "barrels": "barrelsby -d src --delete --recurse -l all -q -S -H --exclude 'src/app' --exclude '\\.d\\.ts$' && node ../../scripts/prune-web-barrel-exports.mjs",
+    "barrels": "find src -name 'index 2.ts' -delete && barrelsby -d src --delete --recurse -l all -q -S -H --exclude 'src/app' --exclude '\\.d\\.ts$' && find src -name 'index 2.ts' -delete && node ../../scripts/prune-web-barrel-exports.mjs",
     "vercel-build": "HUSKY_SKIP_INSTALL=1 cd ../../ && pnpm --filter @mtobdvlb/shared-types build && cd apps/web && pnpm build"
   },
   "dependencies": {
