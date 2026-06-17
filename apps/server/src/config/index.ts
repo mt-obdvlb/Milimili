@@ -1,5 +1,6 @@
 export * from './app'
 export * from './email'
+export * from './env'
 export * from './jwt'
 export * from './mongo'
 export * from './oss'

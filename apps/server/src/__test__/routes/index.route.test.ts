@@ -48,6 +48,9 @@ describe('api route index', () => {
       default: await createMarkerRouter('commons'),
     }))
     vi.doMock('@/routes/like.route', async () => ({ default: await createMarkerRouter('likes') }))
+    vi.doMock('@/routes/health.route', async () => ({
+      default: await createMarkerRouter('health'),
+    }))
 
     // @ts-expect-error Vitest resolves TS path aliases at test runtime.
     const { default: routes } = await import('@/routes')
@@ -70,6 +73,7 @@ describe('api route index', () => {
     ['/follows/__marker', 'follows'],
     ['/commons/__marker', 'commons'],
     ['/likes/__marker', 'likes'],
+    ['/__marker', 'health'],
   ])('mounts %s', async (path, scope) => {
     const response = await request(app).get(path)
 

@@ -1,9 +1,11 @@
 import { MESSAGE } from '@/constants'
+import { getAppConfig } from '@/config'
 import redis from '@/utils/redis.util'
 import { NextFunction, Request, Response } from 'express'
 
-const WINDOW_SECONDS = 60
-const MAX_REQUESTS = 100000
+const appConfig = getAppConfig()
+const WINDOW_SECONDS = appConfig.rateLimitWindowSeconds
+const MAX_REQUESTS = appConfig.rateLimitMaxRequests
 
 export const rateLimiter = async (req: Request, res: Response, next: NextFunction) => {
   try {

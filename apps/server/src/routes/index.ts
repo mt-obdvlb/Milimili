@@ -13,9 +13,11 @@ import followRoute from '@/routes/follow.route'
 import commonRoute from '@/routes/common.route'
 import messageRoute from '@/routes/message.route'
 import likeRoute from '@/routes/like.route'
+import healthRoute from '@/routes/health.route'
 
 const router = Router()
 
+router.use('/', healthRoute)
 router.use('/auth', authRoute)
 router.use('/users', userRoute)
 router.use('/categories', categoryRoute)

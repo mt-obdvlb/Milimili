@@ -1,5 +1,10 @@
+import { env, isProduction } from './env'
+
 export const getAppConfig = () => ({
-  port: process.env.PORT,
-  frontendUrl: process.env.FRONTEND_URL,
-  swaggerServerUrl: process.env.SWAGGER_SERVER_URL || 'http://localhost:3000',
+  port: env.PORT,
+  frontendUrl: env.FRONTEND_URL,
+  swaggerServerUrl: env.SWAGGER_SERVER_URL,
+  swaggerEnabled: env.SWAGGER_ENABLED ?? !isProduction,
+  rateLimitWindowSeconds: env.RATE_LIMIT_WINDOW_SECONDS,
+  rateLimitMaxRequests: env.RATE_LIMIT_MAX_REQUESTS,
 })

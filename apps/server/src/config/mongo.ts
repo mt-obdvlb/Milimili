@@ -1,3 +1,5 @@
+import { env } from './env'
+
 export const getMongoConfig = () => ({
-  uri: process.env.MONGO_URI,
+  uri: env.MONGO_URI,
 })

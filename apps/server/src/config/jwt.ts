@@ -1,5 +1,7 @@
+import { env } from './env'
+
 export const getJwtConfig = () => ({
-  secret: process.env.JWT_SECRET,
-  accessExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN,
-  refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
+  secret: env.JWT_SECRET,
+  accessExpiresIn: env.JWT_ACCESS_EXPIRES_IN,
+  refreshExpiresIn: env.JWT_REFRESH_EXPIRES_IN,
 })

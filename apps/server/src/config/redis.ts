@@ -1,6 +1,8 @@
+import { env } from './env'
+
 export const getRedisConfig = () => ({
-  host: process.env.REDIS_HOST,
-  port: process.env.REDIS_PORT,
-  password: process.env.REDIS_PASSWORD,
-  uri: process.env.REDIS_URI,
+  host: env.REDIS_HOST,
+  port: env.REDIS_PORT,
+  password: env.REDIS_PASSWORD,
+  uri: env.REDIS_URI,
 })

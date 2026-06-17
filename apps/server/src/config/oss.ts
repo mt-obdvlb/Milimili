@@ -1,6 +1,8 @@
+import { env } from './env'
+
 export const getOssConfig = () => ({
-  region: process.env.OSS_REGION,
-  accessKeyId: process.env.OSS_ACCESS_KEY_ID,
-  accessKeySecret: process.env.OSS_ACCESS_KEY_SECRET,
-  bucket: process.env.OSS_BUCKET,
+  region: env.OSS_REGION,
+  accessKeyId: env.OSS_ACCESS_KEY_ID,
+  accessKeySecret: env.OSS_ACCESS_KEY_SECRET,
+  bucket: env.OSS_BUCKET,
 })
