@@ -32,6 +32,13 @@ const envSchema = z
     OSS_BUCKET: z.string().default(''),
     RATE_LIMIT_WINDOW_SECONDS: z.coerce.number().int().positive().default(60),
     RATE_LIMIT_MAX_REQUESTS: z.coerce.number().int().positive().default(1000),
+    LOG_LEVEL: z.string().default('info'),
+    SENTRY_DSN: z.string().default(''),
+    SENTRY_ENVIRONMENT: z.string().optional(),
+    SENTRY_TRACES_SAMPLE_RATE: z.coerce.number().min(0).max(1).default(0.1),
+    OTEL_ENABLED: booleanFromEnv.default(false),
+    OTEL_SERVICE_NAME: z.string().default('milimili-server'),
+    OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: z.url().optional(),
   })
   .superRefine((env, ctx) => {
     if (env.NODE_ENV !== 'production') return

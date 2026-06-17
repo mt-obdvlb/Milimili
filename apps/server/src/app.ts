@@ -1,12 +1,13 @@
 import 'dotenv/config'
+import * as Sentry from '@sentry/node'
 import { errorMiddleware, rateLimiter, securityHeaders } from '@/middlewares'
 import router from '@/routes'
 import { setupSwagger } from '@/utils'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import express from 'express'
-import morgan from 'morgan'
-import { getAppConfig } from '@/config'
+import { env, getAppConfig } from '@/config'
+import { httpLogger } from '@/utils/logger.util'
 
 const appConfig = getAppConfig()
 
@@ -24,13 +25,16 @@ app.use(
 
 app.use(cookieParser())
 app.use(express.json())
-app.use(morgan(appConfig.swaggerEnabled ? 'dev' : 'combined'))
+app.use(httpLogger)
 app.use(rateLimiter)
 
 if (appConfig.swaggerEnabled) {
   setupSwagger(app)
 }
 app.use('/api/v1', router)
+if (env.SENTRY_DSN) {
+  Sentry.setupExpressErrorHandler(app)
+}
 app.use(errorMiddleware)
 
 export default app

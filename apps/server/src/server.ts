@@ -1,3 +1,4 @@
+import './instrumentation'
 import app from './app'
 import { getAppConfig, getMongoConfig } from '@/config'
 import mongoose, { Types } from 'mongoose'

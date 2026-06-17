@@ -29,6 +29,8 @@ coverage/
 .env.test.local
 .env.production.local
 **/.env.production
+observability/.env.observability
+observability/uptime-kuma-admin.env
 
 # ========================
 # Logs
