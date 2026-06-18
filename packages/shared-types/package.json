@@ -17,7 +17,8 @@
     "build": "pnpm barrels && tsup --dts --no-watch",
     "check-types": "tsc --noEmit",
     "lint": "cd ../.. && eslint packages/shared-types/src packages/shared-types/tsup.config.ts --config eslint.config.mjs --max-warnings 0",
-    "barrels": "barrelsby -d src --delete --recurse -l all -q -S -H --exclude \\\\.d\\\\.ts$"
+    "clean:generated": "find src -name 'index [0-9]*.ts' -delete",
+    "barrels": "pnpm clean:generated && barrelsby -d src --delete --recurse -l all -q -S -H --exclude \\\\.d\\\\.ts$ && pnpm clean:generated"
   },
   "dependencies": {
     "tsup": "^8.5.1",

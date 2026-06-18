@@ -6,11 +6,12 @@
   "scripts": {
     "dev": "next dev --port 3001 --turbopack",
     "dev:barrels": "chokidar 'src/**/*.{ts,tsx}' -i 'src/app/**/*' -c 'pnpm barrels' --events add,unlink --debounce 300 --silent",
-    "build": "pnpm barrels && next build",
+    "build": "pnpm clean:generated && pnpm barrels && next build",
     "start": "next start -p 3001 -H 0.0.0.0",
     "lint": "cd ../.. && eslint apps/web/src apps/web/next.config.ts apps/web/postcss.config.js apps/web/replace-svg-attrs.ts --config eslint.config.mjs --max-warnings 0",
-    "check-types": "tsc --noEmit",
-    "barrels": "find src -name 'index 2.ts' -delete && barrelsby -d src --delete --recurse -l all -q -S -H --exclude 'src/app' --exclude '\\.d\\.ts$' && find src -name 'index 2.ts' -delete && node ../../scripts/prune-web-barrel-exports.mjs",
+    "check-types": "pnpm clean:generated && tsc --noEmit",
+    "clean:generated": "find src -name 'index [0-9]*.ts' -delete && if [ -d .next/types ]; then find .next/types -name '* [0-9]*.ts' -delete; fi",
+    "barrels": "pnpm clean:generated && barrelsby -d src --delete --recurse -l all -q -S -H --exclude 'src/app' --exclude '\\.d\\.ts$' && pnpm clean:generated && node ../../scripts/prune-web-barrel-exports.mjs",
     "vercel-build": "HUSKY_SKIP_INSTALL=1 cd ../../ && pnpm --filter @mtobdvlb/shared-types build && cd apps/web && pnpm build"
   },
   "dependencies": {
