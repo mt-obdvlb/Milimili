@@ -2,6 +2,12 @@
 
 set -eu
 
+if [ -f /app/.env.production ]; then
+  set -a
+  . /app/.env.production
+  set +a
+fi
+
 shutdown() {
   kill "$SERVER_PID" "$WEB_PID" 2>/dev/null || true
   wait "$SERVER_PID" "$WEB_PID" 2>/dev/null || true

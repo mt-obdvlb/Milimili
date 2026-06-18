@@ -69,6 +69,10 @@ copy_if_exists "$DEPLOY_PATH/pnpm-lock.yaml" "/app/pnpm-lock.yaml"
 copy_if_exists "$DEPLOY_PATH/pnpm-workspace.yaml" "/app/pnpm-workspace.yaml"
 copy_if_exists "$DEPLOY_PATH/turbo.json" "/app/turbo.json"
 copy_if_exists "$DEPLOY_PATH/.npmrc" "/app/.npmrc"
+copy_if_exists "$DEPLOY_PATH/.env.production" "/app/.env.production"
+copy_if_exists "$DEPLOY_PATH/start.sh" "/start.sh"
+
+docker exec "$APP_CONTAINER" chmod +x /start.sh
 
 copy_if_exists "$DEPLOY_PATH/apps/server/package.json" "/app/apps/server/package.json"
 copy_if_exists "$DEPLOY_PATH/apps/web/package.json" "/app/apps/web/package.json"

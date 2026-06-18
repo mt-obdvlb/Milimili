@@ -43,6 +43,18 @@ jobs:
         run: pnpm -F server build
 
       - name: Build web
+        env:
+          NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+          NEXT_PUBLIC_SENTRY_ENVIRONMENT: ${{ secrets.NEXT_PUBLIC_SENTRY_ENVIRONMENT }}
+          NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE: ${{ secrets.NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE }}
+          NEXT_PUBLIC_SENTRY_REPLAY_SAMPLE_RATE: ${{ secrets.NEXT_PUBLIC_SENTRY_REPLAY_SAMPLE_RATE }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          SENTRY_ENVIRONMENT: ${{ secrets.SENTRY_ENVIRONMENT }}
+          SENTRY_TRACES_SAMPLE_RATE: ${{ secrets.SENTRY_TRACES_SAMPLE_RATE }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_UPLOAD_SOURCEMAPS: ${{ secrets.SENTRY_UPLOAD_SOURCEMAPS }}
         run: pnpm -F web build
 
       - name: Prepare SSH key
@@ -88,7 +100,22 @@ jobs:
           cp pnpm-lock.yaml deploy_bundle/pnpm-lock.yaml
           cp pnpm-workspace.yaml deploy_bundle/pnpm-workspace.yaml
           cp turbo.json deploy_bundle/turbo.json
+          cp start.sh deploy_bundle/start.sh
           if [ -f .npmrc ]; then cp .npmrc deploy_bundle/.npmrc; fi
+
+          {
+            printf '%s\n' 'SENTRY_DSN=${{ secrets.SENTRY_DSN }}'
+            printf '%s\n' 'SENTRY_ENVIRONMENT=${{ secrets.SENTRY_ENVIRONMENT }}'
+            printf '%s\n' 'SENTRY_TRACES_SAMPLE_RATE=${{ secrets.SENTRY_TRACES_SAMPLE_RATE }}'
+            printf '%s\n' 'NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}'
+            printf '%s\n' 'NEXT_PUBLIC_SENTRY_ENVIRONMENT=${{ secrets.NEXT_PUBLIC_SENTRY_ENVIRONMENT }}'
+            printf '%s\n' 'NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE=${{ secrets.NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE }}'
+            printf '%s\n' 'NEXT_PUBLIC_SENTRY_REPLAY_SAMPLE_RATE=${{ secrets.NEXT_PUBLIC_SENTRY_REPLAY_SAMPLE_RATE }}'
+            printf '%s\n' 'LOG_LEVEL=${{ secrets.LOG_LEVEL }}'
+            printf '%s\n' 'OTEL_ENABLED=${{ secrets.OTEL_ENABLED }}'
+            printf '%s\n' 'OTEL_SERVICE_NAME=${{ secrets.OTEL_SERVICE_NAME }}'
+            printf '%s\n' 'OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=${{ secrets.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT }}'
+          } > deploy_bundle/.env.production
 
           cp apps/server/package.json deploy_bundle/apps/server/package.json
           cp apps/web/package.json deploy_bundle/apps/web/package.json
