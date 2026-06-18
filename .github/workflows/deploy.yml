@@ -56,7 +56,7 @@ jobs:
 
       - name: Prepare deploy bundle
         run: |
-          rm -rf apps/web/.next/dev apps/web/.next/cache apps/web/.next/node_modules
+          rm -rf apps/web/.next/dev apps/web/.next/cache
 
           mkdir -p \
             deploy_bundle/apps/server \
@@ -65,6 +65,24 @@ jobs:
             deploy_bundle/packages/tailwind-config \
             deploy_bundle/packages/typescript-config \
             deploy_bundle/scripts
+
+          if [ -d apps/web/.next/node_modules ]; then
+            find apps/web/.next/node_modules -maxdepth 1 -type l -exec sh -c '
+              for path do
+                link_name="$(basename "$path")"
+                case "$link_name" in
+                  */*|.*|*" "*) continue ;;
+                esac
+
+                target="$(readlink "$path")"
+                case "$target" in
+                  ../../../../node_modules/*) printf "%s\t%s\n" "$link_name" "$target" ;;
+                esac
+              done
+            ' sh {} + > deploy_bundle/apps/web/.next-node-module-links.tsv
+          fi
+
+          rm -rf apps/web/.next/node_modules
 
           cp package.json deploy_bundle/package.json
           cp pnpm-lock.yaml deploy_bundle/pnpm-lock.yaml
@@ -102,3 +120,7 @@ jobs:
             https://www.mtobdvlb.icu/api/v1/healthz >/dev/null
           curl --fail --show-error --silent --retry 10 --retry-delay 3 --retry-all-errors \
             https://www.mtobdvlb.icu/api/v1/readyz >/dev/null
+          curl --fail --show-error --silent --retry 10 --retry-delay 3 --retry-all-errors \
+            https://www.mtobdvlb.icu/ >/dev/null
+          curl --fail --show-error --silent --retry 10 --retry-delay 3 --retry-all-errors \
+            https://www.mtobdvlb.icu/login >/dev/null

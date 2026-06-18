@@ -73,6 +73,7 @@ copy_if_exists "$DEPLOY_PATH/.npmrc" "/app/.npmrc"
 copy_if_exists "$DEPLOY_PATH/apps/server/package.json" "/app/apps/server/package.json"
 copy_if_exists "$DEPLOY_PATH/apps/web/package.json" "/app/apps/web/package.json"
 copy_if_exists "$DEPLOY_PATH/apps/web/next.config.ts" "/app/apps/web/next.config.ts"
+copy_if_exists "$DEPLOY_PATH/apps/web/.next-node-module-links.tsv" "/app/apps/web/.next-node-module-links.tsv"
 copy_if_exists "$DEPLOY_PATH/packages/shared-types/package.json" "/app/packages/shared-types/package.json"
 copy_if_exists "$DEPLOY_PATH/packages/tailwind-config/package.json" "/app/packages/tailwind-config/package.json"
 copy_if_exists "$DEPLOY_PATH/packages/typescript-config/package.json" "/app/packages/typescript-config/package.json"
@@ -93,11 +94,41 @@ if [ -d "$DEPLOY_PATH/apps/web/public" ]; then
   docker cp "$DEPLOY_PATH/apps/web/public/." "$APP_CONTAINER:/app/apps/web/public/"
 fi
 
+docker exec "$APP_CONTAINER" sh -lc '
+  manifest=/app/apps/web/.next-node-module-links.tsv
+
+  if [ -f "$manifest" ]; then
+    mkdir -p /app/apps/web/.next/node_modules
+
+    while IFS="$(printf "\t")" read -r link_name target; do
+      [ -n "$link_name" ] || continue
+
+      case "$link_name" in
+        */*|.*|*" "*) continue ;;
+      esac
+
+      case "$target" in
+        ../../../../node_modules/*)
+          package_name="${target#../../../../node_modules/}"
+          target_path="/app/node_modules/$package_name"
+
+          if [ ! -e "$target_path" ]; then
+            echo "Missing Next external module target: $target_path"
+            exit 1
+          fi
+
+          ln -sfn "$target" "/app/apps/web/.next/node_modules/$link_name"
+          ;;
+      esac
+    done < "$manifest"
+  fi
+'
+
 docker restart "$APP_CONTAINER"
 
 attempt=1
 while [ "$attempt" -le 30 ]; do
-  if docker exec "$APP_CONTAINER" node -e "fetch('http://127.0.0.1:3000/api/v1/readyz').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))" >/dev/null 2>&1; then
+  if docker exec "$APP_CONTAINER" node -e "Promise.all(['http://127.0.0.1:3000/api/v1/readyz','http://127.0.0.1:3001/','http://127.0.0.1:3001/login'].map((url)=>fetch(url))).then((responses)=>process.exit(responses.every((response)=>response.ok)?0:1)).catch(()=>process.exit(1))" >/dev/null 2>&1; then
     DEPLOY_OK=1
     docker exec "$APP_CONTAINER" rm -rf "$BACKUP_DIR" >/dev/null 2>&1 || true
     echo "Deployment health check passed"
